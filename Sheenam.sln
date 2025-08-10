@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheenam.Api", "Sheenam.Api\Sheenam.Api.csproj", "{A7851D44-B653-4FD7-ABEA-741C3AD52B92}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7851D44-B653-4FD7-ABEA-741C3AD52B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7851D44-B653-4FD7-ABEA-741C3AD52B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7851D44-B653-4FD7-ABEA-741C3AD52B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7851D44-B653-4FD7-ABEA-741C3AD52B92}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C6E4C39F-134A-4FBF-8C1B-44C5A2DDD4C8}
+	EndGlobalSection
+EndGlobal
