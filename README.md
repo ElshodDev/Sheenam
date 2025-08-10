@@ -1,2 +1,2 @@
 # Sheenam
-This is The-Standart  complient API that allows  you and your family  find comfortanble home 
+This is The-Standard  compliment API that allows  you and your family  find comfortable home 
