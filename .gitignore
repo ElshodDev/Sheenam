@@ -417,3 +417,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /Sheenam.Api/appsettings.Development.json
+/Sheenam.Api/Properties/serviceDependencies.local.json
