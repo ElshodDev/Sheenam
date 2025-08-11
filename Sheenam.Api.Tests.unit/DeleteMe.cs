@@ -1,4 +1,8 @@
-﻿using Xunit.Sdk;
+﻿//===================================================
+// Copyright (c) Coalition  of Good-Hearted Engineers
+// Free To use  Comfort and Peace
+//===================================================
+using Xunit.Sdk;
 
 namespace Sheenam.Api.Tests.unit
 {
