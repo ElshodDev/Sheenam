@@ -7,6 +7,7 @@ using EFxceptions.Models.Exceptions;
 using Npgsql;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
+using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -30,21 +31,30 @@ namespace Sheenam.Api.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
-            catch (PostgresException postgresException) 
+            catch (PostgresException postgresException)
             {
-               var failedGuestStorageException=new
-                    FailedGuestStorageException(postgresException);
+                var failedGuestStorageException = new
+                     FailedGuestStorageException(postgresException);
 
                 throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistGuestException =
                    new AlreadyExistGuestException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistGuestException);
             }
+            catch (Exception exception) 
+            {
+                var failedGuestServiceException=
+                    new FailedGuestServiceException(exception);
+
+
+                throw CreateAndLogServiceException(failedGuestServiceException);
+            }
         }
+
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
             var guestValidationException =
@@ -71,6 +81,15 @@ namespace Sheenam.Api.Services.Foundations.Guests
             this.loggingBroker.LogError(guestDependecyValidationException);
 
             return guestDependecyValidationException;
+        }
+        private GuestServiceException CreateAndLogServiceException(Xeption serviceException)
+        {
+           var guestServiceException=
+                new GuestServiceException(serviceException);
+
+            this.loggingBroker.LogError(guestServiceException);
+
+            return guestServiceException;
         }
     }
 }
