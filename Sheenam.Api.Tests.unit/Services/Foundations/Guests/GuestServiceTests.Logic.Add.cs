@@ -18,15 +18,15 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
 
             //given
             Guest randomGuest = CreateRandomGuest();
-            Guest inputGuest=randomGuest;
-            Guest storageGuest=inputGuest;
+            Guest inputGuest = randomGuest;
+            Guest storageGuest = inputGuest;
             Guest expectedGuest = storageGuest.DeepClone();
 
-            this.storageBrokerMock.Setup(broker=>
+            this.storageBrokerMock.Setup(broker =>
             broker.InserGuestAsync(inputGuest))
                 .ReturnsAsync(storageGuest);
             // when
-            Guest actualGuest=
+            Guest actualGuest =
                 await this.guestService.AddGuestAsync(inputGuest);
 
             //then
@@ -36,6 +36,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             broker.InserGuestAsync(inputGuest), Times.Once());
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

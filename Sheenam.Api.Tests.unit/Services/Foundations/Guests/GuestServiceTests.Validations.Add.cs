@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Moq;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 
@@ -27,6 +28,119 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             //then
             await Assert.ThrowsAsync<GuestValidationException>(() =>
             addGuestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+            broker.LogError(It.Is(SameExceptionAs(
+            expectedGuestValidationException))),
+            Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.InserGuestAsync(It.IsAny<Guest>()),
+            Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfGuestIsInvalidAndLogAsync(
+            string invalidText)
+        {
+            //given 
+            var invalidGuest = new Guest
+            {
+                FirstName = invalidText
+            };
+
+            var invalidGuestException = new InvalidGuestException();
+
+            invalidGuestException.AddData(
+                nameof(Guest.Id),
+                values: "Id is Required");
+
+            invalidGuestException.AddData(
+                nameof(Guest.FirstName),
+                values: "Text is Required");
+
+            invalidGuestException.AddData(
+                nameof(Guest.LastName),
+                values: "Text is Required");
+
+            invalidGuestException.AddData(
+                nameof(Guest.DateOfBirth),
+                values: "Date is Required");
+
+            invalidGuestException.AddData(
+                nameof(Guest.Email),
+                values: "Text is Required");
+
+            invalidGuestException.AddData(
+                nameof(Guest.Address),
+                values: "Text is Required");
+
+            var expectedGuestValidationException =
+                new GuestValidationException(invalidGuestException);
+
+            //when
+            ValueTask<Guest> addGuestTask =
+                this.guestService.AddGuestAsync(invalidGuest);
+
+            //then
+            await Assert.ThrowsAsync<GuestValidationException>(() =>
+            addGuestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+            broker.LogError(It.Is(SameExceptionAs(
+                expectedGuestValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.InserGuestAsync(It.IsAny<Guest>()),
+            Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddifGenderIsinvalidAndLogItAsync()
+        {
+            //given
+            Guest randomGuest = CreateRandomGuest();
+            Guest invalidGuest = randomGuest;
+            invalidGuest.Gender = GetInvalidEnum<GenderType>();
+            var invalidGuestException = new InvalidGuestException();
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Gender),
+                values: "Value is invalid");
+
+            var expectedGuestValidationException =
+                new GuestValidationException(invalidGuestException);
+
+            //when 
+            ValueTask<Guest> addGuestTask =
+                this.guestService.AddGuestAsync(invalidGuest);
+
+            //then
+            await Assert.ThrowsAsync<GuestValidationException>(() =>
+            addGuestTask.AsTask());
+
+
+            this.loggingBrokerMock.Verify(broker=>
+            broker.LogError(It.Is(SameExceptionAs(
+                expectedGuestValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker=>
+            broker.InserGuestAsync(It.IsAny<Guest>()),
+            Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
