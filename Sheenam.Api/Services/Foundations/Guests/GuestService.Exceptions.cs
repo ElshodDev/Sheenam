@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Npgsql;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using System.Threading.Tasks;
@@ -28,6 +29,13 @@ namespace Sheenam.Api.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
+            catch (PostgresException postgresException) 
+            {
+               var failedGuestStorageException=new
+                    FailedGuestStorageException(postgresException);
+
+                throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
+            }
         }
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -37,6 +45,15 @@ namespace Sheenam.Api.Services.Foundations.Guests
             this.loggingBroker.LogError(guestValidationException);
 
             return guestValidationException;
+        }
+        private GuestDependecyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var guestDependencyException=
+                new GuestDependecyException(exception);
+
+            this.loggingBroker.LogCritical(guestDependencyException);
+
+            return guestDependencyException;
         }
     }
 }
