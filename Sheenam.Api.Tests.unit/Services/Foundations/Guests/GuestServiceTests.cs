@@ -3,12 +3,15 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
+using Npgsql;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.Guests;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -38,6 +41,11 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
+
+        private static PostgresException GetPostgresError() =>
+        (PostgresException)FormatterServices.GetSafeUninitializedObject(
+            typeof(PostgresException));
+
 
         private static T GetInvalidEnum<T>()
         {
