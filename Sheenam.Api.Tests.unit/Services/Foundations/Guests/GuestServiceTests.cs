@@ -3,7 +3,6 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-using Microsoft.Data.SqlClient;
 using Moq;
 using Npgsql;
 using Sheenam.Api.Brokers.Loggings;
@@ -42,7 +41,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
 
-        private static string GetRandomString()=>
+        private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
         private static PostgresException GetPostgresError() =>

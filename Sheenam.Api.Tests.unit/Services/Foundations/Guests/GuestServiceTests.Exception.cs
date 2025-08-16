@@ -87,7 +87,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             broker.InserGuestAsync(someGuest), 
             Times.Once);
             
-
+            
             this.loggingBrokerMock.Verify(Broker=>
             Broker.LogError(It.Is(SameExceptionAs(
                 expectedGuestDependencyValidationException))),
