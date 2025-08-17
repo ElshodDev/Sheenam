@@ -4,7 +4,7 @@
 //===================================================
 
 using EFxceptions.Models.Exceptions;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using System;
@@ -31,10 +31,10 @@ namespace Sheenam.Api.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
-            catch (PostgresException postgresException)
+            catch (SqlException sqlserverException)
             {
                 var failedGuestStorageException = new
-                     FailedGuestStorageException(postgresException);
+                     FailedGuestStorageException(sqlserverException);
 
                 throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
             }
@@ -45,9 +45,9 @@ namespace Sheenam.Api.Services.Foundations.Guests
 
                 throw CreateAndLogDependencyValidationException(alreadyExistGuestException);
             }
-            catch (Exception exception) 
+            catch (Exception exception)
             {
-                var failedGuestServiceException=
+                var failedGuestServiceException =
                     new FailedGuestServiceException(exception);
 
 
@@ -66,7 +66,7 @@ namespace Sheenam.Api.Services.Foundations.Guests
         }
         private GuestDependecyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var guestDependencyException=
+            var guestDependencyException =
                 new GuestDependecyException(exception);
 
             this.loggingBroker.LogCritical(guestDependencyException);
@@ -84,8 +84,8 @@ namespace Sheenam.Api.Services.Foundations.Guests
         }
         private GuestServiceException CreateAndLogServiceException(Xeption serviceException)
         {
-           var guestServiceException=
-                new GuestServiceException(serviceException);
+            var guestServiceException =
+                 new GuestServiceException(serviceException);
 
             this.loggingBroker.LogError(guestServiceException);
 

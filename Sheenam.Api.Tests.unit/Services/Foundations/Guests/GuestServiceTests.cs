@@ -3,8 +3,8 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
-using Npgsql;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Guests;
@@ -44,9 +44,8 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static PostgresException GetPostgresError() =>
-        (PostgresException)FormatterServices.GetSafeUninitializedObject(
-            typeof(PostgresException));
+        private static SqlException GetSqlError()=>
+          (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
 
 
         private static T GetInvalidEnum<T>()

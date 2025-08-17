@@ -22,7 +22,7 @@ namespace Sheenam.Api.Brokers.Storages
         {
             string connectionString = this.configuration.GetConnectionString(name: "DatabaseConnection");
        
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseSqlServer(connectionString);
         }
 
         public override void Dispose() { }
