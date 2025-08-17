@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="ADotNet" Version="4.1.0" />
+    <PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

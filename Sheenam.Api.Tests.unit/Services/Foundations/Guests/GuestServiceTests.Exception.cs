@@ -4,8 +4,8 @@
 //===================================================
 
 using EFxceptions.Models.Exceptions;
+using Microsoft.Data.SqlClient;
 using Moq;
-using Npgsql;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 
@@ -18,17 +18,17 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         {
             //given 
             Guest someGuest = CreateRandomGuest();
-            PostgresException postgresException = GetPostgresError();
+            SqlException sqlException = GetSqlError();
 
             var failedGuestStorageException = new
-                FailedGuestStorageException(postgresException);
+                FailedGuestStorageException(sqlException);
 
             var expectedGuestDependecyException = new
                 GuestDependecyException(failedGuestStorageException);
 
             this.storageBrokerMock.Setup(broker =>
             broker.InserGuestAsync(someGuest))
-                .ThrowsAsync(postgresException);
+                .ThrowsAsync(sqlException);
 
 
             //when 
@@ -109,7 +109,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             var failedGuestServiceException =
                 new FailedGuestServiceException(serviceException);
 
-            var expectedGuestServiceException=
+            var expectedGuestServiceException =
                 new GuestServiceException(failedGuestServiceException);
 
             this.storageBrokerMock.Setup(broker =>
