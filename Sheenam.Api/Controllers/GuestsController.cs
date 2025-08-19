@@ -4,7 +4,9 @@
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
+using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Guests;
+using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using Sheenam.Api.Services.Foundations.Guests;
 using System.Threading.Tasks;
 
@@ -12,7 +14,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GuestsController : Controller
+    public class GuestsController : RESTFulController
     {
         private readonly IGuestService guestService;
 
@@ -21,7 +23,35 @@ namespace Sheenam.Api.Controllers
             this.guestService = guestService;
         }
         [HttpPost]
-        public async Task<IActionResult> PostGuest(Guest guest) =>
-        Ok(await guestService.AddGuestAsync(guest));
+        public async ValueTask<IActionResult> PostGuestAsync(Guest guest)
+        {
+            try
+            {
+                Guest postedGuest = await this.guestService.AddGuestAsync(guest);
+
+                return Created(postedGuest);
+            }
+            catch (GuestValidationException guestValidationException)
+            {
+                return BadRequest(guestValidationException.InnerException);
+            }
+            catch (GuestDependecyValidationException guestDependecyValidationException)
+             when (guestDependecyValidationException.InnerException is AlreadyExistGuestException)
+            {
+                return Conflict(guestDependecyValidationException.InnerException);
+            }
+            catch (GuestDependecyValidationException guestDependecyValidationException)
+            {
+                return BadRequest(guestDependecyValidationException.InnerException);
+            }
+            catch (GuestDependecyException guestDependecyException)
+            {
+                return InternalServerError(guestDependecyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(guestServiceException.InnerException);
+            }
+        }
     }
 }
