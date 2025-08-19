@@ -8,11 +8,11 @@ using Xeptions;
 
 namespace Sheenam.Api.Models.Foundations.Guests.Exceptions
 {
-    public class FailedGuestServiceException: Xeption
+    public class FailedGuestServiceException : Xeption
     {
         public FailedGuestServiceException(Exception serviceException)
-        :base(message:"Guest service how error determine",
+        : base(message: "Guest service how error determine",
              serviceException)
-        {}
+        { }
     }
 }

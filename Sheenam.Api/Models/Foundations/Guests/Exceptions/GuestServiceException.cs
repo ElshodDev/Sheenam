@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace Sheenam.Api.Models.Foundations.Guests.Exceptions
 {
-    public class GuestServiceException :Xeption
+    public class GuestServiceException : Xeption
     {
         public GuestServiceException(Xeption serviceException)
         : base(message: "Guest service error occured, contact support",

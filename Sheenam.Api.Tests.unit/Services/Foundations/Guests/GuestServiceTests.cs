@@ -44,7 +44,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static SqlException GetSqlError()=>
+        private static SqlException GetSqlError() =>
           (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
 
 
