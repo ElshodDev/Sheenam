@@ -3,12 +3,14 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-namespace Sheenam.Api.Models.Foundations.Guests
+using Xeptions;
+
+namespace Sheenam.Api.Models.Foundations.Guests.Exceptions
 {
-    public enum GenderType
+    public class InvalidGuestException :Xeption
     {
-        Male,
-        Female,
-        Other,
+        public InvalidGuestException() 
+           : base(message: "Guest is invalid")
+        {}
     }
 }

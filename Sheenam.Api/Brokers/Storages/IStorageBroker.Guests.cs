@@ -3,12 +3,13 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-namespace Sheenam.Api.Models.Foundations.Guests
+using Sheenam.Api.Models.Foundations.Guests;
+using System.Threading.Tasks;
+
+namespace Sheenam.Api.Brokers.Storages
 {
-    public enum GenderType
+    public partial interface IStorageBroker
     {
-        Male,
-        Female,
-        Other,
+        ValueTask<Guest> InserGuestAsync(Guest guest);
     }
 }

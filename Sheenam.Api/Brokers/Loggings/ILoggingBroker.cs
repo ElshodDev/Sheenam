@@ -3,12 +3,13 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-namespace Sheenam.Api.Models.Foundations.Guests
+using System;
+
+namespace Sheenam.Api.Brokers.Loggings
 {
-    public enum GenderType
+    public interface ILoggingBroker
     {
-        Male,
-        Female,
-        Other,
+        void LogError(Exception exception);
+        void LogCritical(Exception exception); 
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Sheenam.Api.Brokers.Storages
 {
-    public partial class StorageBroker : EFxceptionsContext
+    public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
         private readonly IConfiguration configuration;
 
@@ -22,7 +22,12 @@ namespace Sheenam.Api.Brokers.Storages
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = this.configuration.GetConnectionString(name: "DatabaseConnection");
+<<<<<<< HEAD
             optionsBuilder.UseSqlServer(connectionString);
+=======
+       
+        optionsBuilder.UseSqlServer(connectionString);
+>>>>>>> main
         }
 
         public override void Dispose() { }
