@@ -56,16 +56,16 @@ namespace Sheenam.Api.Services.Foundations.Guests
             Condition = Enum.IsDefined(typeof(GenderType), gender) is false,
             Message = "Value is invalid"
         };
-        private static void Validate(params (dynamic Rule, string Parametr)[] validations)
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidGuestException = new InvalidGuestException();
 
-            foreach ((dynamic rule, string parametr) in validations)
+            foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
                     invalidGuestException.UpsertDataList(
-                        key: parametr,
+                        key: parameter,
                        value: rule.Message);
                 }
             }
