@@ -23,6 +23,7 @@ namespace Sheenam.Api.Brokers.Storages
             string connectionString = this.configuration.GetConnectionString(name: "DatabaseConnection");
        
         optionsBuilder.UseSqlServer(connectionString);
+
         }
 
         public override void Dispose() { }
