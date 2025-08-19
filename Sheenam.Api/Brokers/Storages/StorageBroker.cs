@@ -1,6 +1,6 @@
 ﻿//===================================================
 // Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To use  Comfort and Peace
+// Free To Use  To Find Comfort and Peace
 //===================================================
 
 using EFxceptions;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Sheenam.Api.Brokers.Storages
 {
-    public partial class StorageBroker : EFxceptionsContext
+    public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
         private readonly IConfiguration configuration;
 
@@ -18,12 +18,11 @@ namespace Sheenam.Api.Brokers.Storages
             this.configuration = configuration;
             this.Database.Migrate();
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = this.configuration.GetConnectionString(name: "DatabaseConnection");
-       
-        optionsBuilder.UseSqlServer(connectionString);
-
+            optionsBuilder.UseSqlServer(connectionString);
         }
 
         public override void Dispose() { }
