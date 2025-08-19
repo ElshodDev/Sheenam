@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
@@ -44,7 +43,7 @@ namespace Sheenam.Api
             });
         }
 
-       
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
             if (environment.IsDevelopment())
@@ -77,7 +76,7 @@ namespace Sheenam.Api
         private static void AddFoundationService(IServiceCollection services)
         {
             services.AddTransient<IGuestService, GuestService>();
-          
+
         }
     }
 }
