@@ -22,12 +22,8 @@ namespace Sheenam.Api.Brokers.Storages
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = this.configuration.GetConnectionString(name: "DatabaseConnection");
-<<<<<<< HEAD
+
             optionsBuilder.UseSqlServer(connectionString);
-=======
-       
-        optionsBuilder.UseSqlServer(connectionString);
->>>>>>> main
         }
 
         public override void Dispose() { }

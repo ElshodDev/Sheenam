@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-<<<<<<< HEAD
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -29,7 +28,6 @@
 		<PackageReference Include="DeepCloner" Version="0.10.4" />
 		<PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
 	</ItemGroup>
-=======
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -58,7 +56,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Sheenam.Api\Sheenam.Api.csproj" />
   </ItemGroup>
->>>>>>> main
 
 	<ItemGroup>
 		<ProjectReference Include="..\Sheenam.Api\Sheenam.Api.csproj" />
