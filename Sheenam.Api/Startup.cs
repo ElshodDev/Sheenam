@@ -32,6 +32,7 @@ namespace Sheenam.Api
 
             services.AddControllers();
             services.AddDbContext<StorageBroker>();
+            services.AddTransient<IStorageBroker,  StorageBroker>();
             AddBrokers(services);
             AddFoundationService(services);
 
