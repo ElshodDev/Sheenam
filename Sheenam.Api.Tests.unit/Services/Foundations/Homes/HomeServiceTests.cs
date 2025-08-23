@@ -55,10 +55,5 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 
         private static bool GetRandomBool() =>
             new Random().Next(0, 2) == 0;
-
-        private static Expression<Func<Exception, bool>> SameExceptionAs(Exception expectedException) =>
-           actualException =>
-               actualException.Message == expectedException.Message &&
-               actualException.InnerException.Message == expectedException.InnerException.Message;
     }
 }
