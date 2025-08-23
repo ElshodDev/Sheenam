@@ -25,7 +25,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                  this.homeService.AddHomeAsync(nullHome);
 
             //then
-            await Assert.ThrowsAsync<HomeValidationException>(() =>
+            await Assert.ThrowsAsync<HomeValidationException> (() =>
             addHomeTask.AsTask());
 
         }
