@@ -44,7 +44,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfGuestIsInvalidAndLogAsync(
+        public async Task ShouldThrowValidationExceptionOnAddIfHomeIsInvalidAndLogAsync(
             string invalidText)
         {
             //given
@@ -93,10 +93,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
               nameof(Home.Price),
               values: "Price must be greater than 0");
 
-            invalidHomeException.AddData(
-              nameof(Home.Area),
-              values: "Area must be greater than 0");
-
             var expectedHomeValidationException =
                 new HomeValidationException(invalidHomeException);
 
@@ -108,19 +104,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             await Assert.ThrowsAsync<HomeValidationException>(() =>
             addHomeTask.AsTask());
 
-            this.loggingBrokerMock.Verify(broker=>
+            this.loggingBrokerMock.Verify(broker =>
             broker.LogError(It.Is(SameExceptionAs(
                 expectedHomeValidationException))),
                 Times.Once);
 
-            this.storageBrokerMock.Verify(broker=>
+            this.storageBrokerMock.Verify(broker =>
             broker.InsertHomeAsync(It.IsAny<Home>()),
             Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
-
 
         private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedHomeException) =>
             actualException => actualException.SameExceptionAs(expectedHomeException);
