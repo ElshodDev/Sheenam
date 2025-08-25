@@ -40,6 +40,88 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfGuestIsInvalidAndLogAsync(
+            string invalidText)
+        {
+            //given
+            var invalidHome = new Home
+            {
+                Address = invalidText,
+                AdditionalInfo = invalidText,
+                NumberOfBathrooms = 0,
+                NumberOfBedrooms = 0,
+                Area = 0,
+                Price = 0
+            };
+
+
+            var invalidHomeException = new InvalidHomeException();
+
+            invalidHomeException.AddData(
+                nameof(Home.Id),
+                values: "Id is Required");
+
+            invalidHomeException.AddData(
+                nameof(Home.HostId),
+                values: "Host Id is Required");
+
+            invalidHomeException.AddData(
+               nameof(Home.Address),
+               values: "Text is Required");
+
+            invalidHomeException.AddData(
+               nameof(Home.AdditionalInfo),
+               values: "Text is Required");
+
+            invalidHomeException.AddData(
+               nameof(Home.NumberOfBathrooms),
+               values: "Number of bathrooms must be greater than 0");
+
+            invalidHomeException.AddData(
+               nameof(Home.NumberOfBedrooms),
+               values: "Number of bedrooms must be greater than 0");
+
+            invalidHomeException.AddData(
+               nameof(Home.Area),
+               values: "Area must be greater than 0");
+
+            invalidHomeException.AddData(
+              nameof(Home.Price),
+              values: "Price must be greater than 0");
+
+            invalidHomeException.AddData(
+              nameof(Home.Area),
+              values: "Area must be greater than 0");
+
+            var expectedHomeValidationException =
+                new HomeValidationException(invalidHomeException);
+
+            //when 
+            ValueTask<Home> addHomeTask =
+                this.homeService.AddHomeAsync(invalidHome);
+
+            //then
+            await Assert.ThrowsAsync<HomeValidationException>(() =>
+            addHomeTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker=>
+            broker.LogError(It.Is(SameExceptionAs(
+                expectedHomeValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker=>
+            broker.InsertHomeAsync(It.IsAny<Home>()),
+            Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+
         private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedHomeException) =>
             actualException => actualException.SameExceptionAs(expectedHomeException);
     }
