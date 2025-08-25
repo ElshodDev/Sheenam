@@ -38,8 +38,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-
-
         }
 
         private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedHomeException) =>

@@ -3,11 +3,11 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Brokers.Loggings;
+using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
-using Sheenam.Api.Brokers.Storages;
 using System.Threading.Tasks;
-using Sheenam.Api.Brokers.Loggings;
 
 namespace Sheenam.Api.Services.Foundations.Homes
 {
@@ -24,17 +24,25 @@ namespace Sheenam.Api.Services.Foundations.Homes
 
         public async ValueTask<Home> AddHomeAsync(Home home)
         {
-            if (home is null)
+            try
             {
-                var nullHomeException = new NullHomeException();
-                var homeValidationException = new HomeValidationException(nullHomeException);
+                if (home is null)
+                {
+                    throw new NullHomeException();
+                }
+
+                return await this.storageBroker.InsertHomeAsync(home);
+            }
+            catch (NullHomeException nullHomeException)
+            {
+                var homeValidationException = 
+                    new HomeValidationException(nullHomeException);
 
                 this.loggingBroker.LogError(homeValidationException);
 
                 throw homeValidationException;
             }
-
-            return await this.storageBroker.InsertHomeAsync(home);
         }
     }
 }
+ 
