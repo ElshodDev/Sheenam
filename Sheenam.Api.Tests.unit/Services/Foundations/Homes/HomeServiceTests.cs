@@ -4,10 +4,10 @@
 //===================================================
 
 using Moq;
+using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Homes;
-using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
 
 namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
@@ -15,14 +15,17 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
     public partial class HomeServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeService homeService;
 
         public HomeServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.homeService =
-                new HomeService(storageBrokerMock.Object);
+            this.homeService = new HomeService(
+                storageBrokerMock.Object,
+                loggingBrokerMock.Object);
         }
 
         private static Home CreateRandomHome() =>
