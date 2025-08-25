@@ -42,7 +42,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 
         }
 
-        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedHomeException)=>
+        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedHomeException) =>
             actualException => actualException.SameExceptionAs(expectedHomeException);
     }
 }
