@@ -3,9 +3,6 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-using Sheenam.Api.Models.Foundations.Homes;
-using Sheenam.Api.Models.Foundations.Homes.Exceptions;
-
 namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 {
     public partial class HomeServiceTests

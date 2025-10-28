@@ -11,7 +11,8 @@ namespace Sheenam.Api.Models.Foundations.Homes.Exceptions
     {
         public HomeValidationException(Xeption innerException)
         : base(message: "Home validation error occured, fix the errors and try again",
-              innerException) { }
+              innerException)
+        { }
 
     }
 }
