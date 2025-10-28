@@ -8,7 +8,6 @@ using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using Sheenam.Api.Services.Foundations.Guests;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Controllers
@@ -44,49 +43,6 @@ namespace Sheenam.Api.Controllers
             catch (GuestDependecyValidationException guestDependecyValidationException)
             {
                 return BadRequest(guestDependecyValidationException.InnerException);
-            }
-            catch (GuestDependecyException guestDependecyException)
-            {
-                return InternalServerError(guestDependecyException.InnerException);
-            }
-            catch (GuestServiceException guestServiceException)
-            {
-                return InternalServerError(guestServiceException.InnerException);
-            }
-        }
-        [HttpGet]
-        public ActionResult<IQueryable<Guest>> GetAllGuests()
-        {
-            try
-            {
-                IQueryable<Guest> allGuests = this.guestService.RetrieveAllGuests();
-                return Ok(allGuests);
-            }
-            catch (GuestDependecyException guestDependecyException)
-            {
-                return InternalServerError(guestDependecyException.InnerException);
-            }
-            catch (GuestServiceException guestServiceException)
-            {
-                return InternalServerError(guestServiceException.InnerException);
-            }
-        }
-        [HttpGet("{guestId}")]
-        public async ValueTask<ActionResult<Guest>> GetGuestByIdAsync(System.Guid guestId)
-        {
-            try
-            {
-                Guest guest = await this.guestService.RetrieveGuestByIdAsync(guestId);
-                return Ok(guest);
-            }
-            catch (GuestValidationException guestValidationException)
-             when (guestValidationException.InnerException is NotFoundGuestException)
-            {
-                return NotFound(guestValidationException.InnerException);
-            }
-            catch (GuestValidationException guestValidationException)
-            {
-                return BadRequest(guestValidationException.InnerException);
             }
             catch (GuestDependecyException guestDependecyException)
             {
