@@ -4,6 +4,8 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Guests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Guests
@@ -11,5 +13,7 @@ namespace Sheenam.Api.Services.Foundations.Guests
     public interface IGuestService
     {
         ValueTask<Guest> AddGuestAsync(Guest guest);
+        IQueryable<Guest> RetrieveAllGuests();
+        ValueTask<Guest> RetrieveGuestByIdAsync(Guid Id);
     }
 }
