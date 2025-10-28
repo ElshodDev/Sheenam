@@ -5,6 +5,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.Guests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
@@ -20,6 +22,19 @@ namespace Sheenam.Api.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return guestEntityEntry.Entity;
+        }
+        public IQueryable<Guest> RetrieveGuestAsync()
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return broker.Guests.AsQueryable();
+        }
+
+        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid Id)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.Guests.FindAsync(Id);
         }
     }
 }
