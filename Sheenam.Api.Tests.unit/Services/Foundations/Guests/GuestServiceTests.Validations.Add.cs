@@ -58,6 +58,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             var invalidGuestException = new InvalidGuestException();
 
             invalidGuestException.AddData(
+                nameof(Guest.Id),
+                values: "Id is Required");
+
+            invalidGuestException.AddData(
                 nameof(Guest.FirstName),
                 values: "Text is Required");
 

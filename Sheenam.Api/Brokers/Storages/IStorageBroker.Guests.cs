@@ -4,8 +4,6 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Guests;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
@@ -13,7 +11,5 @@ namespace Sheenam.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<Guest> InserGuestAsync(Guest guest);
-        ValueTask<Guest> SelectGuestByIdAsync(Guid Id);
-        IQueryable<Guest> SelectAllGuests();
     }
 }

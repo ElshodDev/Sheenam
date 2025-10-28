@@ -6,8 +6,6 @@
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Guests;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Guests
@@ -25,31 +23,13 @@ namespace Sheenam.Api.Services.Foundations.Guests
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Guest> AddGuestAsync(Guest guest)
+        public ValueTask<Guest> AddGuestAsync(Guest guest) =>
+        TryCatch(async () =>
         {
-            return TryCatch(async () =>
-           {
-               ValidateGuestOnAdd(guest);
+            ValidateGuestOnAdd(guest);
 
-               return await this.storageBroker.InserGuestAsync(guest);
+            return await this.storageBroker.InserGuestAsync(guest);
 
-           });
-        }
-
-        public IQueryable<Guest> RetrieveAllGuests()
-        {
-            return this.storageBroker.SelectAllGuests();
-        }
-        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid Id)
-        {
-            Guest maybeGuest = await this.storageBroker.SelectGuestByIdAsync(Id);
-
-            if (maybeGuest is null)
-            {
-                throw new Models.Foundations.Guests.Exceptions.NotFoundGuestException(Id);
-            }
-
-            return maybeGuest;
-        }
+        });
     }
 }
