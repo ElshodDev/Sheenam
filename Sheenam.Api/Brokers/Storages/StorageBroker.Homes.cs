@@ -16,9 +16,9 @@ namespace Sheenam.Api.Brokers.Storages
 
         public async ValueTask<Home> InsertHomeAsync(Home home)
         {
-            using var broker=new StorageBroker(this.configuration);
+            using var broker = new StorageBroker(this.configuration);
 
-            EntityEntry<Home> homeEntityEntry = 
+            EntityEntry<Home> homeEntityEntry =
                 await broker.Homes.AddAsync(home);
 
             await broker.SaveChangesAsync();
