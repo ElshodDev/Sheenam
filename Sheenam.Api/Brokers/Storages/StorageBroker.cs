@@ -6,6 +6,9 @@
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Sheenam.Api.Models.Foundations.Guests;
+using System;
+using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
 {
@@ -26,5 +29,7 @@ namespace Sheenam.Api.Brokers.Storages
         }
 
         public override void Dispose() { }
+
+       
     }
 }

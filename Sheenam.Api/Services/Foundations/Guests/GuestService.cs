@@ -87,5 +87,14 @@ namespace Sheenam.Api.Services.Foundations.Guests
             if (maybeGuest == null)
                 throw new NotFoundGuestException($"Guest with id {Id} not found.");
         }
+
+        public Task<Guest> RemoveGuestByIdAsync(Guid guestId)
+        {
+           if(null== guestId || guestId == Guid.Empty)
+            {
+                throw new GuestValidationException("Guest id is required.");
+            }
+              return this.storageBroker.DeleteGuestByIdAsync(guestId);
+        }
     }
 }
