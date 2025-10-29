@@ -94,9 +94,11 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             this.storageBrokerMock
                 .Setup(broker => broker.SelectGuestByIdAsync(guestId))
                 .ReturnsAsync(randomGuest);
+
             this.storageBrokerMock
                 .Setup(broker => broker.DeleteGuestByIdAsync(guestId))
                 .ReturnsAsync(randomGuest);
+
             // when
             Guest deletedGuest = await this.guestService.RemoveGuestByIdAsync(guestId);
             // then
