@@ -4,6 +4,7 @@
 //===================================================
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sheenam.Api.Models.Foundations.Guests;
 using System;
 using System.Linq;
@@ -52,6 +53,18 @@ namespace Sheenam.Api.Brokers.Storages
         {
             using var broker = new StorageBroker(this.configuration);
             var guestEntityEntry = broker.Guests.Update(guest);
+            await broker.SaveChangesAsync();
+            return guestEntityEntry.Entity;
+        }
+        public async Task<Guest> DeleteGuestByIdAsync(Guid guestId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            Guest guest = await broker.Guests.FindAsync(guestId);
+            if (guest is null)
+            {
+                return null;
+            }
+            EntityEntry<Guest> guestEntityEntry = broker.Guests.Remove(guest);
             await broker.SaveChangesAsync();
             return guestEntityEntry.Entity;
         }

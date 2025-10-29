@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Guests;
@@ -52,7 +53,7 @@ namespace Sheenam.Api.Services.Foundations.Guests
 
             return maybeGuest;
         }
-        public async ValueTask<Guest> ModifyGuestAsync(Guest guest) 
+        public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
         {
             ValidateGuestOnModify(guest);
 
@@ -86,6 +87,35 @@ namespace Sheenam.Api.Services.Foundations.Guests
         {
             if (maybeGuest == null)
                 throw new NotFoundGuestException($"Guest with id {Id} not found.");
+        }
+        public async ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId)
+        {
+            try
+            {
+                Guest maybeGuest = await this.storageBroker.SelectGuestByIdAsync(guestId);
+
+                if (maybeGuest == null)
+                {
+                    throw new NotFoundGuestException(guestId);
+                }
+                Guest deletedGuest = await this.storageBroker.DeleteGuestByIdAsync(guestId);
+
+                return deletedGuest;
+            }
+            catch (NotFoundGuestException notFoundGuestException)
+            {
+                throw new GuestValidationException(notFoundGuestException);
+            }
+            catch (SqlException sqlException)
+            {
+                throw new GuestDependecyException(
+                    new FailedGuestStorageException(sqlException));
+            }
+            catch (Exception exception)
+            {
+                throw new GuestServiceException(
+                    new FailedGuestServiceException(exception));
+            }
         }
     }
 }

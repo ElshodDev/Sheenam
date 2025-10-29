@@ -84,5 +84,28 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             this.storageBrokerMock.Verify(broker => broker.UpdateGuestAsync(someGuest), Times.Once);
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldDeleteGuestWhenGuestExistsAsync()
+        {
+            // given
+            Guest randomGuest = CreateRandomGuest();
+            Guid guestId = randomGuest.Id;
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectGuestByIdAsync(guestId))
+                .ReturnsAsync(randomGuest);
+
+            this.storageBrokerMock
+                .Setup(broker => broker.DeleteGuestByIdAsync(guestId))
+                .ReturnsAsync(randomGuest);
+
+            // when
+            Guest deletedGuest = await this.guestService.RemoveGuestByIdAsync(guestId);
+            // then
+            Assert.Equal(randomGuest, deletedGuest);
+            this.storageBrokerMock.Verify(broker => broker.SelectGuestByIdAsync(guestId), Times.Once);
+            this.storageBrokerMock.Verify(broker => broker.DeleteGuestByIdAsync(guestId), Times.Once);
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
