@@ -29,12 +29,31 @@ namespace Sheenam.Api.Brokers.Storages
 
             return broker.Guests.AsQueryable();
         }
+        public IQueryable<Guest> SelectAllGuests()
+        {
+            using var broker = new StorageBroker(this.configuration);
 
-        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid Id)
+            return broker.Guests.AsQueryable();
+        }
+
+        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid id)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.Guests.FindAsync(id);
+        }
+        public async ValueTask<Guest> SelectGuestByIdAsync(Guid Id)
         {
             using var broker = new StorageBroker(this.configuration);
 
             return await broker.Guests.FindAsync(Id);
+        }
+        public async ValueTask<Guest> UpdateGuestAsync(Guest guest)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            var guestEntityEntry = broker.Guests.Update(guest);
+            await broker.SaveChangesAsync();
+            return guestEntityEntry.Entity;
         }
     }
 }
