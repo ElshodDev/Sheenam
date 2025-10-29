@@ -53,7 +53,7 @@ namespace Sheenam.Api.Services.Foundations.Guests
 
             return maybeGuest;
         }
-        public async ValueTask<Guest> ModifyGuestAsync(Guest guest) 
+        public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
         {
             ValidateGuestOnModify(guest);
 
