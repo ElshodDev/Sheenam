@@ -10,8 +10,9 @@ namespace Sheenam.Api.Models.Foundations.Guests.Exceptions
 {
     public class NotFoundGuestException : Xeption
     {
-        public NotFoundGuestException(Guid Id)
-            : base(message: $"Couldn't find guest with id: {Id}.")
-        { }
+        public NotFoundGuestException(Guid id)
+            : base(message: $"Couldn't find guest with id: {id}.") { }
+        public NotFoundGuestException(string message) : base(message) { }
+
     }
 }

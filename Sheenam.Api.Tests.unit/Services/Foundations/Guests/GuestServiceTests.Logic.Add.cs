@@ -38,5 +38,51 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+        [Fact]
+        public async Task ShouldReturnGuestWhenGuestExistsAsync()
+        {
+            // given
+            Guest randomGuest = CreateRandomGuest();
+            Guid guestId = randomGuest.Id;
+
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectGuestByIdAsync(guestId))
+                .ReturnsAsync(randomGuest);
+
+            // when
+            Guest actualGuest = await this.guestService.RetrieveGuestByIdAsync(guestId);
+
+            // then
+            Assert.Equal(randomGuest, actualGuest);
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(guestId), Times.Once);
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnUpdatedGuestWhenUpdateIsSuccessfulAsync()
+        {
+            // given
+            Guest someGuest = CreateRandomGuest();
+            Guid guestId = someGuest.Id;
+
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectGuestByIdAsync(someGuest.Id))
+                .ReturnsAsync(someGuest);
+
+            this.storageBrokerMock
+                .Setup(broker => broker.UpdateGuestAsync(someGuest))
+                .ReturnsAsync(someGuest);
+
+            // when
+            Guest updatedGuest = await this.guestService.ModifyGuestAsync(someGuest);
+
+            // then
+            Assert.Equal(someGuest, updatedGuest);
+
+            this.storageBrokerMock.Verify(broker => broker.SelectGuestByIdAsync(someGuest.Id), Times.Once);
+            this.storageBrokerMock.Verify(broker => broker.UpdateGuestAsync(someGuest), Times.Once);
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

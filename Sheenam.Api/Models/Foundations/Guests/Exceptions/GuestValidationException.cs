@@ -12,8 +12,9 @@ namespace Sheenam.Api.Models.Foundations.Guests.Exceptions
         public GuestValidationException(Xeption innerException)
             : base(message: "Guest validation error occured,fix the errors and try again",
               innerException)
-        {
-
-        }
+        { }
+        public GuestValidationException(string message)
+        : base(message)
+        { }
     }
 }

@@ -97,5 +97,35 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(guestServiceException.InnerException);
             }
         }
+
+        [HttpPut("{guestId}")]
+        public async ValueTask<ActionResult<Guest>> PutGuestAsync(System.Guid guestId, Guest guest)
+        {
+            try
+            {
+                guest.Id = guestId;
+
+                Guest updatedGuest = await this.guestService.ModifyGuestAsync(guest);
+
+                return Ok(updatedGuest);
+            }
+            catch (GuestValidationException guestValidationException)
+                when (guestValidationException.InnerException is NotFoundGuestException)
+            {
+                return NotFound(guestValidationException.InnerException);
+            }
+            catch (GuestValidationException guestValidationException)
+            {
+                return BadRequest(guestValidationException.InnerException);
+            }
+            catch (GuestDependecyException guestDependecyException)
+            {
+                return InternalServerError(guestDependecyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(guestServiceException.InnerException);
+            }
+        }
     }
 }
