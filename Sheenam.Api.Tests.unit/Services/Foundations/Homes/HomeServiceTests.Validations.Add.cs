@@ -3,6 +3,10 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Moq;
+using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.Homes.Exceptions;
+
 namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 {
     public partial class HomeServiceTests
@@ -10,21 +14,26 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfHomeIsNullAndLogItAsync()
         {
-            //given
-            //Home nullHome = null;
-            //var nullHomeException = new NullHomeException();
+            // given
+            Home nullHome = null;
+            var nullHomeException = new NullHomeException();
 
-            //var expectedHomeValidationException =
-            //    new HomeValidationException(nullHomeException);
+            var expectedHomeValidationException =
+                new HomeValidationException(nullHomeException);
 
-            ////when
-            //ValueTask<Home> addHomeTask =
-            //     this.homeService.AddHomeAsync(nullHome);
+            // when
+            ValueTask<Home> addHomeTask =
+                this.homeService.AddHomeAsync(nullHome);
 
-            ////then
-            //await Assert.ThrowsAsync<HomeValidationException> (() =>
-            //addHomeTask.AsTask());
+            // then
+            await Assert.ThrowsAsync<HomeValidationException>(() =>
+                addHomeTask.AsTask());
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHomeAsync(It.IsAny<Home>()),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
