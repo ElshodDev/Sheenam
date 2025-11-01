@@ -26,5 +26,13 @@ namespace Sheenam.Api.Brokers.Storages
             return homeEntityEntry.Entity;
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Home>().
+                Property(h => h.Type)
+                .HasConversion<string>();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

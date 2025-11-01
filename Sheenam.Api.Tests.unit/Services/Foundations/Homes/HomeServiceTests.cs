@@ -4,6 +4,7 @@
 //===================================================
 
 using Moq;
+using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Homes;
@@ -14,14 +15,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
     public partial class HomeServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeService homeService;
 
         public HomeServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.homeService =
-                new HomeService(storageBrokerMock.Object);
+                new HomeService(
+                    storageBrokerMock.Object,
+                    loggingBrokerMock.Object);
         }
 
         private static Home CreateRandomHome() =>
@@ -32,7 +37,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             var filler = new Filler<Home>();
 
             filler.Setup()
-            .OnType<Guid>().Use(Guid.NewGuid)
             .OnType<string>().Use(new MnemonicString())
             .OnProperty(h => h.NumberOfBedrooms).Use(new IntRange(1, 10))
             .OnProperty(h => h.NumberOfBathrooms).Use(new IntRange(1, 5))

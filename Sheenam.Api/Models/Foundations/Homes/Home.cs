@@ -9,7 +9,7 @@ namespace Sheenam.Api.Models.Foundations.Homes
 {
     public class Home
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Guid HostId { get; set; }
         public string Address { get; set; }
         public string AdditionalInfo { get; set; }

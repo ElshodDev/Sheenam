@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Services.Foundations.Guests;
+using Sheenam.Api.Services.Foundations.Homes;
 
 namespace Sheenam.Api
 {
@@ -77,7 +78,7 @@ namespace Sheenam.Api
         private static void AddFoundationService(IServiceCollection services)
         {
             services.AddTransient<IGuestService, GuestService>();
-
+            services.AddTransient<IHomeService, HomeService>();
         }
     }
 }
