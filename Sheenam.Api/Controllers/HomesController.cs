@@ -3,11 +3,14 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using Sheenam.Api.Services.Foundations.Homes;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Controllers
@@ -52,5 +55,55 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(homeServiceException.InnerException);
             }
         }
+
+        [HttpGet("{homeId}")]
+        public async ValueTask<IActionResult> GetHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home retrievedHome = await this.homeService.RetrieveHomeByIdAsync(homeId);
+                return Ok(retrievedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return Problem(
+                    detail: homeDependencyException.InnerException.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return Problem(
+                    detail: homeServiceException.InnerException.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Home>> GetAllHomes()
+        {
+            try
+            {
+                IQueryable<Home> allHomes = this.homeService.RetrieveAllHomes();
+                return Ok(allHomes);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return Problem(
+                    detail: homeDependencyException.InnerException.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return Problem(
+                    detail: homeServiceException.InnerException.Message,
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
     }
 }

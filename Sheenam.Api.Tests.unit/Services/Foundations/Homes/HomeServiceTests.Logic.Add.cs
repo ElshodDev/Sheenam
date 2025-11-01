@@ -38,5 +38,62 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnHomeWhenHomeExistsAsync()
+        {
+            // given
+            Home randomHome = CreateRandomHome();
+            Guid homeId = randomHome.Id;
+            Home storageHome = randomHome;
+            Home expectedHome = storageHome.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(homeId))
+                .ReturnsAsync(storageHome);
+
+            // when
+            Home actualHome =
+                await this.homeService.RetrieveHomeByIdAsync(homeId);
+
+            // then
+            actualHome.Should().BeEquivalentTo(expectedHome);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(homeId),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldRetrieveAllHomes()
+        {
+            // given
+            IQueryable<Home> randomHomes = CreateRandomHomes();
+            IQueryable<Home> storageHomes = randomHomes;
+            IQueryable<Home> expectedHomes = storageHomes;
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                .Returns(storageHomes);
+
+            // when
+            IQueryable<Home> actualHomes =
+                this.homeService.RetrieveAllHomes();
+
+            // then
+            actualHomes.Should().BeEquivalentTo(expectedHomes);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllHomes(),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+
     }
 }

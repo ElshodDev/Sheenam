@@ -4,6 +4,8 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Homes;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Homes
@@ -11,5 +13,7 @@ namespace Sheenam.Api.Services.Foundations.Homes
     public interface IHomeService
     {
         ValueTask<Home> AddHomeAsync(Home home);
+        ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId);
+        IQueryable<Home> RetrieveAllHomes();
     }
 }

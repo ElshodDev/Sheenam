@@ -8,6 +8,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Homes
@@ -17,11 +18,14 @@ namespace Sheenam.Api.Services.Foundations.Homes
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public HomeService(IStorageBroker storageBroker, ILoggingBroker loggingBroker)
+        public HomeService(
+            IStorageBroker storageBroker,
+            ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.loggingBroker = loggingBroker;
         }
+
         public async ValueTask<Home> AddHomeAsync(Home home)
         {
             try
@@ -35,6 +39,12 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 throw;
             }
         }
+
+        public IQueryable<Home> RetrieveAllHomes() =>
+            this.storageBroker.SelectAllHomes();
+        public async ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
+            await this.storageBroker.SelectHomeByIdAsync(homeId);
+
         private void ValidateHomeOnAdd(Home home)
         {
             if (home is null)
@@ -73,6 +83,5 @@ namespace Sheenam.Api.Services.Foundations.Homes
                     new InvalidHomeException(nameof(Home.Area), "Area must be greater than zero."));
             }
         }
-
     }
 }
