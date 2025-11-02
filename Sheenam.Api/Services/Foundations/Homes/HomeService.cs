@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
@@ -67,24 +68,66 @@ namespace Sheenam.Api.Services.Foundations.Homes
             }
             catch (InvalidHomeException invalidHomeException)
             {
-                throw new HomeValidationException(invalidHomeException);
+                var homeValidationException = new HomeValidationException(invalidHomeException);
+                this.loggingBroker.LogError(homeValidationException);
+                throw homeValidationException;
             }
             catch (NullHomeException nullHomeException)
             {
-                throw new HomeValidationException(nullHomeException);
+                var homeValidationException = new HomeValidationException(nullHomeException);
+                this.loggingBroker.LogError(homeValidationException);
+                throw homeValidationException;
+            }
+            catch (NotFoundHomeException notFoundHomeException)
+            {
+                var homeValidationException = new HomeValidationException(notFoundHomeException);
+                this.loggingBroker.LogError(homeValidationException);
+                throw homeValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHomeStorageException = new FailedHomeStorageException(sqlException);
+                var homeDependencyException = new HomeDependencyException(failedHomeStorageException);
+
+                this.loggingBroker.LogError(homeDependencyException);
+                throw homeDependencyException;
+            }
+            catch (Exception exception)
+            {
+                var failedHomeServiceException = new FailedHomeServiceException(exception);
+                var homeServiceException = new HomeServiceException(failedHomeServiceException);
+
+                this.loggingBroker.LogError(homeServiceException);
+                throw homeServiceException;
+            }
+        }
+        public async ValueTask<Home> RemoveHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home maybeHome = await this.storageBroker.SelectHomeByIdAsync(homeId);
+
+                if (maybeHome == null)
+                {
+                    throw new NotFoundHomeException(homeId);
+                }
+                Home deletedHome = await this.storageBroker.DeleteHomeByIdAsync(homeId);
+
+                return deletedHome;
             }
             catch (NotFoundHomeException notFoundHomeException)
             {
                 throw new HomeValidationException(notFoundHomeException);
             }
+            catch (SqlException sqlException)
+            {
+                throw new HomeDependencyException(
+                    new FailedHomeStorageException(sqlException));
+            }
             catch (Exception exception)
             {
-                var failedHomeServiceException =
-                    new FailedHomeServiceException(exception);
-
-                this.loggingBroker.LogError(failedHomeServiceException);
-
-                throw new HomeServiceException(failedHomeServiceException);
+                throw new HomeServiceException(
+                    new FailedHomeServiceException(exception));
             }
         }
         private static void ValidateHomeOnModify(Home home)
@@ -158,7 +201,5 @@ namespace Sheenam.Api.Services.Foundations.Homes
                     new InvalidHomeException(nameof(Home.Area), "Area must be greater than zero."));
             }
         }
-
-
     }
 }

@@ -41,6 +41,27 @@ namespace Sheenam.Api.Brokers.Storages
             await broker.SaveChangesAsync();
             return homeEntityEntry.Entity;
         }
+        public async ValueTask<Home> DeleteHomeAsync(Home home)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            EntityEntry<Home> homeEntityEntry =
+                broker.Homes.Remove(home);
+            await broker.SaveChangesAsync();
+            return homeEntityEntry.Entity;
+        }
+        public async ValueTask<Home> DeleteHomeByIdAsync(Guid homeId)
+        {
+            Home maybeHome = await this.SelectHomeByIdAsync(homeId);
+
+            if (maybeHome is null)
+                return null;
+
+            this.Entry(maybeHome).State = EntityState.Deleted;
+            await this.SaveChangesAsync();
+
+            return maybeHome;
+        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

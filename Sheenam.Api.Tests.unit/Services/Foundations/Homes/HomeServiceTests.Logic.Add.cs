@@ -129,5 +129,40 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldDeleteHomeAsync()
+        {
+            // given
+            Home randomHome = CreateRandomHome();
+            Guid homeId = randomHome.Id;
+            Home storageHome = randomHome;
+            Home deletedHome = storageHome;
+            Home expectedHome = deletedHome.DeepClone();
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(homeId))
+                    .ReturnsAsync(storageHome);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteHomeByIdAsync(homeId))
+                    .ReturnsAsync(deletedHome);
+            // when
+            Home actualHome =
+                await this.homeService.RemoveHomeByIdAsync(homeId);
+
+            // then
+            actualHome.Should().BeEquivalentTo(expectedHome);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(homeId),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteHomeByIdAsync(homeId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

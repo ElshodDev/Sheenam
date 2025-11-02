@@ -16,5 +16,6 @@ namespace Sheenam.Api.Services.Foundations.Homes
         ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId);
         IQueryable<Home> RetrieveAllHomes();
         ValueTask<Home> ModifyHomeAsync(Home home);
+        ValueTask<Home> RemoveHomeByIdAsync(Guid homeId);
     }
 }
