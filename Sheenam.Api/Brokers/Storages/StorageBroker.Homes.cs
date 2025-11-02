@@ -33,6 +33,14 @@ namespace Sheenam.Api.Brokers.Storages
             using var broker = new StorageBroker(this.configuration);
             return await broker.Homes.FindAsync(homeId);
         }
+        public async ValueTask<Home> UpdateHomeAsync(Home home)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            EntityEntry<Home> homeEntityEntry =
+                broker.Homes.Update(home);
+            await broker.SaveChangesAsync();
+            return homeEntityEntry.Entity;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
