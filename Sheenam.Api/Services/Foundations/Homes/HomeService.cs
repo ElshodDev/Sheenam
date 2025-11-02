@@ -45,6 +45,81 @@ namespace Sheenam.Api.Services.Foundations.Homes
         public async ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
             await this.storageBroker.SelectHomeByIdAsync(homeId);
 
+        public async ValueTask<Home> ModifyHomeAsync(Home home)
+        {
+            try
+            {
+                if (home is null)
+                {
+                    throw new NullHomeException();
+                }
+
+                ValidateHomeOnModify(home);
+
+                Home maybeHome = await this.storageBroker.SelectHomeByIdAsync(home.Id);
+
+                if (maybeHome is null)
+                {
+                    throw new NotFoundHomeException(home.Id);
+                }
+
+                return await this.storageBroker.UpdateHomeAsync(home);
+            }
+            catch (InvalidHomeException invalidHomeException)
+            {
+                throw new HomeValidationException(invalidHomeException);
+            }
+            catch (NullHomeException nullHomeException)
+            {
+                throw new HomeValidationException(nullHomeException);
+            }
+            catch (NotFoundHomeException notFoundHomeException)
+            {
+                throw new HomeValidationException(notFoundHomeException);
+            }
+            catch (Exception exception)
+            {
+                var failedHomeServiceException =
+                    new FailedHomeServiceException(exception);
+
+                this.loggingBroker.LogError(failedHomeServiceException);
+
+                throw new HomeServiceException(failedHomeServiceException);
+            }
+        }
+        private static void ValidateHomeOnModify(Home home)
+        {
+            if (home.Id == Guid.Empty)
+            {
+                throw new InvalidHomeException(nameof(Home.Id), home.Id.ToString());
+            }
+
+            if (home.HostId == Guid.Empty)
+            {
+                throw new InvalidHomeException(nameof(Home.HostId), home.HostId.ToString());
+            }
+
+            if (home.Price <= 0)
+            {
+                throw new InvalidHomeException(nameof(Home.Price), home.Price.ToString());
+            }
+
+            if (home.Area <= 0)
+            {
+                throw new InvalidHomeException(nameof(Home.Area), home.Area.ToString());
+            }
+
+            if (home.NumberOfBedrooms < 0)
+            {
+                throw new InvalidHomeException(nameof(Home.NumberOfBedrooms), home.NumberOfBedrooms.ToString());
+            }
+
+            if (home.NumberOfBathrooms < 0)
+            {
+                throw new InvalidHomeException(nameof(Home.NumberOfBathrooms), home.NumberOfBathrooms.ToString());
+            }
+        }
+
         private void ValidateHomeOnAdd(Home home)
         {
             if (home is null)
@@ -83,5 +158,7 @@ namespace Sheenam.Api.Services.Foundations.Homes
                     new InvalidHomeException(nameof(Home.Area), "Area must be greater than zero."));
             }
         }
+
+
     }
 }

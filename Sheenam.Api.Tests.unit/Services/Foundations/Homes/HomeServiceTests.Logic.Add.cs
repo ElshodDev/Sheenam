@@ -94,6 +94,40 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldModifyHomeAsync()
+        {
+            // given
+            Home randomHome = CreateRandomHome();
+            Home inputHome = randomHome;
+            Home storageHome = inputHome;
+            Home updatedHome = inputHome;
 
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(inputHome.Id))
+                    .ReturnsAsync(storageHome);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateHomeAsync(inputHome))
+                    .ReturnsAsync(updatedHome);
+
+            // when
+            Home actualHome =
+                await this.homeService.ModifyHomeAsync(inputHome);
+
+            // then
+            actualHome.Should().BeEquivalentTo(updatedHome);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(inputHome.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateHomeAsync(inputHome),
+                    Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

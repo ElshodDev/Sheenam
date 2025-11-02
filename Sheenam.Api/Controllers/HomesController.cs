@@ -104,6 +104,34 @@ namespace Sheenam.Api.Controllers
             }
         }
 
+        [HttpPut("{homeId}")]
+        public async ValueTask<IActionResult> PutHomeAsync(Guid homeId, Home home)
+        {
+            try
+            {
+                home.Id = homeId;
+
+                Home updatedHome = await this.homeService.ModifyHomeAsync(home);
+                return Ok(updatedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+                when (homeValidationException.InnerException is NotFoundHomeException)
+            {
+                return NotFound(homeValidationException.InnerException);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException.InnerException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException.InnerException);
+            }
+        }
 
     }
 }
