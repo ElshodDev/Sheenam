@@ -37,12 +37,18 @@ namespace Sheenam.Api.Services.Foundations.Hosts
 
                 throw CreateAndLogCriticalDependencyException(failedHostStorageException);
             }
-            catch(DuplicateKeyException dublicateKeyException)
+            catch (DuplicateKeyException dublicateKeyException)
             {
                 var alreadyExistsHostException =
                     new AlreadyExistsHostException(dublicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHostException);
+            }
+            catch (Exception exception)
+            {
+                var failedHostServiceException =
+                    new FailedHostServiceException(exception);
+                throw CreateAndLogServiceException(failedHostServiceException);
             }
         }
 
@@ -73,6 +79,13 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             this.loggingBroker.LogError(hostDependecyValidationException);
 
             return hostDependecyValidationException;
+        }
+        private HostServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var hostServiceException =
+                new HostServiceException(exception);
+            this.loggingBroker.LogError(hostServiceException);
+            return hostServiceException;
         }
 
     }
