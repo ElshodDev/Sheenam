@@ -3,8 +3,11 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.Hosts;
+
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
 {
@@ -16,19 +19,19 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             //given 
             Host randomHost = CreateRandomHost();
             Host inputHost = randomHost;
-            Host returningHost = inputHost;
-            Host expectedHost = returningHost;
+            Host storageHost = inputHost;
+            Host expectedHost = storageHost.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
             broker.InsertHostAsync(inputHost))
-                .ReturnsAsync(returningHost);
+                .ReturnsAsync(storageHost);
             //when
 
             Host actualHost =
                   await this.hostService.AddHostAsync(inputHost);
 
             //then
-            Assert.Equal(expectedHost, actualHost);
+            actualHost.Should().BeEquivalentTo(expectedHost);
 
             this.storageBrokerMock.Verify(broker =>
             broker.InsertHostAsync(inputHost),

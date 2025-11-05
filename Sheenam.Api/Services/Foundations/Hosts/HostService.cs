@@ -18,8 +18,8 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             this.storageBroker = storageBroker;
 
 
-        public ValueTask<Host> AddHostAsync(Host host) =>
-            throw new NotImplementedException();
+        public async ValueTask<Host> AddHostAsync(Host host) =>
+          await  this.storageBroker.InsertHostAsync(host);
 
     }
 }
