@@ -3,14 +3,15 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using System;
 using Xeptions;
 
-namespace Sheenam.Api.Models.Foundations.Homes.Exceptions
+namespace Sheenam.Api.Models.Foundations.Hosts.Exceptions
 {
-    public class HomeDependencyValidationException : Xeption
+    public class FailedHostServiceException : Xeption
     {
-        public HomeDependencyValidationException(Xeption innerException)
-            : base(message: "Home dependency validation error occured, contact support",
+        public FailedHostServiceException(Exception innerException)
+            : base(message: "Failed host service error occurred, contact support.",
                   innerException)
         { }
     }

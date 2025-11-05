@@ -5,12 +5,12 @@
 
 using Xeptions;
 
-namespace Sheenam.Api.Models.Foundations.Homes.Exceptions
+namespace Sheenam.Api.Models.Foundations.Hosts.Exceptions
 {
-    public class HomeDependencyValidationException : Xeption
+    public class HostDependencyException : Xeption
     {
-        public HomeDependencyValidationException(Xeption innerException)
-            : base(message: "Home dependency validation error occured, contact support",
+        public HostDependencyException(Xeption innerException)
+            : base(message: "Host dependency error occured, contact support",
                   innerException)
         { }
     }

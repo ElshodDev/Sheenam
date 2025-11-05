@@ -15,7 +15,7 @@ namespace Sheenam.Api.Brokers.Storages
         public DbSet<Host> Hosts { get; set; }
 
 
-     public async ValueTask<Host> InsertHostAsync(Host host)
+        public async ValueTask<Host> InsertHostAsync(Host host)
         {
             using var broker = new StorageBroker(this.configuration);
             EntityEntry<Host> hostEntityEntry =
