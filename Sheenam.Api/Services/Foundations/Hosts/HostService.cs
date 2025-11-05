@@ -24,16 +24,15 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             this.loggingBroker=loggingBroker;
         }
 
-        public async ValueTask<Host> AddHostAsync(Host host) =>
-            await TryCatch(async () =>
-               await this.storageBroker.InsertHostAsync(host));
-
-        private delegate ValueTask<Host> ReturningHostFunction();
-        private async ValueTask<Host> TryCatch(ReturningHostFunction returningHostFunction)
+        public async ValueTask<Host> AddHostAsync(Host host)
         {
             try
             {
-                return await returningHostFunction();
+                if (host is null)
+                {
+                    throw new NullHostException();
+                }
+                return await this.storageBroker.InsertHostAsync(host);
             }
             catch (NullHostException nullHostException)
             {
@@ -41,8 +40,10 @@ namespace Sheenam.Api.Services.Foundations.Hosts
                     new HostValidationException(nullHostException);
 
                 this.loggingBroker.LogError(hostValidationException);
+
                 throw hostValidationException;
             }
+
         }
     }
 }
