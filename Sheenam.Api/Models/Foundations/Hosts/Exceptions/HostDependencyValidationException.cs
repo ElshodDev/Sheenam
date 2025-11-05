@@ -7,9 +7,9 @@ using Xeptions;
 
 namespace Sheenam.Api.Models.Foundations.Hosts.Exceptions
 {
-    public class HostDependecyValidationException : Xeption
+    public class HostDependencyValidationException : Xeption
     {
-        public HostDependecyValidationException(Xeption innerException)
+        public HostDependencyValidationException(Xeption innerException)
          : base(message: "Host dependency validation error occured, fix the errors and try again",
               innerException)
         { }

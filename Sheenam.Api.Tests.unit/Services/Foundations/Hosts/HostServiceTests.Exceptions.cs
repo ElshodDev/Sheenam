@@ -65,7 +65,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                 new AlreadyExistsHostException(duplicateKeyException);
 
             var expectedHostDependencyValidationException =
-                new HomeDependencyValidationException(alreadyExistsHostException);
+                new HostDependencyValidationException(alreadyExistsHostException);
 
             this.storageBrokerMock.Setup(broker =>
             broker.InsertHostAsync(someHost))
@@ -76,7 +76,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostService.AddHostAsync(someHost);
 
             // then
-            await Assert.ThrowsAsync<HomeDependencyValidationException>(() =>
+            await Assert.ThrowsAsync<HostDependencyValidationException>(() =>
                addHostTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>

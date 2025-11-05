@@ -3,9 +3,11 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
+using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -35,7 +37,15 @@ namespace Sheenam.Api.Services.Foundations.Hosts
 
                 throw CreateAndLogCriticalDependencyException(failedHostStorageException);
             }
+            catch(DuplicateKeyException dublicateKeyException)
+            {
+                var alreadyExistsHostException =
+                    new AlreadyExistsHostException(dublicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsHostException);
+            }
         }
+
         private HostValidationException CreateAndLogValidationException(Xeption exception)
         {
             var hostValidationException =
@@ -53,5 +63,17 @@ namespace Sheenam.Api.Services.Foundations.Hosts
 
             return hostDependencyException;
         }
+
+        private HostDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            HostDependencyValidationException hostDependecyValidationException =
+                new HostDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(hostDependecyValidationException);
+
+            return hostDependecyValidationException;
+        }
+
     }
 }
