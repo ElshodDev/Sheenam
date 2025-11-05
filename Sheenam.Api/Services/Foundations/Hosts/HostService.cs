@@ -26,13 +26,8 @@ namespace Sheenam.Api.Services.Foundations.Hosts
 
         public async ValueTask<Host> AddHostAsync(Host host) =>
             await TryCatch(async () =>
-            {
-                if (host is null)
-                {
-                    throw new NullHostException();
-                }
-                return await this.storageBroker.InsertHostAsync(host);
-            });
+               await this.storageBroker.InsertHostAsync(host));
+
         private delegate ValueTask<Host> ReturningHostFunction();
         private async ValueTask<Host> TryCatch(ReturningHostFunction returningHostFunction)
         {
