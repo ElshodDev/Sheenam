@@ -3,8 +3,10 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
 
@@ -34,7 +36,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostService.AddHostAsync(someHost);
 
             // then 
-            await Assert.ThrowsAsync<HostDependencyException>(()=>
+            await Assert.ThrowsAsync<HostDependencyException>(() =>
             addHostTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
@@ -45,6 +47,46 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             broker.LogCritical(It.Is(SameExceptionAs(
                 expectedHostDependecyException))),
                 Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnAddIfDublicateKeyErrorOccursAndlogitAsync()
+        {
+            // given
+            Host someHost = CreateRandomHost();
+            string someMessage = GetRandomString();
+            var duplicateKeyException =
+               new DuplicateKeyException(someMessage);
+
+            var alreadyExistsHostException =
+                new AlreadyExistsHostException(duplicateKeyException);
+
+            var expectedHostDependencyValidationException =
+                new HomeDependencyValidationException(alreadyExistsHostException);
+
+            this.storageBrokerMock.Setup(broker =>
+            broker.InsertHostAsync(someHost))
+                .ThrowsAsync(duplicateKeyException);
+
+            // when
+            ValueTask<Host> addHostTask =
+                this.hostService.AddHostAsync(someHost);
+
+            // then
+            await Assert.ThrowsAsync<HomeDependencyValidationException>(() =>
+               addHostTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.InsertHostAsync(someHost),
+            Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostDependencyValidationException))),
+                    Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
