@@ -5,6 +5,7 @@
 
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
+using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -23,6 +24,10 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             catch (NullHostException nullHostException)
             {
                 throw CreateAndLogValidationException(nullHostException);
+            }
+            catch (InvalidHostException invalidHostException)
+            {
+                throw CreateAndLogValidationException(invalidHostException);
             }
         }
         private HostValidationException CreateAndLogValidationException(Xeption exception)

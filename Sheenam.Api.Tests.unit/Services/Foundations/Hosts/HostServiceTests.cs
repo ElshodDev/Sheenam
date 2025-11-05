@@ -42,8 +42,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             return filler;
         }
-        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedException) =>
-       actualException => actualException.SameExceptionAs(expectedException);
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+             actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
            new DateTimeRange(earliestDate: new DateTime()).GetValue();
