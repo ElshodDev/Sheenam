@@ -7,7 +7,6 @@ using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
 using System;
-using System.Reflection.Metadata;
 
 namespace Sheenam.Api.Services.Foundations.Hosts
 {
