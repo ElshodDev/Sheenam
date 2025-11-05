@@ -4,6 +4,7 @@
 //===================================================
 
 using Moq;
+using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
 
@@ -86,6 +87,39 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostAsync(It.IsAny<Host>()),
+                Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfGenderIsInvalidAndLogItAsync()
+        {
+            Host randomHost = CreateRandomHost();
+            Host invalidHost = randomHost;
+            invalidHost.Gender = GetInvalidEnum<GenderType>();
+            var invalidHostException = new InvalidHostException();
+
+            invalidHostException.AddData(nameof(Host.Gender),
+                "Value is not recognized");
+            var expectedHostValidationException =
+                new HostValidationException(invalidHostException);
+            // when
+            ValueTask<Host> addHostTask =
+                this.hostService.AddHostAsync(invalidHost);
+
+            // then
+            await Assert.ThrowsAsync<HostValidationException>(() =>
+               addHostTask.AsTask());
+
+            this.loggingBrokerMock.Verify(Broker =>
+                Broker.LogError(It.Is(SameExceptionAs(
                     expectedHostValidationException))),
                     Times.Once);
 

@@ -45,6 +45,25 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
              actualException => actualException.SameExceptionAs(expectedException);
 
+        private static int GetRandomNumber() =>
+           new IntRange(min: 2, max: 9).GetValue();
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static T GetInvalidEnum<T>()
+        {
+            int randomNumber = GetRandomNumber();
+
+            while (Enum.IsDefined(typeof(T), randomNumber) is true)
+            {
+                randomNumber = GetRandomNumber();
+            }
+
+            return (T)(object)randomNumber;
+        }
+
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
            new DateTimeRange(earliestDate: new DateTime()).GetValue();
     }
