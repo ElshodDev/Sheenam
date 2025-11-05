@@ -3,9 +3,9 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
-using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -29,6 +29,12 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             {
                 throw CreateAndLogValidationException(invalidHostException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedHostStorageException = new FailedHostStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedHostStorageException);
+            }
         }
         private HostValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -40,6 +46,12 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             return hostValidationException;
         }
 
+        private HostDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var hostDependencyException = new HostDependencyException(exception);
+            this.loggingBroker.LogCritical(hostDependencyException);
 
+            return hostDependencyException;
+        }
     }
 }
