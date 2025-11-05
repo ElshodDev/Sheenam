@@ -106,8 +106,9 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             invalidHost.Gender = GetInvalidEnum<GenderType>();
             var invalidHostException = new InvalidHostException();
 
-            invalidHostException.AddData(nameof(Host.Gender),
-                "Value is not recognized");
+            invalidHostException.AddData(
+               key: nameof(Host.Gender),
+               values: "Invalid gender value");
             var expectedHostValidationException =
                 new HostValidationException(invalidHostException);
             // when

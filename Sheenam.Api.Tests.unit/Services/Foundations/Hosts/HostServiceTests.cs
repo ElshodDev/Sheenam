@@ -63,7 +63,6 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             return (T)(object)randomNumber;
         }
 
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
            new DateTimeRange(earliestDate: new DateTime()).GetValue();
     }
