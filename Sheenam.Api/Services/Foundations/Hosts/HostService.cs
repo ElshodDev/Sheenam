@@ -6,6 +6,9 @@
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Hosts;
+using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Hosts
@@ -30,6 +33,24 @@ namespace Sheenam.Api.Services.Foundations.Hosts
 
              return await this.storageBroker.InsertHostAsync(host);
          });
+
+        public IQueryable<Host> RetrieveAllHosts() =>
+            this.storageBroker.SelectAllHosts();
+
+        public IQueryable<Host> RetrieveAllHostsAsync() =>
+             this.storageBroker.SelectAllHosts();
+
+        public async ValueTask<Host> RetrieveHostByIdAsync(Guid Id)
+        {
+            Host maybeHost = await this.storageBroker.SelectHostByIdAsync(Id);
+
+            if (maybeHost is null)
+            {
+                throw new NotFoundHostException(Id);
+            }
+
+            return maybeHost;
+        }
     }
 
 }

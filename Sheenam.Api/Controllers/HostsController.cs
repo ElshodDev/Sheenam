@@ -5,10 +5,11 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
 using Sheenam.Api.Services.Foundations.Hosts;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Controllers
@@ -37,7 +38,7 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(hostValidationException.InnerException);
             }
             catch (HostDependencyValidationException hostDependencyValidationException)
-             when (hostDependencyValidationException.InnerException is AlreadyExistHomeException)
+             when (hostDependencyValidationException.InnerException is AlreadyExistsHostException)
             {
                 return Conflict(hostDependencyValidationException.InnerException);
             }
@@ -48,6 +49,46 @@ namespace Sheenam.Api.Controllers
             catch (HostDependencyException hostDependecyException)
             {
                 return InternalServerError(hostDependecyException.InnerException);
+            }
+            catch (HostServiceException hostServiceException)
+            {
+                return InternalServerError(hostServiceException.InnerException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Host>> GetAllHostsAsync()
+        {
+            try
+            {
+                IQueryable<Host> retrievedHosts = this.hostService.RetrieveAllHosts();
+                return Ok(retrievedHosts);
+            }
+            catch (HostDependencyException hostDependencyException)
+            {
+                return InternalServerError(hostDependencyException.InnerException);
+            }
+            catch (HostServiceException hostServiceException)
+            {
+                return InternalServerError(hostServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("{hostId}")]
+        public async ValueTask<ActionResult<Host>> GetHostByIdAsync(Guid hostId)
+        {
+            try
+            {
+                Host retrievedHost = await this.hostService.RetrieveHostByIdAsync(hostId);
+                return Ok(retrievedHost);
+            }
+            catch (HostValidationException hostValidationException)
+            {
+                return BadRequest(hostValidationException.InnerException);
+            }
+            catch (HostDependencyException hostDependencyException)
+            {
+                return InternalServerError(hostDependencyException.InnerException);
             }
             catch (HostServiceException hostServiceException)
             {
