@@ -23,17 +23,15 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
-          await TryCatch(async () =>
-            await this.storageBroker.InsertHomeRequestAsync(homeRequest));
-
-        private delegate ValueTask<HomeRequest> ReturningHomeRequestFunction();
-        private async ValueTask<HomeRequest> TryCatch(
-            ReturningHomeRequestFunction returningHomeRequestFunction)
+        public async ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest)
         {
             try
             {
-                return await returningHomeRequestFunction();
+                if (homeRequest is null)
+                {
+                    throw new NullHomeRequestException();
+                }
+                return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
             }
             catch (NullHomeRequestException nullHomeRequestException)
             {
