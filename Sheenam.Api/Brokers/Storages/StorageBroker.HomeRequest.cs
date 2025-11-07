@@ -4,12 +4,23 @@
 //===================================================
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sheenam.Api.Models.Foundations.HomeRequests;
+using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
         public DbSet<HomeRequest> HomeRequests { get; set; }
+
+        public async ValueTask<HomeRequest> InsertHostAsync(HomeRequest homeRequest)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            EntityEntry<HomeRequest> homeRequestEntityEntry =
+                await broker.HomeRequests.AddAsync(homeRequest);
+            await broker.SaveChangesAsync();
+            return homeRequestEntityEntry.Entity;
+        }
     }
 }
