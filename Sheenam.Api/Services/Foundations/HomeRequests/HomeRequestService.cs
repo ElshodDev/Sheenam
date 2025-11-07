@@ -5,7 +5,6 @@
 
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.HomeRequests;
-using System;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.HomeRequests
@@ -17,6 +16,6 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
             this.storageBroker = storageBroker;
 
         public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
-            throw new NotImplementedException();
+            this.storageBroker.InsertHomeRequestAsync(homeRequest);
     }
 }
