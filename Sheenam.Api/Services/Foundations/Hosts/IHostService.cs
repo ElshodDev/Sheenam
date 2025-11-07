@@ -14,7 +14,6 @@ namespace Sheenam.Api.Services.Foundations.Hosts
     {
         ValueTask<Host> AddHostAsync(Host someHost);
         ValueTask<Host> RetrieveHostByIdAsync(Guid Id);
-        IQueryable<Host> RetrieveAllHostsAsync();
         IQueryable<Host> RetrieveAllHosts();
     }
 }

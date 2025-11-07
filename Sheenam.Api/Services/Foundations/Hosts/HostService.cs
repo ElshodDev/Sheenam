@@ -37,9 +37,6 @@ namespace Sheenam.Api.Services.Foundations.Hosts
         public IQueryable<Host> RetrieveAllHosts() =>
             this.storageBroker.SelectAllHosts();
 
-        public IQueryable<Host> RetrieveAllHostsAsync() =>
-             this.storageBroker.SelectAllHosts();
-
         public async ValueTask<Host> RetrieveHostByIdAsync(Guid Id)
         {
             Host maybeHost = await this.storageBroker.SelectHostByIdAsync(Id);

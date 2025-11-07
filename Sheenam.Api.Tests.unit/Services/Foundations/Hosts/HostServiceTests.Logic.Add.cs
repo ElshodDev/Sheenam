@@ -52,7 +52,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                     .Returns(storageHosts);
             // when
             IQueryable<Host> actualHosts =
-                this.hostService.RetrieveAllHostsAsync();
+                this.hostService.RetrieveAllHosts();
             // then
             actualHosts.Should().BeEquivalentTo(expectedHosts);
 
