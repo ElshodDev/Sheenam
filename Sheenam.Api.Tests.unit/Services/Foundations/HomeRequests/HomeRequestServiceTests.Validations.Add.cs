@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Moq;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 
@@ -29,6 +30,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             // then
             await Assert.ThrowsAsync<HomeRequestValidationException>(() =>
                  addHomeRequestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHomeRequestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHomeRequestAsync(It.IsAny<HomeRequest>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
