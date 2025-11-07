@@ -74,6 +74,19 @@ namespace Sheenam.Api.Services.Foundations.Hosts
               (Rule: IsInvalid(host.Email), Parameter: nameof(Host.Email)),
               (Rule: IsInvalid(host.Gender), Parameter: nameof(Host.Gender)));
         }
+
+        public ValueTask<Host> RemoveHostByIdAsync(Guid Id)
+        {
+            return TryCatch(async () =>
+            {
+                Host maybeHost = await this.storageBroker.SelectHostByIdAsync(Id);
+                if (maybeHost is null)
+                {
+                    throw new NotFoundHostException(Id);
+                }
+                return await this.storageBroker.DeleteHostAsync(maybeHost);
+            });
+        }
     }
 
 }

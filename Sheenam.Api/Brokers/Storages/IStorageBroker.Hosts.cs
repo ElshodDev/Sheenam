@@ -16,5 +16,6 @@ namespace Sheenam.Api.Brokers.Storages
         ValueTask<Host> SelectHostByIdAsync(Guid id);
         IQueryable<Host> SelectAllHosts();
         ValueTask<Host> UpdateHostAsync(Host host);
+        ValueTask<Host> DeleteHostAsync(Host someHost);
     }
 }

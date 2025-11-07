@@ -118,5 +118,36 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.loggingBrokerMock.VerifyNoOtherCalls();
 
         }
+
+        [Fact]
+        public async Task ShouldDeleteHostAsync()
+        {
+            // given
+            Host someHost = CreateRandomHost();
+            Guid hostId = someHost.Id;
+
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectHostByIdAsync(hostId))
+                .ReturnsAsync(someHost);
+
+            this.storageBrokerMock
+                .Setup(broker => broker.DeleteHostAsync(someHost))
+                .ReturnsAsync(someHost);
+
+            // when
+            Host deletedHost = await this.hostService.RemoveHostByIdAsync(hostId);
+
+            // then
+            Assert.Equal(someHost, deletedHost);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.SelectHostByIdAsync(hostId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.DeleteHostAsync(someHost), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
