@@ -57,7 +57,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<Host>> GetAllHostsAsync()
+        public ActionResult<IQueryable<Host>> GetAllHosts()
         {
             try
             {
