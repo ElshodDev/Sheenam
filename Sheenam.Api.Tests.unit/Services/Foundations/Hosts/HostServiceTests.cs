@@ -35,6 +35,19 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         private static Host CreateRandomHost() =>
         CreateHostFiller(date: GetRandomDateTimeOffset()).Create();
 
+        private static IQueryable<Host> CreateRandomHosts()
+        {
+            int randomCount = new Random().Next(2, 10);
+            var hosts = new List<Host>();
+
+            for (int i = 0; i < randomCount; i++)
+            {
+                hosts.Add(CreateRandomHost());
+            }
+
+            return hosts.AsQueryable();
+        }
+
         private static Filler<Host> CreateHostFiller(DateTimeOffset date)
         {
             var filler = new Filler<Host>();

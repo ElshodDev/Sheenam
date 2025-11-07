@@ -40,5 +40,50 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+        [Fact]
+        public void ShouldRetrieveAllHosts()
+        {
+            // given
+            IQueryable<Host> randomHosts = CreateRandomHosts();
+            IQueryable<Host> storageHosts = randomHosts;
+            IQueryable<Host> expectedHosts = storageHosts.DeepClone();
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHosts())
+                    .Returns(storageHosts);
+            // when
+            IQueryable<Host> actualHosts =
+                this.hostService.RetrieveAllHostsAsync();
+            // then
+            actualHosts.Should().BeEquivalentTo(expectedHosts);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllHosts(),
+                    Times.Once);
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnHostWhenHostExistsAsync()
+        {
+            // given
+            Host randomHost = CreateRandomHost();
+            Guid hostId = randomHost.Id;
+
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectHostByIdAsync(hostId))
+                .ReturnsAsync(randomHost);
+
+            // when
+            Host actualHost = await this.hostService.RetrieveHostByIdAsync(hostId);
+            // then
+            Assert.Equal(randomHost, actualHost);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostByIdAsync(hostId), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

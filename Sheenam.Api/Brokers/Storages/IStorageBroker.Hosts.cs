@@ -4,6 +4,8 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Hosts;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
@@ -11,5 +13,7 @@ namespace Sheenam.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<Host> InsertHostAsync(Host host);
+        ValueTask<Host> SelectHostByIdAsync(Guid id);
+        IQueryable<Host> SelectAllHosts();
     }
 }
