@@ -4,6 +4,7 @@
 //===================================================
 
 using Moq;
+using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -14,13 +15,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
     public partial class HomeRequestServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeRequestService homeRequestService;
 
         public HomeRequestServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
             this.homeRequestService = new HomeRequestService(
-                storageBroker: this.storageBrokerMock.Object);
+                 storageBroker: this.storageBrokerMock.Object,
+                 loggingBroker: this.loggingBrokerMock.Object);
+
         }
 
         private static HomeRequest CreateRandomHomeRequest() =>
