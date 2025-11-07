@@ -85,5 +85,38 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnUpdatedHostWhenUpdateIsSuccessfulAsync()
+        {
+            // given
+            Host someHost = CreateRandomHost();
+            Guid hostId = someHost.Id;
+
+            this.storageBrokerMock
+                .Setup(broker => broker.SelectHostByIdAsync(someHost.Id))
+                .ReturnsAsync(someHost);
+
+            this.storageBrokerMock
+                .Setup(broker => broker.UpdateHostAsync(someHost))
+                .ReturnsAsync(someHost);
+
+            // when
+            Host updatedHost = await this.hostService.ModifyHostAsync(someHost);
+
+            // then
+            Assert.Equal(someHost, updatedHost);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.SelectHostByIdAsync(someHost.Id), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+            broker.UpdateHostAsync(someHost), Times.Once);
+            this.storageBrokerMock.VerifyNoOtherCalls();
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+
+        }
     }
 }
