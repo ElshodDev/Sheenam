@@ -6,6 +6,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sheenam.Api.Models.Foundations.HomeRequests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Brokers.Storages
@@ -21,6 +23,16 @@ namespace Sheenam.Api.Brokers.Storages
                 await broker.HomeRequests.AddAsync(homeRequest);
             await broker.SaveChangesAsync();
             return homeRequestEntityEntry.Entity;
+        }
+        public IQueryable<HomeRequest> SelectAllHomeRequests()
+        {
+            using var broker = new StorageBroker(this.configuration);
+            return broker.HomeRequests.AsQueryable();
+        }
+        public async ValueTask<HomeRequest> SelectHomeRequestByIdAsync(Guid homeRequestId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+            return await broker.HomeRequests.FindAsync(homeRequestId);
         }
     }
 }

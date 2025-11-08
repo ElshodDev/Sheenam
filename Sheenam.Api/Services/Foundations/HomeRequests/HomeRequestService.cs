@@ -6,6 +6,9 @@
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.HomeRequests;
+using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.HomeRequests
@@ -29,5 +32,17 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
 
                  return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
              });
+        public IQueryable<HomeRequest> RetrieveAllHomeRequests() =>
+         this.storageBroker.SelectAllHomeRequests();
+
+        public async ValueTask<HomeRequest> RetrieveHomeRequestByIdAsync(Guid homeRequestId)
+        {
+            HomeRequest maybeHomeRequest = await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+            if (maybeHomeRequest is null)
+            {
+                throw new NotFoundHomeRequestException(homeRequestId);
+            }
+            return maybeHomeRequest;
+        }
     }
 }
