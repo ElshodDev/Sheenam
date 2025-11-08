@@ -7,6 +7,7 @@ using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
+using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -44,6 +45,12 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
             }
+            catch (Exception exception)
+            {
+                var failedHomeRequestServiceException =
+                    new FailedHomeRequestServiceException(exception);
+                throw CreateAndLogServiceException(failedHomeRequestServiceException);
+            }
         }
 
         private HomeRequestValidationException CreateAndLogValidationException(
@@ -76,6 +83,12 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
 
             return homeRequestDependencyValidationException;
         }
-
+        private HomeRequestServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var homeRequestServiceException =
+                new HomeRequestServiceException(exception);
+            this.loggingBroker.LogError(homeRequestServiceException);
+            return homeRequestServiceException;
+        }
     }
 }
