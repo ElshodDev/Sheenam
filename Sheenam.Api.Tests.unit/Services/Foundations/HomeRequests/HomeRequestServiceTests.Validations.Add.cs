@@ -54,43 +54,20 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             // given
             HomeRequest invalidHomeRequest = new()
             {
+                Id = Guid.NewGuid(),
+                GuestId = Guid.NewGuid(),
+                HomeId = Guid.NewGuid(),
+                StartDate = DateTimeOffset.UtcNow,
+                EndDate = DateTimeOffset.UtcNow.AddDays(1),
+                CreatedDate = DateTimeOffset.UtcNow,
+                UpdatedDate = DateTimeOffset.UtcNow,
                 Message = invalidText
             };
             var invalidHomeRequestException =
                 new InvalidHomeRequestException();
 
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.Id),
-                values: "Id is required");
 
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.GuestId),
-                values: "GuestId is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.HomeId),
-                values: "HomeId is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.Message),
-                values: "Text is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.StartDate),
-                values: "StartDate is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.EndDate),
-                values: "EndDate is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.CreatedDate),
-                values: "CreatedDate is required");
-
-            invalidHomeRequestException.AddData(
-                key: nameof(HomeRequest.UpdatedDate),
-                values: "UpdatedDate is required");
-
+            invalidHomeRequestException.UpsertDataList(nameof(HomeRequest.Message), "Text is required");
             var expectedHomeRequestValidationException =
                 new HomeRequestValidationException(invalidHomeRequestException);
 
@@ -103,9 +80,9 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
                  addHomeRequestTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedHomeRequestValidationException))),
-                        Times.Once);
+          broker.LogError(It.Is(SameExceptionAs(expectedHomeRequestValidationException))),
+          Times.Once);
+
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertHomeRequestAsync(It.IsAny<HomeRequest>()),

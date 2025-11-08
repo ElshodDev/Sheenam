@@ -25,7 +25,8 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
         public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
              TryCatch(async () =>
              {
-                 ValidateHomeRequestNotNull(homeRequest);
+                 ValidateHomeRequestOnAdd(homeRequest);
+
                  return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
              });
     }

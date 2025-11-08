@@ -43,7 +43,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             return filler;
         }
-        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedException) =>
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
       actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
