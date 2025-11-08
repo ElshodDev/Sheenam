@@ -46,6 +46,9 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             return filler;
         }
 
+        private static string GetRandomString() =>
+           new MnemonicString().GetValue();
+
         private static SqlException GetSqlException() =>
       (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
