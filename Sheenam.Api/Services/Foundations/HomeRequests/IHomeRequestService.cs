@@ -6,10 +6,10 @@
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using System.Threading.Tasks;
 
-namespace Sheenam.Api.Brokers.Storages
+namespace Sheenam.Api.Services.Foundations.HomeRequests
 {
-    public partial interface IStorageBroker
+    public interface IHomeRequestService
     {
-        ValueTask<HomeRequest> InsertHomeRequestAsync(HomeRequest homeRequest);
+        ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest);
     }
 }
