@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
@@ -36,6 +37,13 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
                 throw CreateAndLogCriticalDependencyException(
                     failedHomeRequestStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsHomeRequestException =
+                    new AlreadyExistsHomeRequestException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
+            }
         }
 
         private HomeRequestValidationException CreateAndLogValidationException(
@@ -57,6 +65,16 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
             this.loggingBroker.LogCritical(homeRequestDependencyException);
 
             return homeRequestDependencyException;
+        }
+
+        private HomeRequestDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var homeRequestDependencyValidationException =
+                new HomeRequestDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(homeRequestDependencyValidationException);
+
+            return homeRequestDependencyValidationException;
         }
 
     }
