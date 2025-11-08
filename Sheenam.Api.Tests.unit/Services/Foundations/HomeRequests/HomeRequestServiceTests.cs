@@ -36,6 +36,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
         private static HomeRequest CreateRandomHomeRequest() =>
             CreateHomeRequestFiller(date: GetRandomDateTimeOffset()).Create();
 
+        private static IQueryable<HomeRequest> CreateRandomHomeRequests()
+        {
+            int randomCount = new Random().Next(2, 10);
+            var homerequests = new List<HomeRequest>();
+
+            for (int i = 0; i < randomCount; i++)
+            {
+                homerequests.Add(CreateRandomHomeRequest());
+            }
+            return homerequests.AsQueryable();
+        }
+
         private static Filler<HomeRequest> CreateHomeRequestFiller(DateTimeOffset date)
         {
             var filler = new Filler<HomeRequest>();

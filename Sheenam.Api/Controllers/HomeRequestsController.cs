@@ -8,6 +8,8 @@ using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 using Sheenam.Api.Services.Foundations.HomeRequests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Controllers
@@ -43,6 +45,46 @@ namespace Sheenam.Api.Controllers
             catch (HomeRequestDependencyValidationException homeRequestDependencyValidationException)
             {
                 return BadRequest(homeRequestDependencyValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+        }
+        [HttpGet]
+        public ValueTask<ActionResult<IQueryable<HomeRequest>>> GetAllHomeRequests()
+        {
+            try
+            {
+                IQueryable<HomeRequest> retrievedHomeRequests =
+                    this.homeRequestService.RetrieveAllHomeRequests();
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(Ok(retrievedHomeRequests));
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
+                    InternalServerError(homeRequestDependencyException.InnerException));
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
+                    InternalServerError(homeRequestServiceException.InnerException));
+            }
+        }
+
+        [HttpGet("{homeRequestId}")]
+        public async ValueTask<ActionResult<HomeRequest>> GetHomeRequestByIdAsync(
+            Guid homeRequestId)
+        {
+            try
+            {
+                HomeRequest retrievedHomeRequest =
+                    await this.homeRequestService.RetrieveHomeRequestByIdAsync(homeRequestId);
+                return Ok(retrievedHomeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
