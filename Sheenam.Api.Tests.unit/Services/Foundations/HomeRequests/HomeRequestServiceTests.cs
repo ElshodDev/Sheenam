@@ -3,12 +3,14 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -43,6 +45,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             return filler;
         }
+
+        private static SqlException GetSqlException() =>
+      (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
       actualException => actualException.SameExceptionAs(expectedException);
 
