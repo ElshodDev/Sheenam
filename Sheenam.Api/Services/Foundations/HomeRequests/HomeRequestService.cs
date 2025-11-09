@@ -32,6 +32,41 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
 
                  return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
              });
+
+        public async ValueTask<HomeRequest> ModifyHomeRequestAsync(HomeRequest homeRequest)
+        {
+            ValidateHomeRequestOnModify(homeRequest);
+
+            HomeRequest maybeHomeRequest =
+                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequest.Id);
+
+            ValidateStorageHomeRequest(maybeHomeRequest, homeRequest.Id);
+
+            return await this.storageBroker.UpdateHomeRequestAsync(homeRequest);
+        }
+
+        private static void ValidateStorageHomeRequest(HomeRequest maybeHomeRequest, Guid homeRequestId)
+        {
+            if (maybeHomeRequest is null)
+            {
+                throw new NotFoundHomeRequestException(homeRequestId);
+            }
+        }
+
+        private void ValidateHomeRequestOnModify(HomeRequest homeRequest)
+        {
+            ValidateHomeRequestNotNull(homeRequest);
+            Validate(
+              (Rule: IsInvalid(homeRequest.Id), Parameter: nameof(HomeRequest.Id)),
+              (Rule: IsInvalid(homeRequest.GuestId), Parameter: nameof(HomeRequest.GuestId)),
+              (Rule: IsInvalid(homeRequest.HomeId), Parameter: nameof(HomeRequest.HomeId)),
+              (Rule: IsInvalid(homeRequest.Message), Parameter: nameof(HomeRequest.Message)),
+              (Rule: IsInvalid(homeRequest.StartDate), Parameter: nameof(HomeRequest.StartDate)),
+              (Rule: IsInvalid(homeRequest.EndDate), Parameter: nameof(HomeRequest.EndDate)),
+              (Rule: IsInvalid(homeRequest.CreatedDate), Parameter: nameof(HomeRequest.CreatedDate)),
+              (Rule: IsInvalid(homeRequest.UpdatedDate), Parameter: nameof(HomeRequest.UpdatedDate)));
+        }
+
         public IQueryable<HomeRequest> RetrieveAllHomeRequests() =>
          this.storageBroker.SelectAllHomeRequests();
 
