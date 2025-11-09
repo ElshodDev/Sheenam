@@ -5,6 +5,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -19,9 +20,13 @@ namespace Sheenam.Api.Controllers
     public class HomeRequestsController : RESTFulController
     {
         private readonly IHomeRequestService homeRequestService;
+        private readonly ILoggingBroker loggingBroker;
 
-        public HomeRequestsController(IHomeRequestService homeRequestService) =>
+        public HomeRequestsController(IHomeRequestService homeRequestService, ILoggingBroker logging)
+        {
             this.homeRequestService = homeRequestService;
+            this.loggingBroker = loggingBroker;
+        }
 
         [HttpPost]
         public async ValueTask<ActionResult<HomeRequest>> PostHomeRequestAsync(HomeRequest homeRequest)
@@ -96,14 +101,54 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
-        public async ValueTask<ActionResult<HomeRequest>> PutHomeRequestAsync(HomeRequest homeRequest)
+        [HttpPut("{homeRequestId}")]
+        public async ValueTask<ActionResult<HomeRequest>> PutHomeRequestAsync(Guid homeRequestId, HomeRequest homeRequest)
         {
             try
             {
+                homeRequest.Id = homeRequestId;
+
                 HomeRequest modifiedHomeRequest =
                     await this.homeRequestService.ModifyHomeRequestAsync(homeRequest);
                 return Ok(modifiedHomeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyValidationException homeRequestDependencyValidationException)
+            when (homeRequestDependencyValidationException.InnerException is NotFoundHomeRequestException)
+            {
+                return NotFound(homeRequestDependencyValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyValidationException homeRequestDependencyValidationException)
+            {
+                return BadRequest(homeRequestDependencyValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(homeRequestServiceException.InnerException);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError(exception);
+                return InternalServerError(exception);
+            }
+        }
+
+        [HttpDelete("{homeRequestId}")]
+        public async ValueTask<ActionResult<HomeRequest>> DeleteHomeRequestByIdAsync(
+            Guid homeRequestId)
+        {
+            try
+            {
+                HomeRequest deletedHomeRequest =
+                    await this.homeRequestService.RemoveHomeRequestByIdAsync(homeRequestId);
+                return Ok(deletedHomeRequest);
             }
             catch (HomeRequestValidationException homeRequestValidationException)
             {
