@@ -93,5 +93,42 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnUpdatedHomeRequestWhenUpdateIsSuccessfulAsync()
+        {
+            // given
+            HomeRequest randomHomeRequest = CreateRandomHomeRequest();
+            HomeRequest inputHomeRequest = randomHomeRequest;
+            HomeRequest storageHomeRequest = inputHomeRequest.DeepClone();
+            HomeRequest expectedHomeRequest = storageHomeRequest.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeRequestByIdAsync(inputHomeRequest.Id))
+                .ReturnsAsync(storageHomeRequest);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateHomeRequestAsync(inputHomeRequest))
+                .ReturnsAsync(expectedHomeRequest);
+
+            // when
+            HomeRequest actualHomeRequest =
+                await this.homeRequestService.ModifyHomeRequestAsync(inputHomeRequest);
+
+            // then
+            Assert.Equal(expectedHomeRequest, actualHomeRequest);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeRequestByIdAsync(inputHomeRequest.Id),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateHomeRequestAsync(inputHomeRequest),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
