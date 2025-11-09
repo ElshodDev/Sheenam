@@ -79,5 +79,27 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
             }
             return maybeHomeRequest;
         }
+        public async ValueTask<HomeRequest> RemoveHomeRequestByIdAsync(Guid homeRequestId)
+        {
+            ValidateHomeRequestId(homeRequestId);
+            HomeRequest maybeHomeRequest =
+                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+
+            ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
+
+            HomeRequest deleteHomeRequest =
+                await this.storageBroker.DeleteHomeRequestAsync(maybeHomeRequest);
+
+            return deleteHomeRequest;
+        }
+        private static void ValidateHomeRequestId(Guid homeRequestId)
+        {
+            if (homeRequestId == Guid.Empty)
+            {
+                throw new HomeRequestValidationException(
+                    new InvalidHomeRequestException());
+            }
+        }
+
     }
 }
