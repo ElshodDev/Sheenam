@@ -15,6 +15,14 @@ namespace Sheenam.Blazor
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var httpClient = new HttpClient { BaseAddress = new Uri(config["ApiSettings:BaseUrl"]) };
+                return httpClient;
+            });
 
             var app = builder.Build();
 
