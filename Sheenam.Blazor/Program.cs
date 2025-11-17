@@ -20,8 +20,10 @@ namespace Sheenam.Blazor
             builder.Services.AddSingleton(sp =>
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-                var httpClient = new HttpClient { BaseAddress = new Uri(config["ApiSettings:BaseUrl"]) };
-                return httpClient;
+                return new HttpClient
+                {
+                    BaseAddress = new Uri(config["ApiSettings:BaseUrl"]!)
+                };
             });
 
             var app = builder.Build();
@@ -32,7 +34,7 @@ namespace Sheenam.Blazor
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
             app.UseAntiforgery();
             app.MapStaticAssets();
 

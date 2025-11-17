@@ -1,0 +1,60 @@
+﻿@page "/hosts"
+@using Sheenam.Blazor.Models.Foundations.Hosts
+@using System.Net.Http.Json
+@inject HttpClient HttpClient
+
+<h1>Hostlar ro'yxati</h1>
+
+@if (hosts == null)
+{
+    <p>Yuklanmoqda...</p>
+}
+else if (hosts.Count == 0)
+{
+    <p>Hech qanday host topilmadi.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ism Familya</th>
+                <th>Email</th>
+                <th>Tug'ilgan sana</th>
+                <th>Jins</th>
+                <th>Telefon</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var host in hosts)
+            {
+                <tr>
+                    <td>@host.Id</td>
+                    <td>@host.FirstName @host.LastName</td>
+                    <td>@host.Email</td>
+                    <td>@host.DateOfBirth.ToString("d")</td>
+                    <td>@host.Gender</td>
+                    <td>@host.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Host> hosts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            hosts = await HttpClient.GetFromJsonAsync<List<Host>>("api/hosts");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            hosts = new List<Host>();
+        }
+    }
+}
