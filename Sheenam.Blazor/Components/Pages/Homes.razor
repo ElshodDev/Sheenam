@@ -1,0 +1,75 @@
+﻿@page "/homes"
+@using Sheenam.Blazor.Models
+@using Sheenam.Blazor.Models.Foundations.Homes
+@inject HttpClient HttpClient
+@inject NavigationManager Nav
+
+<h1>Uylar ro'yxati</h1>
+
+@if (homes == null)
+{
+    <p>Yuklanmoqda...</p>
+}
+else if (homes.Count == 0)
+{
+    <p>Hech qanday uy topilmadi.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Manzil</th>
+                <th>Yotoq xonasi</th>
+                <th>Vanna xonasi</th>
+                <th>Ulashilgan</th>
+                <th>Maydon (kv.m)</th>
+                <th>Hayvonlarga ruxsat</th>
+                <th>Narxi</th>
+                <th>Bo'sh</th>
+                <th>Qo'shimcha ma'lumot</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var home in homes)
+            {
+                <tr>
+                    <td>@home.Id</td>
+                    <td>@home.Address</td>
+                    <td>@home.NumberOfBedrooms</td>
+                    <td>@home.NumberOfBathrooms</td>
+                    <td>@home.IsShared</td>
+                    <td>@home.Area</td>
+                    <td>@home.IsPetAllowed</td>
+                    <td>@home.Price</td>
+                    <td>@home.IsVacant</td>
+                    <td>@home.AdditionalInfo</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Home> homes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes"); 
+        }
+        catch (Exception ex)
+        {
+            // Xato ishlov: masalan, Console.WriteLine(ex.Message);
+            homes = new List<Home>();
+        }
+    }
+    private void RequestHome(Guid homeId)
+    {
+        // Har bir uy uchun /request-home/{HomeId} sahifasiga o'tish
+        Nav.NavigateTo($"/request-home/{homeId}");
+    }
+}

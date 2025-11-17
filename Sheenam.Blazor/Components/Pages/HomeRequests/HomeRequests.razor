@@ -1,0 +1,92 @@
+﻿@page "/home-requests"
+@using Sheenam.Blazor.Models.Foundations.HomeRequests
+@using Sheenam.Blazor.Models.Foundations.Guests
+@using Sheenam.Blazor.Models.Foundations.Homes
+@using System.Net.Http.Json
+@inject HttpClient HttpClient
+
+<h1>Uy so'rovlari</h1>
+
+<EditForm Model="newRequest" OnValidSubmit="AddRequest" class="p-4 border rounded shadow-sm bg-light">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Mehmonni tanlang:</label>
+        <InputSelect @bind-Value="newRequest.GuestId" class="form-select">
+            <option value="">Tanlang...</option>
+            @foreach (var guest in guests)
+            {
+                <option value="@guest.Id">@guest.FirstName @guest.LastName (@guest.Email)</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Uyni tanlang:</label>
+        <InputSelect @bind-Value="newRequest.HomeId" class="form-select">
+            <option value="">Tanlang...</option>
+            @foreach (var home in homes)
+            {
+                <option value="@home.Id">@home.Address (Narxi: @home.Price)</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Xabar:</label>
+        <InputText @bind-Value="newRequest.Message" class="form-control" />
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Boshlanish sanasi:</label>
+            <InputDate @bind-Value="newRequest.StartDate" class="form-control" />
+        </div>
+        <div class="col">
+            <label class="form-label">Tugash sanasi:</label>
+            <InputDate @bind-Value="newRequest.EndDate" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Yuborish</button>
+</EditForm>
+
+
+@code {
+    private List<HomeRequest> requests;
+    private List<Guest> guests = new List<Guest>();
+    private List<Home> homes = new List<Home>();
+    private HomeRequest newRequest = new HomeRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new List<Guest>();
+            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new List<Home>();
+            requests = await HttpClient.GetFromJsonAsync<List<HomeRequest>>("api/homerequests") ?? new List<HomeRequest>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Xato: {ex.Message}");
+            requests = new List<HomeRequest>();
+            guests = new List<Guest>();
+            homes = new List<Home>();
+        }
+    }
+
+    private async Task AddRequest()
+    {
+        try
+        {
+            await HttpClient.PostAsJsonAsync("api/homerequests", newRequest);
+            newRequest = new HomeRequest();
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Qo'shish xatosi: {ex.Message}");
+        }
+    }
+}

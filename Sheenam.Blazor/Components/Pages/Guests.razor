@@ -1,0 +1,63 @@
+﻿@page "/guests"
+@using System.Net.Http.Json
+@using Sheenam.Blazor.Models.Foundations.Guests  
+@inject HttpClient HttpClient  
+
+<h1>Mehmonlar ro'yxati</h1>
+
+@if (guests == null)
+{
+    <p>Yuklanmoqda...</p>
+}
+else if (guests.Count == 0)
+{
+    <p>Hech qanday mehmon topilmadi.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ism Familya</th>
+                <th>Email</th>
+                <th>Tug'ilgan sana</th>
+                <th>Jins</th>
+                <th>Manzil</th>
+                <th>Telefon raqami</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var guest in guests)
+            {
+                <tr>
+                    <td>@guest.Id</td>
+                    <td>@guest.FirstName @guest.LastName</td>
+                    <td>@guest.Email</td>
+                    <td>@(guest.DateOfBirth.ToString("d"))</td>
+                    <td>@guest.Gender</td> 
+                    <td>@guest.Address</td>
+                    <td>@guest.PhoneNumber</td>
+                  
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Guest> guests;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests"); 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);  // Xato ishlov
+            guests = new List<Guest>();
+        }
+    }
+}
