@@ -1,75 +1,99 @@
 ﻿@page "/homes"
-@using Sheenam.Blazor.Models
 @using Sheenam.Blazor.Models.Foundations.Homes
+@using System.Net.Http.Json
 @inject HttpClient HttpClient
 @inject NavigationManager Nav
 
-<h1>Uylar ro'yxati</h1>
+<PageTitle>Uylar ro'yxati</PageTitle>
+
+<h1 class="mb-5 text-center">🚩 Mavjud uylar</h1>
 
 @if (homes == null)
 {
-    <p>Yuklanmoqda...</p>
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yuklanmoqda...</span>
+        </div>
+    </div>
 }
-else if (homes.Count == 0)
+else if (!homes.Any())
 {
-    <p>Hech qanday uy topilmadi.</p>
+    <div class="alert alert-info text-center fs-4">
+        😔 Hozircha hech qanday uy qo'shilmagan.
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Manzil</th>
-                <th>Yotoq xonasi</th>
-                <th>Vanna xonasi</th>
-                <th>Ulashilgan</th>
-                <th>Maydon (kv.m)</th>
-                <th>Hayvonlarga ruxsat</th>
-                <th>Narxi</th>
-                <th>Bo'sh</th>
-                <th>Qo'shimcha ma'lumot</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var home in homes)
-            {
-                <tr>
-                    <td>@home.Id</td>
-                    <td>@home.Address</td>
-                    <td>@home.NumberOfBedrooms</td>
-                    <td>@home.NumberOfBathrooms</td>
-                    <td>@home.IsShared</td>
-                    <td>@home.Area</td>
-                    <td>@home.IsPetAllowed</td>
-                    <td>@home.Price</td>
-                    <td>@home.IsVacant</td>
-                    <td>@home.AdditionalInfo</td>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        @foreach (var home in homes)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-lg border-0 hover-card">
+                    <!-- Uy rasmi (kelajakda qo'shiladi, hozircha emoji) -->
+                    <div class="card-img-top bg-gradient text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="display-1">🏠</span>
+                    </div>
 
-                </tr>
-            }
-        </tbody>
-    </table>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-primary fw-bold">
+                            @(string.IsNullOrEmpty(home.Address) ? "Manzil kiritilmagan" : home.Address)
+                        </h5>
+
+                        <div class="mb-3 text-muted">
+                            <small>
+                                🛏️ @home.NumberOfBedrooms ta yotoq xonasi<br />
+                                🚿 @home.NumberOfBathrooms ta vanna xonasi<br />
+                                📏 @home.Area m² maydon
+                            </small>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h4 text-success fw-bold mb-0">
+                                    @home.Price.ToString("N0") so'm / kecha
+                                </span>
+                                <span class="badge @(home.IsVacant ? "bg-success" : "bg-danger") fs-6">
+                                    @(home.IsVacant ? "Bo'sh" : "Band")
+                                </span>
+                            </div>
+
+                            <div class="small text-muted mb-3">
+                                @(home.IsPetAllowed ? "🐕 Hayvonlarga ruxsat" : "🚫 Hayvon taqiqlangan")
+                                @(home.IsShared ? " • 👥 Umumiy" : "")
+                            </div>
+
+                            <button class="btn btn-lg btn-outline-primary w-100"
+                                    @onclick="() => RequestHome(home.Id)"
+                                    disabled="@(!home.IsVacant)">
+                                <i class="bi bi-calendar-check"></i> Bron qilish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
 
 @code {
-    private List<Home> homes;
+    private List<Home> homes = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes"); 
+            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new();
         }
         catch (Exception ex)
         {
-            // Xato ishlov: masalan, Console.WriteLine(ex.Message);
-            homes = new List<Home>();
+            Console.WriteLine($"API xatosi: {ex.Message}");
+            homes = new();
         }
     }
+
     private void RequestHome(Guid homeId)
     {
-        // Har bir uy uchun /request-home/{HomeId} sahifasiga o'tish
-        Nav.NavigateTo($"/request-home/{homeId}");
+        // Kelajakda alohida sahifa ochiladi, hozircha HomeRequests ga yo'naltiramiz
+        Nav.NavigateTo($"/home-requests?selectedHomeId={homeId}");
     }
 }

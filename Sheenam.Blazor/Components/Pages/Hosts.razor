@@ -1,60 +1,100 @@
 ﻿@page "/hosts"
+@using Sheenam.Blazor.Models.Foundations.Guests
 @using Sheenam.Blazor.Models.Foundations.Hosts
 @using System.Net.Http.Json
 @inject HttpClient HttpClient
 
-<h1>Hostlar ro'yxati</h1>
+<PageTitle>Hostlar</PageTitle>
 
-@if (hosts == null)
-{
-    <p>Yuklanmoqda...</p>
-}
-else if (hosts.Count == 0)
-{
-    <p>Hech qanday host topilmadi.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ism Familya</th>
-                <th>Email</th>
-                <th>Tug'ilgan sana</th>
-                <th>Jins</th>
-                <th>Telefon</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var host in hosts)
-            {
-                <tr>
-                    <td>@host.Id</td>
-                    <td>@host.FirstName @host.LastName</td>
-                    <td>@host.Email</td>
-                    <td>@host.DateOfBirth.ToString("d")</td>
-                    <td>@host.Gender</td>
-                    <td>@host.PhoneNumber</td>
+<div class="container my-5">
+    <h1 class="text-center mb-4 display-5 fw-bold text-success">
+        🏡 Hostlar ro'yxati
+    </h1>
+
+    @if (hosts == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-success" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">Yuklanmoqda...</span>
+            </div>
+            <p class="mt-3 fs-4 text-muted">Hostlar yuklanmoqda...</p>
+        </div>
+    }
+    else if (hosts.Count == 0)
+    {
+        <div class="alert alert-warning text-center fs-3 p-5 rounded shadow">
+            😔 Hozircha hech qanday host ro'yxatdan o'tmagan.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-lg rounded overflow-hidden">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-success text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Ism Familya</th>
+                        <th>Email</th>
+                        <th>Tug'ilgan sana</th>
+                        <th>Jins</th>
+                        <th>Telefon raqami</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var host in hosts)
+                    {
+                        <tr class="hover-row">
+                            <td class="text-muted small">
+                                <code>@host.Id.ToString().Substring(0, 8))...</code>
+                            </td>
+                            <td class="fw-bold text-dark">
+                                @host.FirstName @host.LastName
+                            </td>
+                            <td>
+                                <a href="mailto:@host.Email" class="text-decoration-none text-primary">
+                                    <i class="bi bi-envelope"></i> @host.Email
+                                </a>
+                            </td>
+                            <td>
+                                @(host.DateOfBirth == default ? "—"
+                                                        : host.DateOfBirth.ToString("dd.MM.yyyy"))
+                    </td>
+                    <td>
+                        <span class="badge @(host.Gender == GenderType.Male ? "bg-primary" :
+                                                                                   host.Gender == GenderType.Female ? "bg-danger" : "bg-secondary") fs-6">
+                            @host.Gender
+                        </span>
+                    </td>
+                    <td>
+                        @(string.IsNullOrEmpty(host.PhoneNumber) ? "—" : host.PhoneNumber)
+                    </td>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+                                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Jami: <strong class="text-success">@hosts.Count</strong> ta host
+            </small>
+        </div>
+    }
+</div>
 
 @code {
-    private List<Host> hosts;
+    private List<Host> hosts = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            hosts = await HttpClient.GetFromJsonAsync<List<Host>>("api/hosts");
+            hosts = await HttpClient.GetFromJsonAsync<List<Host>>("api/hosts") ?? new();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            hosts = new List<Host>();
+            Console.WriteLine($"Hostlarni yuklashda xato: {ex.Message}");
+            hosts = new();
         }
     }
 }

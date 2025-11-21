@@ -58,3 +58,54 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.hover-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+    .hover-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.18) !important;
+    }
+
+.hover-row {
+    transition: all 0.25s ease;
+}
+
+    .hover-row:hover {
+        background-color: #e8f5e8 !important;
+        transform: scale(1.01);
+    }
+.bg-indigo {
+    background: linear-gradient(135deg, #5e42a6 0%, #b574e0 100%) !important;
+}
+
+.text-indigo {
+    color: #5e42a6;
+}
+
+.btn-indigo {
+    background: linear-gradient(135deg, #5e42a6 0%, #b574e0 100%);
+    border: none;
+    color: white;
+}
+
+    .btn-indigo:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+.hover-row:hover {
+    background-color: #f8f4ff !important;
+    transform: scale(1.01);
+    transition: all 0.25s ease;
+}

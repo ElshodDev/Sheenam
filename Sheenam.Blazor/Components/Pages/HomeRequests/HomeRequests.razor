@@ -5,74 +5,154 @@
 @using System.Net.Http.Json
 @inject HttpClient HttpClient
 
-<h1>Uy so'rovlari</h1>
+<PageTitle>Uy so'rovlari</PageTitle>
 
-<EditForm Model="newRequest" OnValidSubmit="AddRequest" class="p-4 border rounded shadow-sm bg-light">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="container my-5">
+    <h1 class="text-center mb-5 display-5 fw-bold text-indigo">
+        ✉️ Uy so'rovlari
+    </h1>
 
-    <div class="mb-3">
-        <label class="form-label">Mehmonni tanlang:</label>
-        <InputSelect @bind-Value="newRequest.GuestId" class="form-select">
-            <option value="">Tanlang...</option>
-            @foreach (var guest in guests)
-            {
-                <option value="@guest.Id">@guest.FirstName @guest.LastName (@guest.Email)</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Uyni tanlang:</label>
-        <InputSelect @bind-Value="newRequest.HomeId" class="form-select">
-            <option value="">Tanlang...</option>
-            @foreach (var home in homes)
-            {
-                <option value="@home.Id">@home.Address (Narxi: @home.Price)</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Xabar:</label>
-        <InputText @bind-Value="newRequest.Message" class="form-control" />
-    </div>
-
-    <div class="row mb-3">
-        <div class="col">
-            <label class="form-label">Boshlanish sanasi:</label>
-            <InputDate @bind-Value="newRequest.StartDate" class="form-control" />
+    <!-- Yangi so'rov formasi -->
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="card-header bg-indigo text-white py-3">
+            <h4 class="mb-0">📩 Yangi so'rov yuborish</h4>
         </div>
-        <div class="col">
-            <label class="form-label">Tugash sanasi:</label>
-            <InputDate @bind-Value="newRequest.EndDate" class="form-control" />
+        <div class="card-body p-4">
+            <EditForm Model="newRequest" OnValidSubmit="AddRequest">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <label class="form-label fw-bold text-indigo">Mehmonni tanlang</label>
+                        <InputSelect @bind-Value="newRequest.GuestId" class="form-select form-select-lg">
+                            <option value="">— Mehmon tanlang —</option>
+                            @foreach (var guest in guests)
+                            {
+                                <option value="@guest.Id">
+                                    @guest.FirstName @guest.LastName (@guest.Email)
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label class="form-label fw-bold text-indigo">Uyni tanlang</label>
+                        <InputSelect @bind-Value="newRequest.HomeId" class="form-select form-select-lg">
+                            <option value="">— Uy tanlang —</option>
+                            @foreach (var home in homes)
+                            {
+                                <option value="@home.Id">
+                                    @home.Address — @home.Price:N0 so'm/kecha
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-indigo">Xabar (ixtiyoriy)</label>
+                        <InputText @bind-Value="newRequest.Message" class="form-control" 
+                                   placeholder="Masalan: 2 kishi, 3 kecha, bolalar bor..." />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-indigo">Boshlanish sanasi</label>
+                        <InputDate @bind-Value="newRequest.StartDate" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-indigo">Tugash sanasi</label>
+                        <InputDate @bind-Value="newRequest.EndDate" class="form-control" />
+                    </div>
+
+                    <div class="col-12 text-end mt-3">
+                        <button type="submit" class="btn btn-indigo btn-lg px-5 shadow">
+                            🚀 So'rov yuborish
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100">Yuborish</button>
-</EditForm>
+    <!-- So'rovlar ro'yxati (sizning table uslubingiz saqlanib qoldi) -->
+    @if (requests == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-indigo" style="width: 4rem; height: 4rem;"></div>
+        </div>
+    }
+    else if (requests.Count == 0)
+    {
+        <div class="alert alert-info text-center fs-4 p-5 rounded shadow">
+            📭 Hozircha hech qanday so'rov yo'q.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-lg rounded overflow-hidden">
+            <table class="table table-hover align-middle">
+                <thead class="bg-indigo text-white">
+                    <tr>
+                        <th>#</th>
+                        <th>Mehmon</th>
+                        <th>Uy</th>
+                        <th>Xabar</th>
+                        <th>Boshlanish</th>
+                        <th>Tugash</th>
+                        <th>Yaratilgan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var (req, i) in requests.Select((r, idx) => (r, idx)))
+                    {
+                        var guest = guests.FirstOrDefault(g => g.Id == req.GuestId);
+                        var home = homes.FirstOrDefault(h => h.Id == req.HomeId);
 
+                        <tr class="hover-row">
+                            <td class="fw-bold">@(i + 1)</td>
+                            <td>@(guest?.FirstName ?? "Noma'lum") @(guest?.LastName ?? "")</td>
+                            <td>@(home?.Address ?? "Uy o'chirilgan")</td>
+                            <td>@(string.IsNullOrEmpty(req.Message) ? "—" : req.Message)</td>
+                            <td>@req.StartDate:dd.MM.yyyy</td>
+                            <td>@req.EndDate:dd.MM.yyyy</td>
+                            <td>@req.CreatedDate:dd.MM HH:mm</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Jami: <strong class="text-indigo">@requests.Count</strong> ta so'rov
+            </small>
+        </div>
+    }
+</div>
 
 @code {
-    private List<HomeRequest> requests;
-    private List<Guest> guests = new List<Guest>();
-    private List<Home> homes = new List<Home>();
-    private HomeRequest newRequest = new HomeRequest();
+    private List<HomeRequest> requests = new();
+    private List<Guest> guests = new();
+    private List<Home> homes = new();
+    private HomeRequest newRequest = new() { StartDate = DateTime.Today.AddDays(1), EndDate = DateTime.Today.AddDays(3) };
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         try
         {
-            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new List<Guest>();
-            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new List<Home>();
-            requests = await HttpClient.GetFromJsonAsync<List<HomeRequest>>("api/homerequests") ?? new List<HomeRequest>();
+            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new();
+            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new();
+            requests = await HttpClient.GetFromJsonAsync<List<HomeRequest>>("api/homerequests") ?? new();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Xato: {ex.Message}");
-            requests = new List<HomeRequest>();
-            guests = new List<Guest>();
-            homes = new List<Home>();
         }
     }
 
@@ -81,12 +161,12 @@
         try
         {
             await HttpClient.PostAsJsonAsync("api/homerequests", newRequest);
-            newRequest = new HomeRequest();
-            await OnInitializedAsync();
+            newRequest = new HomeRequest { StartDate = DateTime.Today.AddDays(1), EndDate = DateTime.Today.AddDays(3) };
+            await LoadData();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Qo'shish xatosi: {ex.Message}");
+            Console.WriteLine($"Yuborishda xato: {ex.Message}");
         }
     }
 }

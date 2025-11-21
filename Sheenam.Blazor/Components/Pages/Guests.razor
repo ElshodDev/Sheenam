@@ -1,63 +1,103 @@
 ﻿@page "/guests"
+@using Sheenam.Blazor.Models.Foundations.Guests
 @using System.Net.Http.Json
-@using Sheenam.Blazor.Models.Foundations.Guests  
-@inject HttpClient HttpClient  
+@inject HttpClient HttpClient
 
-<h1>Mehmonlar ro'yxati</h1>
+<PageTitle>Mehmonlar</PageTitle>
 
-@if (guests == null)
-{
-    <p>Yuklanmoqda...</p>
-}
-else if (guests.Count == 0)
-{
-    <p>Hech qanday mehmon topilmadi.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ism Familya</th>
-                <th>Email</th>
-                <th>Tug'ilgan sana</th>
-                <th>Jins</th>
-                <th>Manzil</th>
-                <th>Telefon raqami</th>
-            </tr>
-        </thead>
-        <tbody>
+<div class="container my-5">
+    <h1 class="text-center mb-5 display-5 fw-bold text-primary">
+        👥 Mehmonlar ro'yxati
+    </h1>
+
+    @if (guests == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">Yuklanmoqda...</span>
+            </div>
+            <p class="mt-3 fs-4 text-muted">Mehmonlar yuklanmoqda...</p>
+        </div>
+    }
+    else if (!guests.Any())
+    {
+        <div class="alert alert-info text-center fs-3 p-5">
+            😔 Hozircha hech qanday mehmon ro'yxatdan o'tmagan.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
             @foreach (var guest in guests)
             {
-                <tr>
-                    <td>@guest.Id</td>
-                    <td>@guest.FirstName @guest.LastName</td>
-                    <td>@guest.Email</td>
-                    <td>@(guest.DateOfBirth.ToString("d"))</td>
-                    <td>@guest.Gender</td> 
-                    <td>@guest.Address</td>
-                    <td>@guest.PhoneNumber</td>
-                  
-                </tr>
+                <div class="col">
+                    <div class="card h-100 shadow hover-card border-0 overflow-hidden">
+                        <!-- Profil rasmi (hozircha avatar emoji) -->
+                        <div class="card-img-top bg-gradient text-white d-flex align-items-center justify-content-center"
+                             style="height: 180px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <span class="display-1">@(guest.Gender == GenderType.Male ? "👨" : guest.Gender == GenderType.Female ? "👩" : "🧑")</span>
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold text-dark mb-1">
+                                @guest.FirstName @guest.LastName
+                            </h5>
+                            <p class="text-muted small mb-3">@guest.Email</p>
+
+                            <div class="d-flex justify-content-center gap-3 text-muted small">
+                                <div>
+                                    <strong>Jins:</strong><br />
+                                    <span class="badge @(guest.Gender == GenderType.Male ? "bg-primary" : guest.Gender == GenderType.Female ? "bg-danger" : "bg-secondary")">
+                                        @guest.Gender
+                                    </span>
+                                </div>
+                                <div>
+                                    <strong>Yosh:</strong><br />
+                                    @(guest.DateOfBirth == default ? "—"
+                                                                : $"{((DateTime.Today - guest.DateOfBirth).Days / 365)} yosh")
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(guest.PhoneNumber))
+                            {
+                                <p class="mt-3 mb-0">
+                                    <i class="bi bi-telephone-fill text-success"></i> @guest.PhoneNumber
+                                </p>
+                            }
+
+                            @if (!string.IsNullOrEmpty(guest.Address))
+                            {
+                                <p class="mt-2 mb-0 text-muted small">
+                                    <i class="bi bi-geo-alt-fill"></i> @guest.Address
+                                </p>
+                            }
+                        </div>
+
+                        <div class="card-footer bg-light border-0 text-center">
+                            <small class="text-muted">
+                                ID: @guest.Id.ToString().Substring(0, 8))...
+                            </small>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+        </div>
+    }
+</div>
 
 @code {
-    private List<Guest> guests;
+    private List<Guest> guests = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests"); 
+            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);  // Xato ishlov
-            guests = new List<Guest>();
+            Console.WriteLine($"Mehmonlarni yuklashda xato: {ex.Message}");
+            guests = new();
         }
     }
 }
