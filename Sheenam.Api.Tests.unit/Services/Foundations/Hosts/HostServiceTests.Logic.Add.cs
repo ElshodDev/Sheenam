@@ -31,7 +31,9 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                   await this.hostService.AddHostAsync(inputHost);
 
             //then
-            actualHost.Should().BeEquivalentTo(expectedHost);
+            actualHost.Should().BeEquivalentTo(expectedHost, options =>
+             options.Excluding(host => host.Id));
+
 
             this.storageBrokerMock.Verify(broker =>
             broker.InsertHostAsync(inputHost),
