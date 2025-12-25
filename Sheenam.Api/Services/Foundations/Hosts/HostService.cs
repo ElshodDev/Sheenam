@@ -31,6 +31,8 @@ namespace Sheenam.Api.Services.Foundations.Hosts
          {
              ValidateHostOnAdd(host);
 
+             host.Id = Guid.NewGuid();
+
              return await this.storageBroker.InsertHostAsync(host);
          });
 
