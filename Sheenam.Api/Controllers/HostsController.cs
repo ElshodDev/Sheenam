@@ -95,11 +95,23 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(hostServiceException.InnerException);
             }
         }
-        [HttpPut]
-        public async ValueTask<ActionResult<Host>> PutHostAsync(Host host)
+        [HttpPut("{hostId}")]
+        public async ValueTask<ActionResult<Host>> PutHostAsync(
+            Guid hostId,
+            Host host)
         {
             try
             {
+                if (hostId != host.Id)
+                {
+                    return BadRequest(
+                        new
+                        {
+                            Message = "Host ID in the URL does not match Host ID in the body.",
+                            UrlId = hostId,
+                            BodyId = host.Id
+                        });
+                }
                 Host modifiedHost = await this.hostService.ModifyHostAsync(host);
                 return Ok(modifiedHost);
             }

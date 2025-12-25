@@ -10,7 +10,7 @@ namespace Sheenam.Api.Models.Foundations.Hosts
 {
     public class Host
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTimeOffset DateOfBirth { get; set; }
