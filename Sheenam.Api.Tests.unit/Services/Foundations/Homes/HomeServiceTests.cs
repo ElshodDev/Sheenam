@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Moq;
@@ -8,7 +8,9 @@ using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Homes;
+using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 {
@@ -23,14 +25,18 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.homeService =
-                new HomeService(
-                    storageBrokerMock.Object,
-                    loggingBrokerMock.Object);
+            this.homeService = new HomeService(
+                storageBrokerMock.Object,
+                loggingBrokerMock.Object);
         }
+
+        // ✅ YANGI: Exception comparison helper
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
+
         private IQueryable<Home> CreateRandomHomes()
         {
             int randomCount = new Random().Next(2, 10);
@@ -40,28 +46,29 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             {
                 homesList.Add(CreateRandomHome());
             }
+
             return homesList.AsQueryable();
         }
-
 
         private static Filler<Home> CreateHomeFiller()
         {
             var filler = new Filler<Home>();
 
             filler.Setup()
-            .OnType<string>().Use(new MnemonicString())
-            .OnProperty(h => h.NumberOfBedrooms).Use(new IntRange(1, 10))
-            .OnProperty(h => h.NumberOfBathrooms).Use(new IntRange(1, 5))
-            .OnProperty(h => h.Area).Use(new DoubleRange(20, 500))
-            .OnProperty(h => h.Price).Use(() =>
-             Convert.ToDecimal(new DoubleRange(100, 5000).GetValue()))
-            .OnProperty(h => h.Type).Use(GetRandomHouseType)
-            .OnProperty(h => h.IsVacant).Use(GetRandomBool)
-            .OnProperty(h => h.IsPetAllowed).Use(GetRandomBool)
-            .OnProperty(h => h.IsShared).Use(GetRandomBool);
+                .OnType<string>().Use(new MnemonicString())
+                .OnProperty(h => h.NumberOfBedrooms).Use(new IntRange(1, 10))
+                .OnProperty(h => h.NumberOfBathrooms).Use(new IntRange(1, 5))
+                .OnProperty(h => h.Area).Use(new DoubleRange(20, 500))
+                .OnProperty(h => h.Price).Use(() =>
+                    Convert.ToDecimal(new DoubleRange(100, 5000).GetValue()))
+                .OnProperty(h => h.Type).Use(GetRandomHouseType)
+                .OnProperty(h => h.IsVacant).Use(GetRandomBool)
+                .OnProperty(h => h.IsPetAllowed).Use(GetRandomBool)
+                .OnProperty(h => h.IsShared).Use(GetRandomBool);
 
             return filler;
         }
+
         private static HouseType GetRandomHouseType()
         {
             Array values = Enum.GetValues(typeof(HouseType));

@@ -9,8 +9,6 @@ namespace Sheenam.Api.Models.Foundations.Homes.Exceptions
 {
     public class InvalidHomeException : Xeption
     {
-        public InvalidHomeException(string parameterName, string parameterValue)
-            : base($"Invalid home error occurred, please fix the errors and try again. {parameterName}: {parameterValue}")
-        { }
+        public InvalidHomeException() { }
     }
 }
