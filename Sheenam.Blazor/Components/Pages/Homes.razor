@@ -1,99 +1,451 @@
 ﻿@page "/homes"
 @using Sheenam.Blazor.Models.Foundations.Homes
+@using Sheenam.Blazor.Models.Foundations.Hosts
 @using System.Net.Http.Json
 @inject HttpClient HttpClient
-@inject NavigationManager Nav
 
-<PageTitle>Uylar ro'yxati</PageTitle>
+<PageTitle>Uylar</PageTitle>
 
-<h1 class="mb-5 text-center">🚩 Mavjud uylar</h1>
+<div class="container my-5">
+    <h1 class="text-center mb-5 display-5 fw-bold text-primary">
+        🏠 Uylar ro'yxati
+    </h1>
 
-@if (homes == null)
-{
-    <div class="text-center">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Yuklanmoqda...</span>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>❌ Xato:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
         </div>
-    </div>
-}
-else if (!homes.Any())
-{
-    <div class="alert alert-info text-center fs-4">
-        😔 Hozircha hech qanday uy qo'shilmagan.
-    </div>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
-        @foreach (var home in homes)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-lg border-0 hover-card">
-                    <!-- Uy rasmi (kelajakda qo'shiladi, hozircha emoji) -->
-                    <div class="card-img-top bg-gradient text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <span class="display-1">🏠</span>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✅ Muvaffaqiyatli!</strong> @successMessage
+            <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+        </div>
+    }
+
+    <!-- Yangi uy qo'shish formasi -->
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0">
+                @if (isEditing)
+                {
+                    <text>✏️ Uyni tahrirlash</text>
+                }
+                else
+                {
+                    <text>➕ Yangi uy qo'shish</text>
+                }
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            <EditForm Model="currentHome" OnValidSubmit="SaveHome">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-primary">Host ID</label>
+                        <input type="text" class="form-control form-control-lg"
+                               @bind="hostIdInput"
+                               placeholder="Host GUID kiriting" />
+                        <small class="text-muted">Host ID (GUID formatida)</small>
                     </div>
 
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-primary fw-bold">
-                            @(string.IsNullOrEmpty(home.Address) ? "Manzil kiritilmagan" : home.Address)
-                        </h5>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-primary">Uy turi</label>
+                        <InputSelect @bind-Value="currentHome.Type" class="form-select form-select-lg">
+                            <option value="@HouseType.Flat">Kvartira</option>
+                            <option value="@HouseType.Bungalow">Bungalov</option>
+                            <option value="@HouseType.Duplex">Duplex</option>
+                            <option value="@HouseType.other">Boshqa</option>
+                        </InputSelect>
+                    </div>
 
-                        <div class="mb-3 text-muted">
-                            <small>
-                                🛏️ @home.NumberOfBedrooms ta yotoq xonasi<br />
-                                🚿 @home.NumberOfBathrooms ta vanna xonasi<br />
-                                📏 @home.Area m² maydon
-                            </small>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-primary">Manzil</label>
+                        <InputText @bind-Value="currentHome.Address" class="form-control form-control-lg"
+                                   placeholder="Manzilni kiriting" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-primary">Qo'shimcha ma'lumot</label>
+                        <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control"
+                                       rows="3" placeholder="Uy haqida qo'shimcha ma'lumot..." />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-primary">Yotoq xonalari</label>
+                        <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control form-control-lg"
+                                     min="0" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-primary">Vanna xonalari</label>
+                        <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control form-control-lg"
+                                     min="0" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-primary">Maydon (m²)</label>
+                        <InputNumber @bind-Value="currentHome.Area" class="form-control form-control-lg"
+                                     min="1" step="0.1" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-primary">Narxi (so'm/kecha)</label>
+                        <InputNumber @bind-Value="currentHome.Price" class="form-control form-control-lg"
+                                     min="0" />
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check form-switch form-check-lg me-4">
+                            <InputCheckbox @bind-Value="currentHome.IsVacant" class="form-check-input" id="vacant" />
+                            <label class="form-check-label" for="vacant">Bo'sh</label>
                         </div>
+                        <div class="form-check form-switch form-check-lg me-4">
+                            <InputCheckbox @bind-Value="currentHome.IsPetAllowed" class="form-check-input" id="pet" />
+                            <label class="form-check-label" for="pet">Hayvon ruxsat</label>
+                        </div>
+                        <div class="form-check form-switch form-check-lg">
+                            <InputCheckbox @bind-Value="currentHome.IsShared" class="form-check-input" id="shared" />
+                            <label class="form-check-label" for="shared">Umumiy</label>
+                        </div>
+                    </div>
 
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="h4 text-success fw-bold mb-0">
-                                    @home.Price.ToString("N0") so'm / kecha
-                                </span>
-                                <span class="badge @(home.IsVacant ? "bg-success" : "bg-danger") fs-6">
-                                    @(home.IsVacant ? "Bo'sh" : "Band")
-                                </span>
-                            </div>
-
-                            <div class="small text-muted mb-3">
-                                @(home.IsPetAllowed ? "🐕 Hayvonlarga ruxsat" : "🚫 Hayvon taqiqlangan")
-                                @(home.IsShared ? " • 👥 Umumiy" : "")
-                            </div>
-
-                            <button class="btn btn-lg btn-outline-primary w-100"
-                                    @onclick="() => RequestHome(home.Id)"
-                                    disabled="@(!home.IsVacant)">
-                                <i class="bi bi-calendar-check"></i> Bron qilish
+                    <div class="col-12 text-end mt-3">
+                        @if (isEditing)
+                        {
+                            <button type="button" class="btn btn-secondary btn-lg px-4 me-2" @onclick="CancelEdit">
+                                ❌ Bekor qilish
                             </button>
+                        }
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <text>Saqlanmoqda...</text>
+                            }
+                            else if (isEditing)
+                            {
+                                <text>💾 Saqlash</text>
+                            }
+                            else
+                            {
+                                <text>➕ Qo'shish</text>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Uylar ro'yxati -->
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;"></div>
+            <p class="mt-3 text-muted">Uylar yuklanmoqda...</p>
+        </div>
+    }
+    else if (homes.Count == 0)
+    {
+        <div class="alert alert-info text-center fs-4 p-5 rounded shadow">
+            😔 Hozircha hech qanday uy yo'q.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var home in homes)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-lg border-0 hover-card">
+                        <div class="card-img-top bg-gradient text-center py-5"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <span class="display-1">🏠</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-primary fw-bold mb-0">
+                                    @home.Address
+                                </h5>
+                                <span class="badge @GetTypeBadgeClass(home.Type)">
+                                    @GetTypeText(home.Type)
+                                </span>
+                            </div>
+
+                            <p class="text-muted small mb-3">
+                                @(string.IsNullOrEmpty(home.AdditionalInfo) ? "Ma'lumot yo'q" : home.AdditionalInfo)
+                            </p>
+
+                            <div class="mb-3 text-muted small">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>🛏️ Yotoq xonalar:</span>
+                                    <strong>@home.NumberOfBedrooms ta</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>🚿 Vanna xonalar:</span>
+                                    <strong>@home.NumberOfBathrooms ta</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>📏 Maydon:</span>
+                                    <strong>@home.Area m²</strong>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="h5 text-success fw-bold mb-0">
+                                        @home.Price.ToString("N0") so'm
+                                    </span>
+                                    <span class="badge @(home.IsVacant ? "bg-success" : "bg-danger") fs-6">
+                                        @(home.IsVacant ? "Bo'sh" : "Band")
+                                    </span>
+                                </div>
+
+                                <div class="d-flex gap-1 mb-3">
+                                    @if (home.IsPetAllowed)
+                                    {
+                                        <span class="badge bg-info">🐕 Hayvon OK</span>
+                                    }
+                                    @if (home.IsShared)
+                                    {
+                                        <span class="badge bg-warning">👥 Umumiy</span>
+                                    }
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" @onclick="() => EditHome(home)">
+                                        ✏️ Tahrirlash
+                                    </button>
+                                    <button class="btn btn-outline-danger" @onclick="() => DeleteHome(home.Id)">
+                                        🗑️ O'chirish
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Jami: <strong class="text-primary">@homes.Count</strong> ta uy
+            </small>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
         }
-    </div>
-}
+
+    .form-check-lg .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+</style>
 
 @code {
     private List<Home> homes = new();
+    private Home currentHome = new() { IsVacant = true, Type = HouseType.Flat };
+    private string hostIdInput = "00000000-0000-0000-0000-000000000003";
+
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private bool isEditing = false;
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         try
         {
-            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new();
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await HttpClient.GetAsync("api/Homes");
+
+            if (response.IsSuccessStatusCode)
+            {
+                homes = await response.Content.ReadFromJsonAsync<List<Home>>() ?? new();
+                if (!isEditing)
+                {
+                    successMessage = $"{homes.Count} ta uy yuklandi";
+                }
+            }
+            else
+            {
+                errorMessage = $"Ma'lumotlarni yuklashda xato: {response.StatusCode}";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"API bilan bog'lanishda xato: {ex.Message}";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"API xatosi: {ex.Message}");
-            homes = new();
+            errorMessage = $"Kutilmagan xato: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    private void RequestHome(Guid homeId)
+    private async Task SaveHome()
     {
-        // Kelajakda alohida sahifa ochiladi, hozircha HomeRequests ga yo'naltiramiz
-        Nav.NavigateTo($"/home-requests?selectedHomeId={homeId}");
+        try
+        {
+            isSubmitting = true;
+            errorMessage = null;
+            successMessage = null;
+
+            if (!Guid.TryParse(hostIdInput, out Guid hostId))
+            {
+                errorMessage = "Host ID noto'g'ri formatda!";
+                return;
+            }
+
+            currentHome.HostId = hostId;
+
+            if (isEditing)
+            {
+                // Update
+                var response = await HttpClient.PutAsJsonAsync($"api/Homes/{currentHome.Id}", currentHome);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    successMessage = "Uy muvaffaqiyatli yangilandi!";
+                    isEditing = false;
+                    ResetForm();
+                    await LoadData();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Yangilashda xato: {response.StatusCode} - {error}";
+                }
+            }
+            else
+            {
+                // Create
+                currentHome.Id = Guid.NewGuid();
+
+                var response = await HttpClient.PostAsJsonAsync("api/Homes", currentHome);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    successMessage = "Uy muvaffaqiyatli qo'shildi!";
+                    ResetForm();
+                    await LoadData();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Qo'shishda xato: {response.StatusCode} - {error}";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Saqlashda xato: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
+
+    private void EditHome(Home home)
+    {
+        isEditing = true;
+        hostIdInput = home.HostId.ToString();
+        currentHome = new Home
+        {
+            Id = home.Id,
+            HostId = home.HostId,
+            Address = home.Address,
+            AdditionalInfo = home.AdditionalInfo,
+            IsVacant = home.IsVacant,
+            IsPetAllowed = home.IsPetAllowed,
+            IsShared = home.IsShared,
+            NumberOfBedrooms = home.NumberOfBedrooms,
+            NumberOfBathrooms = home.NumberOfBathrooms,
+            Area = home.Area,
+            Price = home.Price,
+            Type = home.Type
+        };
+        successMessage = null;
+        errorMessage = null;
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        ResetForm();
+    }
+
+    private async Task DeleteHome(Guid id)
+    {
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/Homes/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "Uy o'chirildi!";
+                await LoadData();
+            }
+            else
+            {
+                errorMessage = $"O'chirishda xato: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"O'chirishda xato: {ex.Message}";
+        }
+    }
+
+    private void ResetForm()
+    {
+        currentHome = new Home { IsVacant = true, Type = HouseType.Flat };
+        hostIdInput = "00000000-0000-0000-0000-000000000003";
+    }
+
+    private string GetTypeBadgeClass(HouseType type) => type switch
+    {
+        HouseType.Flat => "bg-primary",
+        HouseType.Bungalow => "bg-success",
+        HouseType.Duplex => "bg-warning",
+        HouseType.other => "bg-secondary",
+        _ => "bg-secondary"
+    };
+
+    private string GetTypeText(HouseType type) => type switch
+    {
+        HouseType.Flat => "Kvartira",
+        HouseType.Bungalow => "Bungalov",
+        HouseType.Duplex => "Duplex",
+        HouseType.other => "Boshqa",
+        _ => type.ToString()
+    };
 }
