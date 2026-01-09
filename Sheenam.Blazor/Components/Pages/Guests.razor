@@ -6,23 +6,128 @@
 <PageTitle>Mehmonlar</PageTitle>
 
 <div class="container my-5">
-    <h1 class="text-center mb-5 display-5 fw-bold text-primary">
+    <h1 class="text-center mb-5 display-5 fw-bold text-info">
         👥 Mehmonlar ro'yxati
     </h1>
 
-    @if (guests == null)
+    @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
-                <span class="visually-hidden">Yuklanmoqda...</span>
-            </div>
-            <p class="mt-3 fs-4 text-muted">Mehmonlar yuklanmoqda...</p>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>❌ Xato:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
         </div>
     }
-    else if (!guests.Any())
+
+    @if (!string.IsNullOrEmpty(successMessage))
     {
-        <div class="alert alert-info text-center fs-3 p-5">
-            😔 Hozircha hech qanday mehmon ro'yxatdan o'tmagan.
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✅ Muvaffaqiyatli!</strong> @successMessage
+            <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+        </div>
+    }
+
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="card-header bg-info text-white py-3">
+            <h4 class="mb-0">
+                @if (isEditing)
+                {
+                    <text>✏️ Mehmonni tahrirlash</text>
+                }
+                else
+                {
+                    <text>➕ Yangi mehmon qo'shish</text>
+                }
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            <EditForm Model="currentGuest" OnValidSubmit="SaveGuest">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Ism</label>
+                        <InputText @bind-Value="currentGuest.FirstName" class="form-control form-control-lg"
+                                   placeholder="Ism kiriting" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Familya</label>
+                        <InputText @bind-Value="currentGuest.LastName" class="form-control form-control-lg"
+                                   placeholder="Familya kiriting" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Email</label>
+                        <InputText @bind-Value="currentGuest.Email" type="email" class="form-control form-control-lg"
+                                   placeholder="email@example.com" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Telefon raqami</label>
+                        <InputText @bind-Value="currentGuest.PhoneNumber" class="form-control form-control-lg"
+                                   placeholder="+998901234567" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Tug'ilgan sana</label>
+                        <InputDate @bind-Value="currentGuest.DateOfBirth" class="form-control form-control-lg" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-info">Jins</label>
+                        <InputSelect @bind-Value="currentGuest.Gender" class="form-select form-select-lg">
+                            <option value="@GenderType.Male">Erkak</option>
+                            <option value="@GenderType.Female">Ayol</option>
+                            <option value="@GenderType.Other">Boshqa</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-info">Manzil</label>
+                        <InputText @bind-Value="currentGuest.Address" class="form-control form-control-lg"
+                                   placeholder="Manzilni kiriting" />
+                    </div>
+
+                    <div class="col-12 text-end mt-3">
+                        @if (isEditing)
+                        {
+                            <button type="button" class="btn btn-secondary btn-lg px-4 me-2" @onclick="CancelEdit">
+                                ❌ Bekor qilish
+                            </button>
+                        }
+                        <button type="submit" class="btn btn-info btn-lg px-5 shadow text-white" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <text>Saqlanmoqda...</text>
+                            }
+                            else if (isEditing)
+                            {
+                                <text>💾 Saqlash</text>
+                            }
+                            else
+                            {
+                                <text>➕ Qo'shish</text>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-info" style="width: 4rem; height: 4rem;"></div>
+            <p class="mt-3 text-muted">Mehmonlar yuklanmoqda...</p>
+        </div>
+    }
+    else if (guests.Count == 0)
+    {
+        <div class="alert alert-info text-center fs-4 p-5 rounded shadow">
+            😔 Hozircha hech qanday mehmon yo'q.
         </div>
     }
     else
@@ -31,73 +136,272 @@
             @foreach (var guest in guests)
             {
                 <div class="col">
-                    <div class="card h-100 shadow hover-card border-0 overflow-hidden">
-                        <!-- Profil rasmi (hozircha avatar emoji) -->
+                    <div class="card h-100 shadow-lg hover-card border-0 overflow-hidden">
+
                         <div class="card-img-top bg-gradient text-white d-flex align-items-center justify-content-center"
-                             style="height: 180px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <span class="display-1">@(guest.Gender == GenderType.Male ? "👨" : guest.Gender == GenderType.Female ? "👩" : "🧑")</span>
+                             style="height: 180px; background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                            <span class="display-1">@GetGenderEmoji(guest.Gender)</span>
                         </div>
 
                         <div class="card-body text-center">
                             <h5 class="card-title fw-bold text-dark mb-1">
                                 @guest.FirstName @guest.LastName
                             </h5>
-                            <p class="text-muted small mb-3">@guest.Email</p>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-envelope"></i> @guest.Email
+                            </p>
 
-                            <div class="d-flex justify-content-center gap-3 text-muted small">
+                            <div class="d-flex justify-content-around mb-3">
                                 <div>
-                                    <strong>Jins:</strong><br />
-                                    <span class="badge @(guest.Gender == GenderType.Male ? "bg-primary" : guest.Gender == GenderType.Female ? "bg-danger" : "bg-secondary")">
-                                        @guest.Gender
+                                    <small class="text-muted">Jins</small><br />
+                                    <span class="badge @GetGenderBadgeClass(guest.Gender) fs-6">
+                                        @GetGenderText(guest.Gender)
                                     </span>
                                 </div>
                                 <div>
-                                    <strong>Yosh:</strong><br />
-                                    @(guest.DateOfBirth == default ? "—"
-                                                                : $"{((DateTime.Today - guest.DateOfBirth).Days / 365)} yosh")
-                        </div>
-                    </div>
+                                    <small class="text-muted">Yosh</small><br />
+                                    <strong>@GetAge(guest.DateOfBirth)</strong>
+                                </div>
+                            </div>
 
-                    @if (!string.IsNullOrEmpty(guest.PhoneNumber))
+                            @if (!string.IsNullOrEmpty(guest.PhoneNumber))
                             {
-                                <p class="mt-3 mb-0">
+                                <p class="mb-2 text-muted small">
                                     <i class="bi bi-telephone-fill text-success"></i> @guest.PhoneNumber
                                 </p>
                             }
 
                             @if (!string.IsNullOrEmpty(guest.Address))
                             {
-                                <p class="mt-2 mb-0 text-muted small">
-                                    <i class="bi bi-geo-alt-fill"></i> @guest.Address
+                                <p class="mb-3 text-muted small">
+                                    <i class="bi bi-geo-alt-fill text-danger"></i> @guest.Address
                                 </p>
                             }
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-sm btn-info text-white" @onclick="() => EditGuest(guest)">
+                                    ✏️ Tahrirlash
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteGuest(guest.Id)">
+                                    🗑️ O'chirish
+                                </button>
+                            </div>
                         </div>
 
                         <div class="card-footer bg-light border-0 text-center">
                             <small class="text-muted">
-                                ID: @guest.Id.ToString().Substring(0, 8))...
+                                ID: @guest.Id.ToString().Substring(0, 8)...
                             </small>
                         </div>
                     </div>
                 </div>
             }
         </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Jami: <strong class="text-info">@guests.Count</strong> ta mehmon
+            </small>
+        </div>
     }
 </div>
 
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        }
+</style>
+
 @code {
     private List<Guest> guests = new();
+    private Guest currentGuest = new() { DateOfBirth = DateTime.Today.AddYears(-25), Gender = GenderType.Male };
+
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private bool isEditing = false;
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         try
         {
-            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new();
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await HttpClient.GetAsync("api/Guests");
+
+            if (response.IsSuccessStatusCode)
+            {
+                guests = await response.Content.ReadFromJsonAsync<List<Guest>>() ?? new();
+                if (!isEditing)
+                {
+                    successMessage = $"{guests.Count} ta mehmon yuklandi";
+                }
+            }
+            else
+            {
+                errorMessage = $"Ma'lumotlarni yuklashda xato: {response.StatusCode}";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"API bilan bog'lanishda xato: {ex.Message}";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Mehmonlarni yuklashda xato: {ex.Message}");
-            guests = new();
+            errorMessage = $"Kutilmagan xato: {ex.Message}";
         }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveGuest()
+    {
+        try
+        {
+            isSubmitting = true;
+            errorMessage = null;
+            successMessage = null;
+
+            if (isEditing)
+            {
+                var response = await HttpClient.PutAsJsonAsync($"api/Guests/{currentGuest.Id}", currentGuest);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    successMessage = "Mehmon muvaffaqiyatli yangilandi!";
+                    isEditing = false;
+                    ResetForm();
+                    await LoadData();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Yangilashda xato: {response.StatusCode} - {error}";
+                }
+            }
+            else
+            {
+                currentGuest.Id = Guid.NewGuid();
+
+                var response = await HttpClient.PostAsJsonAsync("api/Guests", currentGuest);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    successMessage = "Mehmon muvaffaqiyatli qo'shildi!";
+                    ResetForm();
+                    await LoadData();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Qo'shishda xato: {response.StatusCode} - {error}";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Saqlashda xato: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void EditGuest(Guest guest)
+    {
+        isEditing = true;
+        currentGuest = new Guest
+        {
+            Id = guest.Id,
+            FirstName = guest.FirstName,
+            LastName = guest.LastName,
+            Email = guest.Email,
+            PhoneNumber = guest.PhoneNumber,
+            DateOfBirth = guest.DateOfBirth,
+            Gender = guest.Gender,
+            Address = guest.Address
+        };
+        successMessage = null;
+        errorMessage = null;
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        ResetForm();
+    }
+
+    private async Task DeleteGuest(Guid id)
+    {
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/Guests/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "Mehmon o'chirildi!";
+                await LoadData();
+            }
+            else
+            {
+                errorMessage = $"O'chirishda xato: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"O'chirishda xato: {ex.Message}";
+        }
+    }
+
+    private void ResetForm()
+    {
+        currentGuest = new Guest
+        {
+            DateOfBirth = DateTime.Today.AddYears(-25),
+            Gender = GenderType.Male
+        };
+    }
+
+    private string GetGenderEmoji(GenderType gender) => gender switch
+    {
+        GenderType.Male => "👨",
+        GenderType.Female => "👩",
+        _ => "🧑"
+    };
+
+    private string GetGenderBadgeClass(GenderType gender) => gender switch
+    {
+        GenderType.Male => "bg-primary",
+        GenderType.Female => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    private string GetGenderText(GenderType gender) => gender switch
+    {
+        GenderType.Male => "Erkak",
+        GenderType.Female => "Ayol",
+        _ => "Boshqa"
+    };
+
+    private string GetAge(DateTimeOffset dateOfBirth)
+    {
+        if (dateOfBirth == default) return "—";
+        var age = (DateTime.Today - dateOfBirth.Date).Days / 365;
+        return $"{age} yosh";
     }
 }
