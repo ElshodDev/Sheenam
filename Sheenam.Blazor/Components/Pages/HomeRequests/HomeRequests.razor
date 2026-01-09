@@ -12,6 +12,22 @@
         ✉️ Uy so'rovlari
     </h1>
 
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>❌ Xato:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✅ Muvaffaqiyatli!</strong> @successMessage
+            <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+        </div>
+    }
+
     <!-- Yangi so'rov formasi -->
     <div class="card shadow-lg border-0 mb-5">
         <div class="card-header bg-indigo text-white py-3">
@@ -24,34 +40,24 @@
 
                 <div class="row g-4">
                     <div class="col-lg-6">
-                        <label class="form-label fw-bold text-indigo">Mehmonni tanlang</label>
-                        <InputSelect @bind-Value="newRequest.GuestId" class="form-select form-select-lg">
-                            <option value="">— Mehmon tanlang —</option>
-                            @foreach (var guest in guests)
-                            {
-                                <option value="@guest.Id">
-                                    @guest.FirstName @guest.LastName (@guest.Email)
-                                </option>
-                            }
-                        </InputSelect>
+                        <label class="form-label fw-bold text-indigo">Mehmon ID</label>
+                        <input type="text" class="form-control form-control-lg"
+                               @bind="guestIdInput"
+                               placeholder="Guest GUID kiriting" />
+                        <small class="text-muted">Vaqtincha: GUID formatida (masalan: 00000000-0000-0000-0000-000000000001)</small>
                     </div>
 
                     <div class="col-lg-6">
-                        <label class="form-label fw-bold text-indigo">Uyni tanlang</label>
-                        <InputSelect @bind-Value="newRequest.HomeId" class="form-select form-select-lg">
-                            <option value="">— Uy tanlang —</option>
-                            @foreach (var home in homes)
-                            {
-                                <option value="@home.Id">
-                                    @home.Address — @home.Price:N0 so'm/kecha
-                                </option>
-                            }
-                        </InputSelect>
+                        <label class="form-label fw-bold text-indigo">Uy ID</label>
+                        <input type="text" class="form-control form-control-lg"
+                               @bind="homeIdInput"
+                               placeholder="Home GUID kiriting" />
+                        <small class="text-muted">Vaqtincha: GUID formatida (masalan: 00000000-0000-0000-0000-000000000002)</small>
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-bold text-indigo">Xabar (ixtiyoriy)</label>
-                        <InputText @bind-Value="newRequest.Message" class="form-control" 
+                        <InputText @bind-Value="newRequest.Message" class="form-control"
                                    placeholder="Masalan: 2 kishi, 3 kecha, bolalar bor..." />
                     </div>
 
@@ -66,8 +72,16 @@
                     </div>
 
                     <div class="col-12 text-end mt-3">
-                        <button type="submit" class="btn btn-indigo btn-lg px-5 shadow">
-                            🚀 So'rov yuborish
+                        <button type="submit" class="btn btn-indigo btn-lg px-5 shadow" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <text>Yuborilmoqda...</text>
+                            }
+                            else
+                            {
+                                <text>🚀 So'rov yuborish</text>
+                            }
                         </button>
                     </div>
                 </div>
@@ -75,11 +89,12 @@
         </div>
     </div>
 
-    <!-- So'rovlar ro'yxati (sizning table uslubingiz saqlanib qoldi) -->
-    @if (requests == null)
+    <!-- So'rovlar ro'yxati -->
+    @if (isLoading)
     {
         <div class="text-center py-5">
             <div class="spinner-border text-indigo" style="width: 4rem; height: 4rem;"></div>
+            <p class="mt-3 text-muted">Ma'lumotlar yuklanmoqda...</p>
         </div>
     }
     else if (requests.Count == 0)
@@ -91,32 +106,37 @@
     else
     {
         <div class="table-responsive shadow-lg rounded overflow-hidden">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="bg-indigo text-white">
                     <tr>
                         <th>#</th>
-                        <th>Mehmon</th>
-                        <th>Uy</th>
+                        <th>ID</th>
+                        <th>Mehmon ID</th>
+                        <th>Uy ID</th>
                         <th>Xabar</th>
                         <th>Boshlanish</th>
                         <th>Tugash</th>
                         <th>Yaratilgan</th>
+                        <th>Amallar</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var (req, i) in requests.Select((r, idx) => (r, idx)))
                     {
-                        var guest = guests.FirstOrDefault(g => g.Id == req.GuestId);
-                        var home = homes.FirstOrDefault(h => h.Id == req.HomeId);
-
                         <tr class="hover-row">
                             <td class="fw-bold">@(i + 1)</td>
-                            <td>@(guest?.FirstName ?? "Noma'lum") @(guest?.LastName ?? "")</td>
-                            <td>@(home?.Address ?? "Uy o'chirilgan")</td>
+                            <td><small>@req.Id.ToString().Substring(0, 8)...</small></td>
+                            <td><small>@req.GuestId.ToString().Substring(0, 8)...</small></td>
+                            <td><small>@req.HomeId.ToString().Substring(0, 8)...</small></td>
                             <td>@(string.IsNullOrEmpty(req.Message) ? "—" : req.Message)</td>
-                            <td>@req.StartDate:dd.MM.yyyy</td>
-                            <td>@req.EndDate:dd.MM.yyyy</td>
-                            <td>@req.CreatedDate:dd.MM HH:mm</td>
+                            <td>@req.StartDate.ToString("dd.MM.yyyy")</td>
+                            <td>@req.EndDate.ToString("dd.MM.yyyy")</td>
+                            <td>@req.CreatedDate.ToString("dd.MM HH:mm")</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" @onclick="() => DeleteRequest(req.Id)">
+                                    🗑️ O'chirish
+                                </button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -131,11 +151,46 @@
     }
 </div>
 
+<style>
+    .text-indigo {
+        color: #6366f1;
+    }
+
+    .bg-indigo {
+        background-color: #6366f1;
+    }
+
+    .btn-indigo {
+        background-color: #6366f1;
+        border-color: #6366f1;
+        color: white;
+    }
+
+        .btn-indigo:hover {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+    .hover-row:hover {
+        background-color: #f8f9ff;
+    }
+</style>
+
 @code {
     private List<HomeRequest> requests = new();
-    private List<Guest> guests = new();
-    private List<Home> homes = new();
-    private HomeRequest newRequest = new() { StartDate = DateTime.Today.AddDays(1), EndDate = DateTime.Today.AddDays(3) };
+    private HomeRequest newRequest = new()
+    {
+        StartDate = DateTime.Today.AddDays(1),
+        EndDate = DateTime.Today.AddDays(3)
+    };
+
+    private string guestIdInput = "00000000-0000-0000-0000-000000000001";
+    private string homeIdInput = "00000000-0000-0000-0000-000000000002";
+
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,13 +201,32 @@
     {
         try
         {
-            guests = await HttpClient.GetFromJsonAsync<List<Guest>>("api/guests") ?? new();
-            homes = await HttpClient.GetFromJsonAsync<List<Home>>("api/homes") ?? new();
-            requests = await HttpClient.GetFromJsonAsync<List<HomeRequest>>("api/homerequests") ?? new();
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await HttpClient.GetAsync("api/HomeRequests");
+
+            if (response.IsSuccessStatusCode)
+            {
+                requests = await response.Content.ReadFromJsonAsync<List<HomeRequest>>() ?? new();
+                successMessage = $"{requests.Count} ta so'rov yuklandi";
+            }
+            else
+            {
+                errorMessage = $"Ma'lumotlarni yuklashda xato: {response.StatusCode}";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"API bilan bog'lanishda xato: {ex.Message}. API ishga tushganini tekshiring!";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Xato: {ex.Message}");
+            errorMessage = $"Kutilmagan xato: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
@@ -160,13 +234,76 @@
     {
         try
         {
-            await HttpClient.PostAsJsonAsync("api/homerequests", newRequest);
-            newRequest = new HomeRequest { StartDate = DateTime.Today.AddDays(1), EndDate = DateTime.Today.AddDays(3) };
-            await LoadData();
+            isSubmitting = true;
+            errorMessage = null;
+            successMessage = null;
+
+            // String'dan Guid'ga o'girish
+            if (!Guid.TryParse(guestIdInput, out Guid guestId))
+            {
+                errorMessage = "Mehmon ID noto'g'ri formatda!";
+                return;
+            }
+
+            if (!Guid.TryParse(homeIdInput, out Guid homeId))
+            {
+                errorMessage = "Uy ID noto'g'ri formatda!";
+                return;
+            }
+
+            newRequest.Id = Guid.NewGuid();
+            newRequest.GuestId = guestId;
+            newRequest.HomeId = homeId;
+            newRequest.CreatedDate = DateTime.UtcNow;
+            newRequest.UpdatedDate = DateTime.UtcNow;
+
+            var response = await HttpClient.PostAsJsonAsync("api/HomeRequests", newRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "So'rov muvaffaqiyatli yuborildi!";
+                newRequest = new HomeRequest
+                {
+                    StartDate = DateTime.Today.AddDays(1),
+                    EndDate = DateTime.Today.AddDays(3)
+                };
+                await LoadData();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Yuborishda xato: {response.StatusCode} - {error}";
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Yuborishda xato: {ex.Message}");
+            errorMessage = $"Yuborishda xato: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task DeleteRequest(Guid id)
+    {
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/HomeRequests/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "So'rov o'chirildi!";
+                await LoadData();
+            }
+            else
+            {
+                errorMessage = $"O'chirishda xato: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"O'chirishda xato: {ex.Message}";
         }
     }
 }

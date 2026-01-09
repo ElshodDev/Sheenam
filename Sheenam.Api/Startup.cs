@@ -2,7 +2,6 @@
 // Copyright (c) Coalition  of Good-Hearted Engineers
 // Free To Use  To Find Comfort and Peace
 //===================================================
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +38,24 @@ namespace Sheenam.Api
             AddBrokers(services);
             AddFoundationService(services);
 
+            // CORS sozlamalari qo'shildi
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazor", builder =>
+                {
+                    builder
+                        .WithOrigins(
+                            "http://localhost:5184",  // Blazor default porti
+                            "https://localhost:5185", // HTTPS porti
+                            "http://localhost:5000",  // Boshqa portlar
+                            "https://localhost:5001"
+                        )
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(
@@ -47,14 +64,12 @@ namespace Sheenam.Api
             });
         }
 
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
             if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-
                 app.UseSwaggerUI(options =>
                 {
                     options.SwaggerEndpoint(
@@ -65,6 +80,10 @@ namespace Sheenam.Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            // CORS middleware qo'shildi (UseRouting dan keyin, UseAuthorization dan oldin)
+            app.UseCors("AllowBlazor");
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
