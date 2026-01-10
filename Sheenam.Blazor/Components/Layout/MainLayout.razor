@@ -2,12 +2,12 @@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu /> <!-- Barcha linklar shu yerda chiqadi -->
+        <NavMenu OnShowHelpModal="HandleShowHelpModal" />
     </div>
     <main>
         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-            <a href="https://t.me/Ibodullayev_E_M" target="_blank">support</a>
+            <a href="https://t.me/Elshod_Developer" target="_blank">support</a>
         </div>
         <article class="content px-4">
             @Body
@@ -15,8 +15,27 @@
     </main>
 </div>
 
+<!-- Help Modal - Body level'da -->
+<HelpModal IsVisible="showHelpModal" OnClose="HandleCloseHelpModal" />
+
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool showHelpModal = false;
+
+    private void HandleShowHelpModal(bool show)
+    {
+        showHelpModal = show;
+        StateHasChanged();
+    }
+
+    private void HandleCloseHelpModal()
+    {
+        showHelpModal = false;
+        StateHasChanged();
+    }
+}

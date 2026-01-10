@@ -1,35 +1,385 @@
-﻿<div class="top-row ps-3 navbar navbar-dark bg-dark">
+﻿@using System.Net.Http.Json
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Sheenam.Blazor</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <a class="navbar-brand" href="">
+            <span class="logo-icon">🏡</span>
+            <span class="logo-text">Sheenam</span>
+        </a>
     </div>
 </div>
 
-<div class="collapse nav-scrollable" id="navMenu">
-    <nav class="nav flex-column">
+<input type="checkbox" title="Navigation menu" id="navToggle" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.getElementById('navToggle').click()">
+    <nav class="flex-column">
+        <!-- Dashboard -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="homes">
-                <span class="bi bi-house-fill-nav-menu" aria-hidden="true"></span> Homes
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="guests">
-                <span class="bi bi-people-fill-nav-menu" aria-hidden="true"></span> Guests
-            </NavLink>
-        </div>
-        
-        <div  class="nav-item px-3">
-            <NavLink class="nav-link" href="hosts">
-                <span class="bi bi-cloud-fill-nav-menu" aria-hidden="true"></span> Hosts
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="home-requests">
-                <span class="bi bi-envelope-fill-nav-menu" aria-hidden="true"></span> Home Requests
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
             </NavLink>
         </div>
 
+        <!-- Hosts -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="hosts">
+                <span class="nav-icon">🏡</span>
+                <span class="nav-text">Hostlar</span>
+                @if (hostCount > 0)
+                {
+                    <span class="nav-badge">@hostCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <!-- Homes -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="homes">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Uylar</span>
+                @if (homeCount > 0)
+                {
+                    <span class="nav-badge">@homeCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <!-- Guests -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="guests">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Mehmonlar</span>
+                @if (guestCount > 0)
+                {
+                    <span class="nav-badge">@guestCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <!-- Home Requests -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="home-requests">
+                <span class="nav-icon">✉️</span>
+                <span class="nav-text">So'rovlar</span>
+                @if (requestCount > 0)
+                {
+                    <span class="nav-badge badge-warning">@requestCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <hr class="my-3 border-light opacity-25" />
+
+        <!-- Settings Section -->
+        <div class="nav-section-title px-3">
+            <small class="text-muted text-uppercase fw-bold">Sozlamalar</small>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="ToggleDarkMode">
+                <span class="nav-icon">@(isDarkMode ? "🌙" : "☀️")</span>
+                <span class="nav-text">@(isDarkMode ? "Dark Mode" : "Light Mode")</span>
+            </a>
+        </div>
+
+        <!-- Help -->
+        <div class="nav-item px-3">
+            <a class="nav-link" href="javascript:void(0)" @onclick="ShowHelp">
+                <span class="nav-icon">❓</span>
+                <span class="nav-text">Yordam</span>
+            </a>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="nav-footer px-3 mt-4">
+            <small class="text-muted d-block mb-1">
+                <strong>Sheenam v1.0</strong>
+            </small>
+            <small class="text-muted">
+                © 2025 Good-Hearted Engineers
+            </small>
+        </div>
     </nav>
 </div>
+
+<style>
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .logo-icon {
+        font-size: 2rem;
+        animation: bounce 3s infinite ease-in-out;
+    }
+
+    .logo-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+    }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    .nav-scrollable {
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+
+    .nav-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            color: white;
+        }
+
+            .nav-link:hover::before {
+                width: 4px;
+            }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-weight: 600;
+        }
+
+            .nav-link.active::before {
+                width: 4px;
+                background: white;
+            }
+
+    .nav-icon {
+        font-size: 1.5rem;
+        width: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover .nav-icon {
+        transform: scale(1.2);
+    }
+
+    .nav-text {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .nav-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 1.5rem;
+        text-align: center;
+    }
+
+    .nav-link.active .nav-badge {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .badge-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .nav-section-title {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-footer {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .top-row {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Scrollbar styling */
+    .nav-scrollable::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .nav-scrollable::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-scrollable::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+    }
+
+        .nav-scrollable::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+    /* Mobile responsive */
+    @@media (max-width: 640.98px) {
+        .logo-text {
+            font-size: 1.2rem;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Dark Mode styles */
+    .dark-mode {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+        .dark-mode .top-row {
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+        }
+
+        .dark-mode .nav-scrollable {
+            background: #1a1a1a;
+        }
+
+        .dark-mode .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+            .dark-mode .nav-link:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+</style>
+
+@code {
+    private int hostCount = 0;
+    private int homeCount = 0;
+    private int guestCount = 0;
+    private int requestCount = 0;
+    private bool isDarkMode = false;
+
+    [Parameter]
+    public EventCallback<bool> OnShowHelpModal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCounts();
+        LoadDarkModePreference();
+    }
+
+    private async Task LoadCounts()
+    {
+        try
+        {
+            var hostsTask = HttpClient.GetFromJsonAsync<List<object>>("api/Hosts");
+            var homesTask = HttpClient.GetFromJsonAsync<List<object>>("api/Homes");
+            var guestsTask = HttpClient.GetFromJsonAsync<List<object>>("api/Guests");
+            var requestsTask = HttpClient.GetFromJsonAsync<List<object>>("api/HomeRequests");
+
+            await Task.WhenAll(hostsTask, homesTask, guestsTask, requestsTask);
+
+            hostCount = (await hostsTask)?.Count ?? 0;
+            homeCount = (await homesTask)?.Count ?? 0;
+            guestCount = (await guestsTask)?.Count ?? 0;
+            requestCount = (await requestsTask)?.Count ?? 0;
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"NavMenu count xato: {ex.Message}");
+        }
+    }
+
+    private void LoadDarkModePreference()
+    {
+        // LocalStorage dan o'qish (kelajakda qo'shamiz)
+    }
+
+    private void ToggleDarkMode()
+    {
+        isDarkMode = !isDarkMode;
+        ApplyDarkMode();
+        StateHasChanged();
+    }
+
+    private void ApplyDarkMode()
+    {
+        try
+        {
+            if (isDarkMode)
+            {
+                _ = JSRuntime.InvokeVoidAsync("eval", "document.body.classList.add('dark-mode')");
+            }
+            else
+            {
+                _ = JSRuntime.InvokeVoidAsync("eval", "document.body.classList.remove('dark-mode')");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dark mode xato: {ex.Message}");
+        }
+    }
+
+    private async Task ShowHelp()
+    {
+        await OnShowHelpModal.InvokeAsync(true);
+    }
+}
