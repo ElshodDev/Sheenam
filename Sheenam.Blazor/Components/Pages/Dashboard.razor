@@ -1,0 +1,364 @@
+﻿@page "/"
+@page "/dashboard"
+@using Sheenam.Blazor.Models.Foundations.Hosts
+@using Sheenam.Blazor.Models.Foundations.Homes
+@using Sheenam.Blazor.Models.Foundations.Guests
+@using Sheenam.Blazor.Models.Foundations.HomeRequests
+@using System.Net.Http.Json
+@inject HttpClient HttpClient
+@inject NavigationManager Nav
+
+<PageTitle>Dashboard - Sheenam</PageTitle>
+
+<div class="container-fluid my-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4 fw-bold mb-2">
+                <span class="text-gradient">📊 Dashboard</span>
+            </h1>
+            <p class="text-muted">Umumiy ma'lumotlar va statistika</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-primary" @onclick="LoadData">
+                🔄 Yangilash
+            </button>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;"></div>
+            <p class="mt-3 text-muted">Ma'lumotlar yuklanmoqda...</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card border-0 shadow-lg h-100 bg-gradient-success">
+                    <div class="card-body text-white">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-white-50 mb-2">Uy egalari</h6>
+                                <h2 class="fw-bold mb-0">@hosts.Count</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <span class="display-4">🏡</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-light btn-sm w-100" @onclick='() => Nav.NavigateTo("/hosts")'>
+                            Ko'rish →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card border-0 shadow-lg h-100 bg-gradient-primary">
+                    <div class="card-body text-white">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-white-50 mb-2">Uylar</h6>
+                                <h2 class="fw-bold mb-0">@homes.Count</h2>
+                                <small>Bo'sh: @vacantHomes</small>
+                            </div>
+                            <div class="stat-icon">
+                                <span class="display-4">🏠</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-light btn-sm w-100" @onclick='() => Nav.NavigateTo("/homes")'>
+                            Ko'rish →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card border-0 shadow-lg h-100 bg-gradient-info">
+                    <div class="card-body text-white">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-white-50 mb-2">Mehmonlar</h6>
+                                <h2 class="fw-bold mb-0">@guests.Count</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <span class="display-4">👥</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-light btn-sm w-100" @onclick='() => Nav.NavigateTo("/guests")'>
+                            Ko'rish →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card border-0 shadow-lg h-100 bg-gradient-warning">
+                    <div class="card-body text-white">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-white-50 mb-2">So'rovlar</h6>
+                                <h2 class="fw-bold mb-0">@homeRequests.Count</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <span class="display-4">✉️</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-light btn-sm w-100" @onclick='() => Nav.NavigateTo("/home-requests")'>
+                            Ko'rish →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow">
+                    <div class="card-body text-center">
+                        <span class="display-4 mb-3 d-block">💰</span>
+                        <h5 class="text-muted mb-2">O'rtacha narx</h5>
+                        <h3 class="fw-bold text-success">@averagePrice.ToString("N0") so'm</h3>
+                        <small class="text-muted">kecha uchun</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow">
+                    <div class="card-body text-center">
+                        <span class="display-4 mb-3 d-block">📏</span>
+                        <h5 class="text-muted mb-2">Umumiy maydon</h5>
+                        <h3 class="fw-bold text-primary">@totalArea.ToString("N0") m²</h3>
+                        <small class="text-muted">barcha uylar</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow">
+                    <div class="card-body text-center">
+                        <span class="display-4 mb-3 d-block">📊</span>
+                        <h5 class="text-muted mb-2">Bo'sh uylar</h5>
+                        <h3 class="fw-bold text-info">@vacancyRate%</h3>
+                        <small class="text-muted">@vacantHomes / @homes.Count ta</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">📋 Oxirgi so'rovlar</h5>
+                    <button class="btn btn-sm btn-outline-primary" @onclick='() => Nav.NavigateTo("/home-requests")'>
+                        Barchasini ko'rish →
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (recentRequests.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mehmon</th>
+                                    <th>Uy</th>
+                                    <th>Boshlanish</th>
+                                    <th>Tugash</th>
+                                    <th>Xabar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var req in recentRequests)
+                                {
+                                    var guest = guests.FirstOrDefault(g => g.Id == req.GuestId);
+                                    var home = homes.FirstOrDefault(h => h.Id == req.HomeId);
+                                    <tr>
+                                        <td>
+                                            <strong>@(guest?.FirstName ?? "Noma'lum") @(guest?.LastName ?? "")</strong>
+                                        </td>
+                                        <td>@(home?.Address ?? "—")</td>
+                                        <td>@req.StartDate.ToString("dd.MM.yyyy")</td>
+                                        <td>@req.EndDate.ToString("dd.MM.yyyy")</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                @(string.IsNullOrEmpty(req.Message) ? "—" : req.Message.Substring(0, Math.Min(30, req.Message.Length)) + "...")
+                                            </small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        Hozircha so'rovlar yo'q
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow quick-action" @onclick='() => Nav.NavigateTo("/hosts")'>
+                    <div class="card-body text-center">
+                        <span class="display-3">➕</span>
+                        <h6 class="mt-3 mb-0">Yangi Host</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow quick-action" @onclick='() => Nav.NavigateTo("/homes")'>
+                    <div class="card-body text-center">
+                        <span class="display-3">🏠</span>
+                        <h6 class="mt-3 mb-0">Yangi Uy</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow quick-action" @onclick='() => Nav.NavigateTo("/guests")'>
+                    <div class="card-body text-center">
+                        <span class="display-3">👤</span>
+                        <h6 class="mt-3 mb-0">Yangi Mehmon</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow quick-action" @onclick='() => Nav.NavigateTo("/home-requests")'>
+                    <div class="card-body text-center">
+                        <span class="display-3">📩</span>
+                        <h6 class="mt-3 mb-0">Yangi So'rov</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .text-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+        }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .quick-action {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+    .stat-icon {
+        opacity: 0.3;
+    }
+</style>
+
+@code {
+    private List<Host> hosts = new();
+    private List<Home> homes = new();
+    private List<Guest> guests = new();
+    private List<HomeRequest> homeRequests = new();
+    private List<HomeRequest> recentRequests = new();
+
+    private int vacantHomes = 0;
+    private decimal averagePrice = 0;
+    private double totalArea = 0;
+    private int vacancyRate = 0;
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+
+            var hostsTask = HttpClient.GetFromJsonAsync<List<Host>>("api/Hosts");
+            var homesTask = HttpClient.GetFromJsonAsync<List<Home>>("api/Homes");
+            var guestsTask = HttpClient.GetFromJsonAsync<List<Guest>>("api/Guests");
+            var requestsTask = HttpClient.GetFromJsonAsync<List<HomeRequest>>("api/HomeRequests");
+
+            await Task.WhenAll(hostsTask, homesTask, guestsTask, requestsTask);
+
+            hosts = await hostsTask ?? new();
+            homes = await homesTask ?? new();
+            guests = await guestsTask ?? new();
+            homeRequests = await requestsTask ?? new();
+
+            CalculateStats();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dashboard xato: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void CalculateStats()
+    {
+
+        vacantHomes = homes.Count(h => h.IsVacant);
+
+        if (homes.Any())
+        {
+            averagePrice = homes.Average(h => h.Price);
+        }
+
+        totalArea = homes.Sum(h => h.Area);
+
+        if (homes.Any())
+        {
+            vacancyRate = (int)((double)vacantHomes / homes.Count * 100);
+        }
+
+        recentRequests = homeRequests
+            .OrderByDescending(r => r.CreatedDate)
+            .Take(5)
+            .ToList();
+    }
+}
