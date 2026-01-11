@@ -45,33 +45,44 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="fw-bold">Manzil *</label>
-                            <InputText @bind-Value="currentHome.Address" class="form-control"
+                            <InputText @bind-Value="currentHome.Address" class="form-control @GetValidationClass(nameof(currentHome.Address))"
                                        placeholder="Manzilni kiriting" />
+                            <ValidationMessage For="@(() => currentHome.Address)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Uy turi *</label>
-                            <InputSelect @bind-Value="currentHome.Type" class="form-select">
+                            <InputSelect @bind-Value="currentHome.Type" class="form-select @GetValidationClass(nameof(currentHome.Type))">
+                                <option value="">-- Tanlang --</option>
                                 <option value="@HouseType.Flat">Kvartira</option>
                                 <option value="@HouseType.Bungalow">Bungalov</option>
                                 <option value="@HouseType.Duplex">Duplex</option>
                                 <option value="@HouseType.other">Boshqa</option>
                             </InputSelect>
+                            <ValidationMessage For="@(() => currentHome.Type)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Narx (so'm) *</label>
-                            <InputNumber @bind-Value="currentHome.Price" class="form-control" />
+                            <InputNumber @bind-Value="currentHome.Price" class="form-control @GetValidationClass(nameof(currentHome.Price))"
+                                         placeholder="10,000 - 100,000,000" />
+                            <ValidationMessage For="@(() => currentHome.Price)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Maydon (m²) *</label>
-                            <InputNumber @bind-Value="currentHome.Area" class="form-control" />
+                            <InputNumber @bind-Value="currentHome.Area" class="form-control @GetValidationClass(nameof(currentHome.Area))"
+                                         placeholder="10 - 10,000" />
+                            <ValidationMessage For="@(() => currentHome.Area)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
-                            <label class="fw-bold">Yotoq xonalar</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control" />
+                            <label class="fw-bold">Yotoq xonalar *</label>
+                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control @GetValidationClass(nameof(currentHome.NumberOfBedrooms))"
+                                         placeholder="0 - 20" />
+                            <ValidationMessage For="@(() => currentHome.NumberOfBedrooms)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
-                            <label class="fw-bold">Vanna xonalar</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control" />
+                            <label class="fw-bold">Vanna xonalar *</label>
+                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control @GetValidationClass(nameof(currentHome.NumberOfBathrooms))"
+                                         placeholder="0 - 10" />
+                            <ValidationMessage For="@(() => currentHome.NumberOfBathrooms)" class="text-danger small" />
                         </div>
                         <div class="col-md-3 d-flex align-items-end gap-2">
                             <div class="form-check form-switch">
@@ -85,7 +96,9 @@
                         </div>
                         <div class="col-12">
                             <label class="fw-bold">Qo'shimcha</label>
-                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control" rows="2" />
+                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control @GetValidationClass(nameof(currentHome.AdditionalInfo))"
+                                           rows="2" placeholder="500 belgigacha" />
+                            <ValidationMessage For="@(() => currentHome.AdditionalInfo)" class="text-danger small" />
                         </div>
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-secondary me-2" @onclick="CancelForm">
@@ -386,6 +399,23 @@
         background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
         background-size: 200% 100%;
     }
+
+    /* Validation */
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .validation-message {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
 </style>
 
 @code {
@@ -398,6 +428,7 @@
     private bool showAddForm = false;
     private bool showDeleteConfirm = false;
     private Guid deleteHomeId = Guid.Empty;
+    private List<string> validationErrors = new();
 
     private string searchQuery = "";
     private decimal? minPrice, maxPrice;
@@ -477,9 +508,30 @@
     {
         showAddForm = true; isEditing = false;
         currentHome = new Home { IsVacant = true, Type = HouseType.Flat };
+        validationErrors.Clear();
     }
 
-    private void CancelForm() { showAddForm = false; isEditing = false; }
+    private void CancelForm()
+    {
+        showAddForm = false;
+        isEditing = false;
+        validationErrors.Clear();
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        ToastService.ShowWarning("Formada xatoliklar mavjud! Iltimos, to'g'rilang.", "Validation xatosi");
+    }
+
+    private void ClearValidationErrors()
+    {
+        validationErrors.Clear();
+    }
+
+    private string GetValidationClass(string fieldName)
+    {
+        return validationErrors.Any(e => e.Contains(fieldName)) ? "is-invalid" : "";
+    }
 
     private async Task SaveHome()
     {
