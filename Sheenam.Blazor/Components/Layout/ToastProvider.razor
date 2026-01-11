@@ -1,0 +1,174 @@
+﻿@using Sheenam.Blazor.Services
+@inject ToastService ToastService
+@implements IDisposable
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 999999;">
+    @foreach (var toast in toasts)
+    {
+        <div class="toast show @GetToastClass(toast.Type)" role="alert">
+            <div class="toast-header @GetHeaderClass(toast.Type)">
+                <span class="me-2">@GetIcon(toast.Type)</span>
+                <strong class="me-auto">@toast.Title</strong>
+                <button type="button" class="btn-close @GetCloseButtonClass(toast.Type)"
+                        @onclick="() => RemoveToast(toast.Id)"></button>
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .toast {
+        min-width: 350px;
+        margin-bottom: 1rem;
+        animation: slideInRight 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .toast-success {
+        border-left: 5px solid #28a745;
+    }
+
+    .toast-error {
+        border-left: 5px solid #dc3545;
+    }
+
+    .toast-info {
+        border-left: 5px solid #17a2b8;
+    }
+
+    .toast-warning {
+        border-left: 5px solid #ffc107;
+    }
+
+    .toast-header-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+    }
+
+    .toast-header-error {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+        border: none;
+    }
+
+    .toast-header-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        border: none;
+    }
+
+    .toast-header-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+    }
+
+    @@keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .toast.removing {
+        animation: slideOutRight 0.3s ease-out;
+    }
+</style>
+
+@code {
+    private List<ToastModel> toasts = new();
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += ShowToast;
+    }
+
+    private async void ShowToast(string title, string message, ToastType type)
+    {
+        var toast = new ToastModel
+        {
+            Id = Guid.NewGuid(),
+            Title = title,
+            Message = message,
+            Type = type
+        };
+
+        toasts.Add(toast);
+        StateHasChanged();
+
+        await Task.Delay(4000);
+        RemoveToast(toast.Id);
+    }
+
+    private void RemoveToast(Guid id)
+    {
+        var toast = toasts.FirstOrDefault(t => t.Id == id);
+        if (toast != null)
+        {
+            toasts.Remove(toast);
+            StateHasChanged();
+        }
+    }
+
+    private string GetToastClass(ToastType type) => type switch
+    {
+        ToastType.Success => "toast-success",
+        ToastType.Error => "toast-error",
+        ToastType.Warning => "toast-warning",
+        _ => "toast-info"
+    };
+
+    private string GetHeaderClass(ToastType type) => type switch
+    {
+        ToastType.Success => "toast-header-success",
+        ToastType.Error => "toast-header-error",
+        ToastType.Warning => "toast-header-warning",
+        _ => "toast-header-info"
+    };
+
+    private string GetIcon(ToastType type) => type switch
+    {
+        ToastType.Success => "✅",
+        ToastType.Error => "❌",
+        ToastType.Warning => "⚠️",
+        _ => "ℹ️"
+    };
+
+    private string GetCloseButtonClass(ToastType type) =>
+        type == ToastType.Success || type == ToastType.Error ||
+        type == ToastType.Info || type == ToastType.Warning ? "btn-close-white" : "";
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= ShowToast;
+    }
+
+    private class ToastModel
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
+        public ToastType Type { get; set; }
+    }
+}

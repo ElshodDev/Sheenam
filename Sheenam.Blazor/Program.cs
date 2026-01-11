@@ -2,8 +2,8 @@
 // Copyright (c) Coalition  of Good-Hearted Engineers
 // Free To Use  To Find Comfort and Peace
 //===================================================
-
 using Sheenam.Blazor.Components;
+using Sheenam.Blazor.Services;
 
 namespace Sheenam.Blazor
 {
@@ -15,6 +15,7 @@ namespace Sheenam.Blazor
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
             builder.Services.AddHttpClient();
 
             builder.Services.AddSingleton(sp =>
@@ -25,6 +26,9 @@ namespace Sheenam.Blazor
                     BaseAddress = new Uri(config["ApiSettings:BaseUrl"]!)
                 };
             });
+
+            // Toast Service qo'shildi
+            builder.Services.AddScoped<ToastService>();
 
             var app = builder.Build();
 
@@ -37,7 +41,6 @@ namespace Sheenam.Blazor
             // app.UseHttpsRedirection();
             app.UseAntiforgery();
             app.MapStaticAssets();
-
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
