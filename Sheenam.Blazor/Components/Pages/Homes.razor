@@ -1,13 +1,15 @@
 ﻿@page "/homes"
 @using Sheenam.Blazor.Models.Foundations.Homes
 @using Sheenam.Blazor.Models.Foundations.Hosts
+@using Sheenam.Blazor.Services
 @using System.Net.Http.Json
 @inject HttpClient HttpClient
+@inject ToastService ToastService
 
 <PageTitle>Uylar</PageTitle>
 
 <div class="container my-5">
-
+    <!-- Header -->
     <div class="row mb-4">
         <div class="col-lg-4">
             <h1 class="display-5 fw-bold text-primary mb-2">🏠 Uylar</h1>
@@ -31,6 +33,7 @@
         </div>
     </div>
 
+    <!-- Add/Edit Form -->
     @if (showAddForm)
     {
         <div class="card shadow-lg border-0 mb-4">
@@ -98,6 +101,7 @@
         </div>
     }
 
+    <!-- Filters -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h5 class="mb-3">🎛️ Filterlar</h5>
@@ -146,7 +150,7 @@
                     <button class="btn btn-outline-secondary me-2" @onclick="ResetFilters">
                         🔄 Tozalash
                     </button>
-                    <button class="btn btn-success px-5" @onclick="ApplyFilters">
+                    <button class="btn btn-success px-5" @onclick="ApplyFiltersWithNotification">
                         ✅ Qo'llash
                     </button>
                 </div>
@@ -154,6 +158,7 @@
         </div>
     </div>
 
+    <!-- Sorting & Results -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div><strong>@filteredHomes.Count</strong> ta uy</div>
         <div class="d-flex gap-2 align-items-center">
@@ -318,6 +323,12 @@
         StateHasChanged();
     }
 
+    private void ApplyFiltersWithNotification()
+    {
+        ApplyFilters();
+        ToastService.ShowInfo($"{filteredHomes.Count} ta uy topildi", "Qidiruv natijalari");
+    }
+
     private void ResetFilters()
     {
         searchQuery = ""; minPrice = maxPrice = null; minArea = maxArea = null;
@@ -343,18 +354,38 @@
             currentHome.HostId = Guid.Parse("00000000-0000-0000-0000-000000000003");
             if (isEditing)
             {
-                await HttpClient.PutAsJsonAsync($"api/Homes/{currentHome.Id}", currentHome);
+                var response = await HttpClient.PutAsJsonAsync($"api/Homes/{currentHome.Id}", currentHome);
+                if (response.IsSuccessStatusCode)
+                {
+                    ToastService.ShowSuccess("Uy muvaffaqiyatli yangilandi!");
+                    showAddForm = false;
+                    await LoadData();
+                }
+                else
+                {
+                    ToastService.ShowError("Uyni yangilashda xato yuz berdi");
+                }
             }
             else
             {
                 currentHome.Id = Guid.NewGuid();
-                await HttpClient.PostAsJsonAsync("api/Homes", currentHome);
+                var response = await HttpClient.PostAsJsonAsync("api/Homes", currentHome);
+                if (response.IsSuccessStatusCode)
+                {
+                    ToastService.ShowSuccess("Yangi uy muvaffaqiyatli qo'shildi!");
+                    showAddForm = false;
+                    await LoadData();
+                }
+                else
+                {
+                    ToastService.ShowError("Uyni qo'shishda xato yuz berdi");
+                }
             }
-            showAddForm = false;
-            await LoadData();
-            ApplyFilters();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Xato: {ex.Message}");
+        }
     }
 
     private void EditHome(Home home)
@@ -379,9 +410,23 @@
 
     private async Task DeleteHome(Guid id)
     {
-        await HttpClient.DeleteAsync($"api/Homes/{id}");
-        await LoadData();
-        ApplyFilters();
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/Homes/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                ToastService.ShowSuccess("Uy muvaffaqiyatli o'chirildi!");
+                await LoadData();
+            }
+            else
+            {
+                ToastService.ShowError("Uyni o'chirishda xato yuz berdi");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Xato: {ex.Message}");
+        }
     }
 
     private string GetTypeBadge(HouseType type) => type switch
