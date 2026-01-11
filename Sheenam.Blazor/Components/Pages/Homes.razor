@@ -175,9 +175,27 @@
 
     @if (isLoading)
     {
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;"></div>
-            <p class="mt-3">Yuklanmoqda...</p>
+        <!-- Loading Skeleton -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @for (int i = 0; i < 6; i++)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow">
+                        <div class="skeleton skeleton-image" style="height: 200px;"></div>
+                        <div class="card-body">
+                            <div class="skeleton skeleton-title mb-3"></div>
+                            <div class="skeleton skeleton-text mb-2"></div>
+                            <div class="skeleton skeleton-text mb-2"></div>
+                            <div class="skeleton skeleton-text mb-3" style="width: 70%;"></div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="skeleton skeleton-badge"></div>
+                                <div class="skeleton skeleton-badge"></div>
+                            </div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
     else if (filteredHomes.Count == 0)
@@ -233,7 +251,7 @@
                                 <button class="btn btn-sm btn-primary" @onclick="() => EditHome(home)">
                                     ✏️ Tahrirlash
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteHome(home.Id)">
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ShowDeleteConfirm(home.Id)">
                                     🗑️ O'chirish
                                 </button>
                             </div>
@@ -245,6 +263,35 @@
     }
 </div>
 
+<!-- Confirmation Dialog -->
+@if (showDeleteConfirm)
+{
+    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
+    <div class="modal fade show d-block" tabindex="-1" style="z-index: 1055;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        🗑️ Uyni o'chirish
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Bu uyni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">
+                        ❌ Yo'q
+                    </button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">
+                        ✅ Ha, ishonchim komil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <style>
     .hover-card {
         transition: all 0.3s;
@@ -254,6 +301,91 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
         }
+
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal.show {
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-dialog {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s ease-in-out infinite;
+        border-radius: 4px;
+    }
+
+    .skeleton-image {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .skeleton-title {
+        height: 24px;
+        width: 80%;
+    }
+
+    .skeleton-text {
+        height: 16px;
+        width: 100%;
+    }
+
+    .skeleton-badge {
+        height: 24px;
+        width: 80px;
+        border-radius: 12px;
+    }
+
+    .skeleton-button {
+        height: 38px;
+        width: 100%;
+        border-radius: 6px;
+    }
+
+    @@keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* Dark mode */
+    body.dark-mode .skeleton {
+        background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
+        background-size: 200% 100%;
+    }
 </style>
 
 @code {
@@ -264,6 +396,8 @@
     private bool isLoading = true;
     private bool isEditing = false;
     private bool showAddForm = false;
+    private bool showDeleteConfirm = false;
+    private Guid deleteHomeId = Guid.Empty;
 
     private string searchQuery = "";
     private decimal? minPrice, maxPrice;
@@ -406,6 +540,25 @@
             Price = home.Price,
             Type = home.Type
         };
+    }
+
+    private void ShowDeleteConfirm(Guid id)
+    {
+        deleteHomeId = id;
+        showDeleteConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirm = false;
+        deleteHomeId = Guid.Empty;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        showDeleteConfirm = false;
+        await DeleteHome(deleteHomeId);
+        deleteHomeId = Guid.Empty;
     }
 
     private async Task DeleteHome(Guid id)
