@@ -1,0 +1,137 @@
+﻿@if (TotalPages > 1)
+{
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center mb-0">
+            <!-- First Page -->
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => OnPageChanged(1)">
+                    «
+                </a>
+            </li>
+
+            <!-- Previous -->
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => OnPageChanged(CurrentPage - 1)">
+                    ‹
+                </a>
+            </li>
+
+            @if (StartPage > 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @for (int page = StartPage; page <= EndPage; page++)
+            {
+                var pageNumber = page;
+                <li class="page-item @(CurrentPage == pageNumber ? "active" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="() => OnPageChanged(pageNumber)">
+                        @pageNumber
+                    </a>
+                </li>
+            }
+
+            @if (EndPage < TotalPages)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+
+            <!-- Next -->
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => OnPageChanged(CurrentPage + 1)">
+                    ›
+                </a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="() => OnPageChanged(TotalPages)">
+                    »
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Page Info -->
+    <div class="text-center mt-2">
+        <small class="text-muted">
+            Sahifa <strong>@CurrentPage</strong> / <strong>@TotalPages</strong>
+            (<strong>@TotalItems</strong> ta element, @PageSize tadan)
+        </small>
+    </div>
+}
+
+<style>
+    .pagination .page-link {
+        color: #667eea;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 0.75rem;
+        margin: 0 2px;
+        border-radius: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+        .pagination .page-link:hover {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        font-weight: bold;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+
+    /* Dark mode */
+    body.dark-mode .pagination .page-link {
+        background-color: #2d2d2d;
+        border-color: #404040;
+        color: #e0e0e0;
+    }
+
+        body.dark-mode .pagination .page-link:hover {
+            background-color: #667eea;
+            color: white;
+        }
+
+    body.dark-mode .pagination .page-item.disabled .page-link {
+        background-color: #1a1a1a;
+        color: #666;
+    }
+</style>
+
+@code {
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int TotalItems { get; set; }
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public EventCallback<int> OnPageChange { get; set; }
+
+    private int MaxPagesToShow = 5;
+
+    private int StartPage => Math.Max(1, CurrentPage - MaxPagesToShow / 2);
+    private int EndPage => Math.Min(TotalPages, StartPage + MaxPagesToShow - 1);
+
+    private async Task OnPageChanged(int page)
+    {
+        if (page < 1 || page > TotalPages || page == CurrentPage)
+            return;
+
+        await OnPageChange.InvokeAsync(page);
+    }
+}

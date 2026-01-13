@@ -45,7 +45,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="fw-bold">Manzil *</label>
-                            <InputText @bind-Value="currentHome.Address" class="form-control"
+                            <InputText @bind-Value="currentHome.Address" class="form-control" 
                                        placeholder="Manzilni kiriting" />
                             <ValidationMessage For="@(() => currentHome.Address)" class="text-danger small" />
                         </div>
@@ -62,25 +62,25 @@
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Narx (so'm) *</label>
-                            <InputNumber @bind-Value="currentHome.Price" class="form-control"
+                            <InputNumber @bind-Value="currentHome.Price" class="form-control" 
                                          placeholder="10,000 - 100,000,000" />
                             <ValidationMessage For="@(() => currentHome.Price)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Maydon (m²) *</label>
-                            <InputNumber @bind-Value="currentHome.Area" class="form-control"
+                            <InputNumber @bind-Value="currentHome.Area" class="form-control" 
                                          placeholder="10 - 10,000" />
                             <ValidationMessage For="@(() => currentHome.Area)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Yotoq xonalar *</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control"
+                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control" 
                                          placeholder="0 - 20" />
                             <ValidationMessage For="@(() => currentHome.NumberOfBedrooms)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Vanna xonalar *</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control"
+                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control" 
                                          placeholder="0 - 10" />
                             <ValidationMessage For="@(() => currentHome.NumberOfBathrooms)" class="text-danger small" />
                         </div>
@@ -96,7 +96,7 @@
                         </div>
                         <div class="col-12">
                             <label class="fw-bold">Qo'shimcha</label>
-                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control"
+                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control" 
                                            rows="2" placeholder="500 belgigacha" />
                             <ValidationMessage For="@(() => currentHome.AdditionalInfo)" class="text-danger small" />
                         </div>
@@ -173,16 +173,35 @@
 
     <!-- Sorting & Results -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <div><strong>@filteredHomes.Count</strong> ta uy</div>
-        <div class="d-flex gap-2 align-items-center">
-            <label class="mb-0">Saralash:</label>
-            <select class="form-select form-select-sm" style="width: auto;" @bind="sortBy" @bind:after="ApplyFilters">
-                <option value="default">Default</option>
-                <option value="price-asc">Narx ↑</option>
-                <option value="price-desc">Narx ↓</option>
-                <option value="area-asc">Maydon ↑</option>
-                <option value="area-desc">Maydon ↓</option>
-            </select>
+        <div>
+            <strong>@filteredHomes.Count</strong> ta uy
+            @if (filteredHomes.Count > 0)
+            {
+                <span class="text-muted">
+                    (ko'rsatilmoqda: @((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, filteredHomes.Count))
+                </span>
+            }
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+            <div class="d-flex gap-2 align-items-center">
+                <label class="mb-0 small">Sahifada:</label>
+                <select class="form-select form-select-sm" style="width: auto;" @bind="pageSize" @bind:after="OnPageSizeChanged">
+                    <option value="6">6</option>
+                    <option value="9">9</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                </select>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <label class="mb-0 small">Saralash:</label>
+                <select class="form-select form-select-sm" style="width: auto;" @bind="sortBy" @bind:after="ApplyFilters">
+                    <option value="default">Default</option>
+                    <option value="price-asc">Narx ↑</option>
+                    <option value="price-desc">Narx ↓</option>
+                    <option value="area-asc">Maydon ↑</option>
+                    <option value="area-desc">Maydon ↓</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -220,8 +239,8 @@
     }
     else
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var home in filteredHomes)
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+            @foreach (var home in pagedHomes)
             {
                 <div class="col">
                     <div class="card h-100 shadow hover-card">
@@ -235,7 +254,7 @@
                                 <span class="badge @GetTypeBadge(home.Type)">@GetTypeText(home.Type)</span>
                             </div>
                             <p class="text-muted small">@(home.AdditionalInfo ?? "—")</p>
-
+                            
                             <div class="small mb-3">
                                 <div class="d-flex justify-content-between">
                                     <span>🛏️ Yotoq:</span><strong>@home.NumberOfBedrooms</strong>
@@ -273,6 +292,13 @@
                 </div>
             }
         </div>
+
+        <!-- Pagination -->
+        <Pagination CurrentPage="@currentPage"
+                    TotalPages="@totalPages"
+                    TotalItems="@filteredHomes.Count"
+                    PageSize="@pageSize"
+                    OnPageChange="HandlePageChange" />
     }
 </div>
 
@@ -306,14 +332,8 @@
 }
 
 <style>
-    .hover-card {
-        transition: all 0.3s;
-    }
-
-        .hover-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
-        }
+    .hover-card { transition: all 0.3s; }
+    .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important; }
 
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.7);
@@ -328,13 +348,8 @@
     }
 
     @@keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     @@keyframes slideDown {
@@ -342,7 +357,6 @@
             transform: translateY(-50px);
             opacity: 0;
         }
-
         to {
             transform: translateY(0);
             opacity: 1;
@@ -388,7 +402,6 @@
         0% {
             background-position: 200% 0;
         }
-
         100% {
             background-position: -200% 0;
         }
@@ -421,6 +434,7 @@
 @code {
     private List<Home> homes = new();
     private List<Home> filteredHomes = new();
+    private List<Home> pagedHomes = new();
     private Home currentHome = new() { IsVacant = true, Type = HouseType.Flat };
 
     private bool isLoading = true;
@@ -429,6 +443,11 @@
     private bool showDeleteConfirm = false;
     private Guid deleteHomeId = Guid.Empty;
     private List<string> validationErrors = new();
+
+    // Pagination
+    private int currentPage = 1;
+    private int pageSize = 9;
+    private int totalPages = 1;
 
     private string searchQuery = "";
     private decimal? minPrice, maxPrice;
@@ -450,6 +469,7 @@
             {
                 homes = await response.Content.ReadFromJsonAsync<List<Home>>() ?? new();
                 filteredHomes = homes;
+                UpdatePagination();
             }
         }
         catch { }
@@ -488,9 +508,36 @@
         StateHasChanged();
     }
 
+    private void UpdatePagination()
+    {
+        totalPages = (int)Math.Ceiling(filteredHomes.Count / (double)pageSize);
+        if (currentPage > totalPages) currentPage = Math.Max(1, totalPages);
+        
+        pagedHomes = filteredHomes
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        StateHasChanged();
+    }
+
+    private void HandlePageChange(int page)
+    {
+        currentPage = page;
+        UpdatePagination();
+    }
+
+    private void OnPageSizeChanged()
+    {
+        currentPage = 1;
+        UpdatePagination();
+    }
+
     private void ApplyFiltersWithNotification()
     {
         ApplyFilters();
+        currentPage = 1;
+        UpdatePagination();
         ToastService.ShowInfo($"{filteredHomes.Count} ta uy topildi", "Qidiruv natijalari");
     }
 
@@ -499,10 +546,12 @@
         searchQuery = ""; minPrice = maxPrice = null; minArea = maxArea = null;
         filterBedrooms = filterType = ""; filterVacantOnly = false; sortBy = "default";
         filteredHomes = homes;
+        currentPage = 1;
+        UpdatePagination();
         StateHasChanged();
     }
 
-    private void ClearSearch() { searchQuery = ""; ApplyFilters(); }
+    private void ClearSearch() { searchQuery = ""; ApplyFilters(); UpdatePagination(); }
 
     private void ShowAddForm()
     {
@@ -511,10 +560,10 @@
         validationErrors.Clear();
     }
 
-    private void CancelForm()
-    {
-        showAddForm = false;
-        isEditing = false;
+    private void CancelForm() 
+    { 
+        showAddForm = false; 
+        isEditing = false; 
         validationErrors.Clear();
     }
 
@@ -574,18 +623,11 @@
         showAddForm = true; isEditing = true;
         currentHome = new Home
         {
-            Id = home.Id,
-            HostId = home.HostId,
-            Address = home.Address,
-            AdditionalInfo = home.AdditionalInfo,
-            IsVacant = home.IsVacant,
-            IsPetAllowed = home.IsPetAllowed,
-            IsShared = home.IsShared,
-            NumberOfBedrooms = home.NumberOfBedrooms,
-            NumberOfBathrooms = home.NumberOfBathrooms,
-            Area = home.Area,
-            Price = home.Price,
-            Type = home.Type
+            Id = home.Id, HostId = home.HostId, Address = home.Address,
+            AdditionalInfo = home.AdditionalInfo, IsVacant = home.IsVacant,
+            IsPetAllowed = home.IsPetAllowed, IsShared = home.IsShared,
+            NumberOfBedrooms = home.NumberOfBedrooms, NumberOfBathrooms = home.NumberOfBathrooms,
+            Area = home.Area, Price = home.Price, Type = home.Type
         };
     }
 
@@ -631,17 +673,13 @@
 
     private string GetTypeBadge(HouseType type) => type switch
     {
-        HouseType.Flat => "bg-primary",
-        HouseType.Bungalow => "bg-success",
-        HouseType.Duplex => "bg-warning",
-        _ => "bg-secondary"
+        HouseType.Flat => "bg-primary", HouseType.Bungalow => "bg-success",
+        HouseType.Duplex => "bg-warning", _ => "bg-secondary"
     };
 
     private string GetTypeText(HouseType type) => type switch
     {
-        HouseType.Flat => "Kvartira",
-        HouseType.Bungalow => "Bungalov",
-        HouseType.Duplex => "Duplex",
-        _ => "Boshqa"
+        HouseType.Flat => "Kvartira", HouseType.Bungalow => "Bungalov",
+        HouseType.Duplex => "Duplex", _ => "Boshqa"
     };
 }
