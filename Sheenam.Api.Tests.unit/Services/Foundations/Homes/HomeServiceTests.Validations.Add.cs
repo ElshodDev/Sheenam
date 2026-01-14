@@ -58,8 +58,8 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             // given
             var invalidHome = new Home
             {
-                Id = Guid.Empty,  
-                HostId = Guid.Empty,  
+                Id = Guid.Empty,
+                HostId = Guid.Empty,
                 Address = invalidText,
                 AdditionalInfo = invalidText,
                 Type = (HouseType)999

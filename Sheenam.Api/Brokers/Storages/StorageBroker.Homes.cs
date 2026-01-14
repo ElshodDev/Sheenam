@@ -25,6 +25,7 @@ namespace Sheenam.Api.Brokers.Storages
             await broker.SaveChangesAsync();
             return homeEntityEntry.Entity;
         }
+
         public IQueryable<Home> SelectAllHomes() =>
             this.Homes;
 
@@ -33,6 +34,7 @@ namespace Sheenam.Api.Brokers.Storages
             using var broker = new StorageBroker(this.configuration);
             return await broker.Homes.FindAsync(homeId);
         }
+
         public async ValueTask<Home> UpdateHomeAsync(Home home)
         {
             using var broker = new StorageBroker(this.configuration);
@@ -41,6 +43,7 @@ namespace Sheenam.Api.Brokers.Storages
             await broker.SaveChangesAsync();
             return homeEntityEntry.Entity;
         }
+
         public async ValueTask<Home> DeleteHomeAsync(Home home)
         {
             using var broker = new StorageBroker(this.configuration);
@@ -49,6 +52,7 @@ namespace Sheenam.Api.Brokers.Storages
             await broker.SaveChangesAsync();
             return homeEntityEntry.Entity;
         }
+
         public async ValueTask<Home> DeleteHomeByIdAsync(Guid homeId)
         {
             Home maybeHome = await this.SelectHomeByIdAsync(homeId);
@@ -62,14 +66,15 @@ namespace Sheenam.Api.Brokers.Storages
             return maybeHome;
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Home>().
-                Property(h => h.Type)
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Home>()
+                .Property(h => h.Type)
                 .HasConversion<string>();
 
-            base.OnModelCreating(modelBuilder);
+            ConfigureUsers(modelBuilder);
         }
     }
 }
