@@ -3,7 +3,9 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-namespace Sheenam.Blazor.Models.Foundations.HomeRequests
+using Sheenam.Blazor.Models.Foundations.HomeRequests;
+
+namespace Sheenam.Api.Models.Foundations.HomeRequests
 {
     public class HomeRequest
     {
@@ -15,5 +17,9 @@ namespace Sheenam.Blazor.Models.Foundations.HomeRequests
         public DateTimeOffset EndDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public HomeRequestStatus Status { get; set; } = HomeRequestStatus.Pending;
+
+        public string RejectionReason { get; set; }
     }
 }

@@ -62,9 +62,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
                 CreatedDate = DateTimeOffset.UtcNow,
                 UpdatedDate = DateTimeOffset.UtcNow,
                 Message = invalidText,
-                // ✅ YANGI:  Status default Pending bo'lishi kerak
                 Status = HomeRequestStatus.Pending,
-                // ✅ YANGI:  RejectionReason default null
                 RejectionReason = null
             };
             var invalidHomeRequestException =
@@ -95,7 +93,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
-        // ✅ YANGI TEST: Invalid Status uchun validation
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfStatusIsInvalidAndLogItAsync()
         {
@@ -110,7 +107,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
                 CreatedDate = DateTimeOffset.UtcNow,
                 UpdatedDate = DateTimeOffset.UtcNow,
                 Message = "Valid message",
-                // ❌ Invalid enum value
                 Status = (HomeRequestStatus)999,
                 RejectionReason = null
             };

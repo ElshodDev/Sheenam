@@ -53,15 +53,11 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)
-                // ✅ YANGI:  RejectionReason default null bo'lishi kerak
                 .OnProperty(hr => hr.RejectionReason).Use(() => null)
-                // ✅ YANGI: Status default Pending bo'lishi kerak
                 .OnProperty(hr => hr.Status).Use(HomeRequestStatus.Pending);
 
             return filler;
         }
-
-        // ✅ YANGI: Status bilan random HomeRequest yaratish uchun helper method
         private static HomeRequest CreateRandomHomeRequestWithStatus(HomeRequestStatus status)
         {
             HomeRequest homeRequest = CreateRandomHomeRequest();
