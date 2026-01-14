@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +56,7 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(homeRequestDependencyException.InnerException);
             }
         }
+
         [HttpGet]
         public ValueTask<ActionResult<IQueryable<HomeRequest>>> GetAllHomeRequests()
         {
@@ -101,8 +102,35 @@ namespace Sheenam.Api.Controllers
             }
         }
 
+        // 🆕 GET by Status
+        [HttpGet("status/{status}")]
+        public ValueTask<ActionResult<IQueryable<HomeRequest>>> GetHomeRequestsByStatusAsync(
+            HomeRequestStatus status)
+        {
+            try
+            {
+                IQueryable<HomeRequest> retrievedHomeRequests =
+                    this.homeRequestService.RetrieveHomeRequestsByStatusAsync(status);
+
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
+                    Ok(retrievedHomeRequests));
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
+                    InternalServerError(homeRequestDependencyException.InnerException));
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
+                    InternalServerError(homeRequestServiceException.InnerException));
+            }
+        }
+
         [HttpPut("{homeRequestId}")]
-        public async ValueTask<ActionResult<HomeRequest>> PutHomeRequestAsync(Guid homeRequestId, HomeRequest homeRequest)
+        public async ValueTask<ActionResult<HomeRequest>> PutHomeRequestAsync(
+            Guid homeRequestId,
+            HomeRequest homeRequest)
         {
             try
             {
@@ -124,6 +152,126 @@ namespace Sheenam.Api.Controllers
             catch (HomeRequestDependencyValidationException homeRequestDependencyValidationException)
             {
                 return BadRequest(homeRequestDependencyValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(homeRequestServiceException.InnerException);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError(exception);
+                return InternalServerError(exception);
+            }
+        }
+
+        // 🆕 POST Approve
+        [HttpPost("{homeRequestId}/approve")]
+        public async ValueTask<ActionResult<HomeRequest>> ApproveHomeRequestAsync(
+            Guid homeRequestId)
+        {
+            try
+            {
+                HomeRequest approvedHomeRequest =
+                    await this.homeRequestService.ApproveHomeRequestAsync(homeRequestId);
+
+                return Ok(approvedHomeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
+            }
+            catch (InvalidHomeRequestStatusException invalidStatusException)
+            {
+                return BadRequest(invalidStatusException);
+            }
+            catch (NotFoundHomeRequestException notFoundException)
+            {
+                return NotFound(notFoundException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(homeRequestServiceException.InnerException);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError(exception);
+                return InternalServerError(exception);
+            }
+        }
+
+        // 🆕 POST Reject
+        [HttpPost("{homeRequestId}/reject")]
+        public async ValueTask<ActionResult<HomeRequest>> RejectHomeRequestAsync(
+            Guid homeRequestId,
+            [FromQuery] string rejectionReason = null)
+        {
+            try
+            {
+                HomeRequest rejectedHomeRequest =
+                    await this.homeRequestService.RejectHomeRequestAsync(
+                        homeRequestId,
+                        rejectionReason);
+
+                return Ok(rejectedHomeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
+            }
+            catch (InvalidHomeRequestStatusException invalidStatusException)
+            {
+                return BadRequest(invalidStatusException);
+            }
+            catch (NotFoundHomeRequestException notFoundException)
+            {
+                return NotFound(notFoundException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(homeRequestServiceException.InnerException);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError(exception);
+                return InternalServerError(exception);
+            }
+        }
+
+        // 🆕 POST Cancel
+        [HttpPost("{homeRequestId}/cancel")]
+        public async ValueTask<ActionResult<HomeRequest>> CancelHomeRequestAsync(
+            Guid homeRequestId)
+        {
+            try
+            {
+                HomeRequest cancelledHomeRequest =
+                    await this.homeRequestService.CancelHomeRequestAsync(homeRequestId);
+
+                return Ok(cancelledHomeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
+            }
+            catch (InvalidHomeRequestStatusException invalidStatusException)
+            {
+                return BadRequest(invalidStatusException);
+            }
+            catch (NotFoundHomeRequestException notFoundException)
+            {
+                return NotFound(notFoundException);
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
