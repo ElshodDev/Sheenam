@@ -1,19 +1,25 @@
-//===================================================
+﻿//===================================================
 // Copyright (c) Coalition  of Good-Hearted Engineers
 // Free To Use  To Find Comfort and Peace
 //===================================================
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
+using Sheenam.Api.Services.Foundations.Auth;
 using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Hosts;
+using Sheenam.Api.Services.Foundations.Users;
+using System.Text;
 
 namespace Sheenam.Api
 {
@@ -26,28 +32,25 @@ namespace Sheenam.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var apiInfo = new OpenApiInfo
-            {
-                Title = "Sheenam.Api",
-                Version = "v1"
-            };
-
             services.AddControllers();
             services.AddDbContext<StorageBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+
             AddBrokers(services);
             AddFoundationService(services);
 
-            // CORS sozlamalari qo'shildi
+            // ✅ JWT Authentication
+            AddJwtAuthentication(services);
+
+            // CORS sozlamalari
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowBlazor", builder =>
                 {
                     builder
                         .WithOrigins(
-                            "http://localhost:5184",  // Blazor default porti
-                            "https://localhost:5185", // HTTPS porti
-                            "http://localhost:5000",  // Boshqa portlar
+                            "http://localhost:5184",
+                            "https://localhost:5185",
+                            "http://localhost:5000",
                             "https://localhost:5001"
                         )
                         .AllowAnyMethod()
@@ -56,11 +59,41 @@ namespace Sheenam.Api
                 });
             });
 
+            // ✅ Swagger with JWT support
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc(
-                    name: "v1",
-                    info: apiInfo);
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Sheenam.Api",
+                    Version = "v1",
+                    Description = "Home rental API with JWT Authentication"
+                });
+
+                // JWT Authorization in Swagger
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your token"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
         }
 
@@ -81,9 +114,11 @@ namespace Sheenam.Api
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // CORS middleware qo'shildi (UseRouting dan keyin, UseAuthorization dan oldin)
+            // CORS middleware
             app.UseCors("AllowBlazor");
 
+            // ✅ Authentication & Authorization (CORS dan keyin!)
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -102,6 +137,38 @@ namespace Sheenam.Api
             services.AddTransient<IHomeService, HomeService>();
             services.AddTransient<IHostService, HostService>();
             services.AddTransient<IHomeRequestService, HomeRequestService>();
+
+            // ✅ User & Auth Services
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IAuthService, AuthService>();
+        }
+
+        // ✅ JWT Configuration
+        private void AddJwtAuthentication(IServiceCollection services)
+        {
+            var jwtSettings = Configuration.GetSection("JwtSettings");
+            var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+                };
+            });
+
+            services.AddAuthorization();
         }
     }
 }
