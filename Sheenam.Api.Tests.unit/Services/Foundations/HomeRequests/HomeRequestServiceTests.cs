@@ -30,7 +30,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             this.homeRequestService = new HomeRequestService(
                  storageBroker: this.storageBrokerMock.Object,
                  loggingBroker: this.loggingBrokerMock.Object);
-
         }
 
         private static HomeRequest CreateRandomHomeRequest() =>
@@ -53,9 +52,21 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             var filler = new Filler<HomeRequest>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(date);
+                .OnType<DateTimeOffset>().Use(date)
+                // ✅ YANGI:  RejectionReason default null bo'lishi kerak
+                .OnProperty(hr => hr.RejectionReason).Use(() => null)
+                // ✅ YANGI: Status default Pending bo'lishi kerak
+                .OnProperty(hr => hr.Status).Use(HomeRequestStatus.Pending);
 
             return filler;
+        }
+
+        // ✅ YANGI: Status bilan random HomeRequest yaratish uchun helper method
+        private static HomeRequest CreateRandomHomeRequestWithStatus(HomeRequestStatus status)
+        {
+            HomeRequest homeRequest = CreateRandomHomeRequest();
+            homeRequest.Status = status;
+            return homeRequest;
         }
 
         private static string GetRandomString() =>

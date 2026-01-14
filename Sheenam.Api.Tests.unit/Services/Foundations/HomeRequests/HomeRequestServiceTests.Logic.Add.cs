@@ -21,6 +21,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             HomeRequest storageHomeRequest = inputHomeRequest;
             HomeRequest expectedHomeRequest = storageHomeRequest.DeepClone();
 
+            // ✅ YANGI: Status va RejectionReason default qiymatlari
+            expectedHomeRequest.Status = HomeRequestStatus.Pending;
+            expectedHomeRequest.RejectionReason = null;
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertHomeRequestAsync(inputHomeRequest))
                     .ReturnsAsync(storageHomeRequest);
@@ -31,6 +35,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             // then
             actualHomeRequest.Should().BeEquivalentTo(expectedHomeRequest);
+            // ✅ YANGI:  Status Pending bo'lishi kerakligini tekshirish
+            actualHomeRequest.Status.Should().Be(HomeRequestStatus.Pending);
+            // ✅ YANGI:  RejectionReason null bo'lishi kerakligini tekshirish
+            actualHomeRequest.RejectionReason.Should().BeNull();
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertHomeRequestAsync(inputHomeRequest),

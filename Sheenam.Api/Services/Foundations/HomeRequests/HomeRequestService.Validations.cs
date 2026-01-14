@@ -6,6 +6,7 @@
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 using System;
+using System.Data;
 
 namespace Sheenam.Api.Services.Foundations.HomeRequests
 {
@@ -22,7 +23,8 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
               (Rule: IsInvalid(homeRequest.StartDate), Parameter: nameof(HomeRequest.StartDate)),
               (Rule: IsInvalid(homeRequest.EndDate), Parameter: nameof(HomeRequest.EndDate)),
               (Rule: IsInvalid(homeRequest.CreatedDate), Parameter: nameof(HomeRequest.CreatedDate)),
-              (Rule: IsInvalid(homeRequest.UpdatedDate), Parameter: nameof(HomeRequest.UpdatedDate)));
+              (Rule: IsInvalid(homeRequest.UpdatedDate), Parameter: nameof(HomeRequest.UpdatedDate)),
+              (Rule: IsInvalid(homeRequest.Status), Parameter: nameof(HomeRequest.Status)));
         }
         private void ValidateHomeRequestNotNull(HomeRequest homeRequest)
         {
@@ -65,5 +67,10 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
             }
             invalidHomeRequestException.ThrowIfContainsErrors();
         }
+        private static dynamic IsInvalid(HomeRequestStatus status) => new
+        {
+            Condition = Enum.IsDefined(typeof(HomeRequestStatus), status) is false,
+            Message = "Value is invalid"
+        };
     }
 }
