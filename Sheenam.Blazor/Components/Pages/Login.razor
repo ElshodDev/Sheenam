@@ -1,0 +1,141 @@
+﻿@page "/login"
+@using Sheenam.Blazor.Models.Auth
+@using Sheenam.Blazor.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject ToastService Toast
+
+<PageTitle>Login - Sheenam</PageTitle>
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>🔐 Login</h2>
+
+        <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="loginRequest.Email"
+                           class="form-control"
+                           placeholder="your@email.com" />
+                <ValidationMessage For="@(() => loginRequest.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="loginRequest.Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="••••••••" />
+                <ValidationMessage For="@(() => loginRequest.Password)" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                Login
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginRequest = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await AuthService.LoginAsync(loginRequest);
+
+            if (response != null && !string.IsNullOrEmpty(response.Token))
+            {
+                ((CustomAuthStateProvider)AuthStateProvider).NotifyUserAuthentication(response.Token);
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid email or password";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+    . form-group {
+        margin-bottom: 1rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+    .w-100 {
+        width: 100%;
+    }
+
+    .alert {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+    }
+
+    . alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>

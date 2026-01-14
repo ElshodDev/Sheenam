@@ -2,6 +2,8 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
+using Microsoft.AspNetCore.Components.Authorization;
 using Sheenam.Blazor.Components;
 using Sheenam.Blazor.Services;
 
@@ -18,7 +20,7 @@ namespace Sheenam.Blazor
 
             builder.Services.AddHttpClient();
 
-            builder.Services.AddSingleton(sp =>
+            builder.Services.AddScoped(sp =>
             {
                 var config = sp.GetRequiredService<IConfiguration>();
                 var baseUrl = config["ApiSettings:BaseUrl"] ?? "https://localhost:5001/";
@@ -33,6 +35,11 @@ namespace Sheenam.Blazor
 
             builder.Services.AddScoped<ToastService>();
             builder.Services.AddScoped<HomeRequestService>();
+
+            builder.Services.AddScoped<TokenStorageService>();
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddAuthorizationCore();
 
             var app = builder.Build();
 
