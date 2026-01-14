@@ -35,9 +35,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             // then
             actualHomeRequest.Should().BeEquivalentTo(expectedHomeRequest);
-            // ✅ YANGI:  Status Pending bo'lishi kerakligini tekshirish
             actualHomeRequest.Status.Should().Be(HomeRequestStatus.Pending);
-            // ✅ YANGI:  RejectionReason null bo'lishi kerakligini tekshirish
             actualHomeRequest.RejectionReason.Should().BeNull();
 
             this.storageBrokerMock.Verify(broker =>
