@@ -17,5 +17,7 @@ namespace Sheenam.Api.Models.Foundations.HomeRequests
         public DateTimeOffset EndDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public HomeRequestStatus Status { get; set; }= HomeRequestStatus.Pending;
     }
 }
