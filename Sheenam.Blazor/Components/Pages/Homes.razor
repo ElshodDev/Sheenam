@@ -1,4 +1,5 @@
 ﻿@page "/homes"
+@attribute [Authorize]
 @using Sheenam.Blazor.Models.Foundations.Homes
 @using Sheenam.Blazor.Models.Foundations.Hosts
 @using Sheenam.Blazor.Services
@@ -6,7 +7,7 @@
 @inject HttpClient HttpClient
 @inject ToastService ToastService
 
-<PageTitle>Uylar</PageTitle>
+<PageTitle>Uylar - Sheenam</PageTitle>
 
 <div class="container my-5">
     <!-- Header -->

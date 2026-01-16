@@ -67,25 +67,50 @@
 
         try
         {
+            Console.WriteLine("🔐 [Blazor] Login started...");
+            Console.WriteLine($"📧 [Blazor] Email: {loginRequest.Email}");
+
             var response = await AuthService.LoginAsync(loginRequest);
+
+            Console.WriteLine($"📦 [Blazor] Response:  {(response == null ? "NULL" : "OK")}");
 
             if (response != null && !string.IsNullOrEmpty(response.Token))
             {
+                var tokenPreview = response.Token.Length > 20
+                    ? response.Token.Substring(0, 20) + "..."
+                    : response.Token;
+
+                Console.WriteLine($"✅ [Blazor] Token received: {tokenPreview}");
+
+                // ✅ Authentication state'ni yangilash
                 ((CustomAuthStateProvider)AuthStateProvider).NotifyUserAuthentication(response.Token);
-                Navigation.NavigateTo("/");
+
+                Console.WriteLine("✅ [Blazor] Auth state updated");
+
+                // ✅ Biroz kutish (state yangilanishi uchun)
+                await Task.Delay(500);
+
+                Console.WriteLine("🔄 [Blazor] Redirecting.. .");
+
+                // ✅ MUHIM: forceLoad:  false (page reload bo'lmasin, token saqlansin)
+                Navigation.NavigateTo("/", forceLoad: false);
             }
             else
             {
                 errorMessage = "Invalid email or password";
+                Console.WriteLine("❌ [Blazor] No token received");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Login failed: {ex.Message}";
+            errorMessage = $"Login failed:  {ex.Message}";
+            Console.WriteLine($"❌ [Blazor] Exception: {ex.Message}");
+            Console.WriteLine($"❌ [Blazor] Stack: {ex.StackTrace}");
         }
         finally
         {
             isLoading = false;
+            Console.WriteLine("🏁 [Blazor] Login finished");
         }
     }
 }
@@ -98,7 +123,7 @@
         min-height: 80vh;
     }
 
-    .login-card {
+    . login-card {
         width: 100%;
         max-width: 400px;
         padding: 2rem;
@@ -107,7 +132,7 @@
         background: white;
     }
 
-        .login-card h2 {
+        . login-card h2 {
             text-align: center;
             margin-bottom: 1.5rem;
             color: #333;
@@ -130,12 +155,91 @@
     .alert {
         padding: 0.75rem;
         margin-bottom: 1rem;
-        border-radius: 5px;
+        border-radius: 0.5rem;
     }
 
-    . alert-danger {
+    .alert-danger {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        animation: spinner-border 0.75s linear infinite;
+    }
+
+    @@keyframes spinner-border {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .spinner-border-sm {
+        width: 0.875rem;
+        height: 0.875rem;
+        border-width: 0.15em;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mt-3 {
+        margin-top: 1rem;
+    }
+
+    a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
 </style>

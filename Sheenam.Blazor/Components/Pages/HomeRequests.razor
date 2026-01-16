@@ -1,10 +1,11 @@
 ﻿@page "/home-requests"
+@attribute [Authorize]
 @using Sheenam.Api.Models.Foundations.HomeRequests
 @using Sheenam.Blazor.Models.Foundations.HomeRequests
 @using Sheenam.Blazor.Services
 @inject HomeRequestService HomeRequestService
 
-<PageTitle>Uy so'rovlari boshqaruvi</PageTitle>
+<PageTitle>Uy so'rovlari - Sheenam</PageTitle>
 
 <div class="container my-5">
     <h1 class="text-center mb-5 display-5 fw-bold text-indigo">

@@ -1,26 +1,60 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 
 <div class="page">
     <div class="sidebar">
         <NavMenu OnShowHelpModal="HandleShowHelpModal" />
     </div>
+
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-            <a href="https://t.me/Ibodullayev_E_M" target="_blank">support</a>
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="top-links">
+                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+                    <a href="https://t.me/Ibodullayev_E_M" target="_blank">Support</a>
+                </div>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="user-badge">
+                            <span class="user-icon">👤</span>
+                            <span class="user-name">@GetUserName(context)</span>
+                        </div>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/login" class="login-link">🔐 Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
         </div>
+
         <article class="content px-4">
-            @Body
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <div class="alert alert-danger error-box">
+                        <h3>⚠️ An error occurred</h3>
+                        <p class="error-message">@ex.Message</p>
+                        <button class="btn btn-primary" @onclick="ReloadPage">
+                            🔄 Reload Page
+                        </button>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
         </article>
     </main>
 </div>
 
-<!-- Help Modal - Body level'da -->
+<!-- Help Modal -->
 <HelpModal IsVisible="showHelpModal" OnClose="HandleCloseHelpModal" />
 
 <!-- Toast Notifications -->
 <ToastProvider />
 
+<!-- Blazor Error UI -->
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
@@ -40,5 +74,27 @@
     {
         showHelpModal = false;
         StateHasChanged();
+    }
+
+    private void ReloadPage()
+    {
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+
+    private string GetUserName(AuthenticationState authState)
+    {
+        var name = authState.User.Identity?.Name;
+
+        if (!string.IsNullOrEmpty(name))
+            return name;
+
+        var firstName = authState.User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value;
+        var lastName = authState.User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value;
+
+        if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName))
+            return $"{firstName} {lastName}".Trim();
+
+        var email = authState.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+        return email ??  "User";
     }
 }
