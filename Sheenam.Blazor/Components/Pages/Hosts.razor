@@ -1,11 +1,11 @@
 ﻿@page "/hosts"
+@attribute [Authorize]
 @using Sheenam.Blazor.Models.Foundations.Guests
 @using Sheenam.Blazor.Models.Foundations.Hosts
 @using System.Net.Http.Json
 @inject HttpClient HttpClient
 
-<PageTitle>Hostlar</PageTitle>
-
+<PageTitle>Hostlar - Sheenam</PageTitle>
 <div class="container my-5">
     <h1 class="text-center mb-5 display-5 fw-bold text-success">
         🏡 Hostlar ro'yxati

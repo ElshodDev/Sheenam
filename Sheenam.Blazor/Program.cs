@@ -15,6 +15,7 @@ namespace Sheenam.Blazor
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // ✅ Prerendering'siz Razor Components
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
@@ -49,8 +50,11 @@ namespace Sheenam.Blazor
                 app.UseHsts();
             }
 
+            app.UseHttpsRedirection();  // ✅ HTTPS redirect
             app.UseAntiforgery();
             app.MapStaticAssets();
+
+            // ✅ Prerendering mode'ni InteractiveServer'ga o'zgartirish
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
