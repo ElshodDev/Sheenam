@@ -1,0 +1,131 @@
+@* ===================================================
+   Copyright (c) Coalition of Good-Hearted Engineers
+   Free To Use To Find Comfort and Peace
+   =================================================== *@
+
+@using Sheenam.Blazor.Models.Foundations.Guests
+
+<div class="guest-form">
+    <EditForm Model="@Guest" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <InputText id="firstName" 
+                          @bind-Value="Guest.FirstName" 
+                          class="form-control" 
+                          placeholder="Enter first name" />
+                <ValidationMessage For="@(() => Guest.FirstName)" />
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <InputText id="lastName" 
+                          @bind-Value="Guest.LastName" 
+                          class="form-control" 
+                          placeholder="Enter last name" />
+                <ValidationMessage For="@(() => Guest.LastName)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <InputText id="email" 
+                          type="email"
+                          @bind-Value="Guest.Email" 
+                          class="form-control" 
+                          placeholder="Enter email" />
+                <ValidationMessage For="@(() => Guest.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <InputText id="phone" 
+                          @bind-Value="Guest.PhoneNumber" 
+                          class="form-control" 
+                          placeholder="Enter phone number" />
+                <ValidationMessage For="@(() => Guest.PhoneNumber)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="dateOfBirth">Date of Birth</label>
+                <InputDate id="dateOfBirth" 
+                          @bind-Value="Guest.DateOfBirth" 
+                          class="form-control" />
+                <ValidationMessage For="@(() => Guest.DateOfBirth)" />
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <InputSelect id="gender" 
+                            @bind-Value="Guest.Gender" 
+                            class="form-control">
+                    <option value="">Select gender</option>
+                    @foreach (var gender in Enum.GetValues<GenderType>())
+                    {
+                        <option value="@gender">@gender</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Guest.Gender)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <InputTextArea id="address" 
+                          @bind-Value="Guest.Address" 
+                          class="form-control" 
+                          rows="3"
+                          placeholder="Enter full address" />
+            <ValidationMessage For="@(() => Guest.Address)" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" 
+                    class="btn btn-primary" 
+                    disabled="@IsSubmitting">
+                @if (IsSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                @SubmitButtonText
+            </button>
+            
+            @if (OnCancel.HasDelegate)
+            {
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        @onclick="OnCancel"
+                        disabled="@IsSubmitting">
+                    Cancel
+                </button>
+            }
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public Guest Guest { get; set; } = new Guest();
+
+    [Parameter]
+    public EventCallback<Guest> OnValidSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public bool IsSubmitting { get; set; }
+
+    [Parameter]
+    public string SubmitButtonText { get; set; } = "Submit";
+
+    private async Task HandleValidSubmit()
+    {
+        await OnValidSubmit.InvokeAsync(Guest);
+    }
+}

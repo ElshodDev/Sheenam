@@ -1,314 +1,138 @@
-﻿@using System.Net.Http.Json
-@using Microsoft.AspNetCore.Components.Authorization
-@inject HttpClient HttpClient
-@inject IJSRuntime JSRuntime
+﻿@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
-@inject Sheenam.Blazor.Services.AuthService AuthService
 @inject NavigationManager Navigation
-@implements IDisposable
+@inject Services.TokenStorageService TokenStorage
 
-<AuthorizeView>
-    <Authorized>
-        <div class="top-row ps-3 navbar navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="">
-                    <span class="logo-icon">🏡</span>
-                    <span class="logo-text">Sheenam</span>
-                </a>
-                <div class="user-info">
-                    <span class="user-name">👤 @GetUserFullName(context)</span>
-                    <span class="user-role">@GetUserRole(context)</span>
+<div class="sidebar-container">
+    <div class="brand-box">
+        <div class="logo-circle">
+            🏠
+        </div>
+        <div class="brand-info">
+            <h3>Sheenam</h3>
+            <span>Dashboard v1.0</span>
+        </div>
+    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    @GetUserInitials(context)
+                </div>
+                <div class="profile-text">
+                    <span class="name">@GetFullName(context)</span>
+                    <span class="role">@GetUserRole(context)</span>
                 </div>
             </div>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <div class="top-row ps-3 navbar navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="">
-                    <span class="logo-icon">🏡</span>
-                    <span class="logo-text">Sheenam</span>
-                </a>
-            </div>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+        </Authorized>
+    </AuthorizeView>
 
-<input type="checkbox" title="Navigation menu" id="navToggle" class="navbar-toggler" />
+    <nav class="nav-scroll">
+        <div class="menu-label">ASOSIY</div>
+        <div class="nav-item-wrapper">
+            <NavLink class="modern-nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="icon">📊</span>
+                <span class="label">Dashboard</span>
+                @if (homesCount > 0)
+                {
+                    <span class="badge-pill">@homesCount</span>
+                }
+            </NavLink>
+        </div>
 
-<div class="nav-scrollable" onclick="document.getElementById('navToggle').click()">
-    <nav class="flex-column">
+        <div class="menu-label">BOSHQARUV</div>
+        <div class="nav-item-wrapper">
+            <NavLink class="modern-nav-link" href="/hosts">
+                <span class="icon">👨‍💼</span>
+                <span class="label">Hostlar</span>
+                @if (hostsCount > 0)
+                {
+                    <span class="badge-pill success">@hostsCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <div class="nav-item-wrapper">
+            <NavLink class="modern-nav-link" href="/homes">
+                <span class="icon">🏡</span>
+                <span class="label">Uylar</span>
+                @if (homesCount > 0)
+                {
+                    <span class="badge-pill info">@homesCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <div class="nav-item-wrapper">
+            <NavLink class="modern-nav-link" href="/guests">
+                <span class="icon">👥</span>
+                <span class="label">Mehmonlar</span>
+                @if (guestsCount > 0)
+                {
+                    <span class="badge-pill warning">@guestsCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <div class="nav-item-wrapper">
+            <NavLink class="modern-nav-link" href="/home-requests">
+                <span class="icon">✉️</span>
+                <span class="label">So'rovlar</span>
+                @if (requestsCount > 0)
+                {
+                    <span class="badge-pill danger">@requestsCount</span>
+                }
+            </NavLink>
+        </div>
+
+        <div class="menu-gap"></div>
+
+        <div class="menu-label">TIZIM</div>
+        <div class="nav-item-wrapper">
+            <button class="modern-nav-link btn-reset" @onclick="() => OnShowHelpModal.InvokeAsync(true)">
+                <span class="icon">❓</span>
+                <span class="label">Yordam</span>
+            </button>
+        </div>
+
         <AuthorizeView>
-            <Authorized Context="navContext">
-                <!-- Dashboard -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="nav-icon">📊</span>
-                        <span class="nav-text">Dashboard</span>
-                    </NavLink>
-                </div>
-
-                <!-- Hosts -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="hosts">
-                        <span class="nav-icon">🏡</span>
-                        <span class="nav-text">Hostlar</span>
-                        @if (hostCount > 0)
-                        {
-                            <span class="nav-badge">@hostCount</span>
-                        }
-                    </NavLink>
-                </div>
-
-                <!-- Homes -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="homes">
-                        <span class="nav-icon">🏠</span>
-                        <span class="nav-text">Uylar</span>
-                        @if (homeCount > 0)
-                        {
-                            <span class="nav-badge">@homeCount</span>
-                        }
-                    </NavLink>
-                </div>
-
-                <!-- Guests -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="guests">
-                        <span class="nav-icon">👥</span>
-                        <span class="nav-text">Mehmonlar</span>
-                        @if (guestCount > 0)
-                        {
-                            <span class="nav-badge">@guestCount</span>
-                        }
-                    </NavLink>
-                </div>
-
-                <!-- Home Requests -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="home-requests">
-                        <span class="nav-icon">✉️</span>
-                        <span class="nav-text">So'rovlar</span>
-                        @if (requestCount > 0)
-                        {
-                            <span class="nav-badge badge-warning">@requestCount</span>
-                        }
-                    </NavLink>
-                </div>
-
-                <!-- Admin Only:  Users -->
-                <AuthorizeView Roles="Admin">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="admin/users">
-                            <span class="nav-icon">👨‍💼</span>
-                            <span class="nav-text">Foydalanuvchilar</span>
-                        </NavLink>
-                    </div>
-                </AuthorizeView>
-
-                <hr class="my-3 border-light opacity-25" />
-
-                <!-- Settings Section -->
-                <div class="nav-section-title px-3">
-                    <small class="text-muted text-uppercase fw-bold">Sozlamalar</small>
-                </div>
-
-                <!-- Profile -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="profile">
-                        <span class="nav-icon">👤</span>
-                        <span class="nav-text">Profil</span>
-                    </NavLink>
-                </div>
-
-                <!-- Dark Mode Toggle -->
-                <div class="nav-item px-3">
-                    <a class="nav-link" href="javascript:void(0)" @onclick="ToggleDarkMode">
-                        <span class="nav-icon">@(isDarkMode ? "🌙" : "☀️")</span>
-                        <span class="nav-text">@(isDarkMode ? "Dark Mode" : "Light Mode")</span>
-                    </a>
-                </div>
-
-                <!-- Help -->
-                <div class="nav-item px-3">
-                    <a class="nav-link" href="javascript:void(0)" @onclick="ShowHelp">
-                        <span class="nav-icon">❓</span>
-                        <span class="nav-text">Yordam</span>
-                    </a>
-                </div>
-
-                <!-- Logout -->
-                <div class="nav-item px-3">
-                    <a class="nav-link logout-link" href="javascript:void(0)" @onclick="HandleLogout">
-                        <span class="nav-icon">🚪</span>
-                        <span class="nav-text">Chiqish</span>
-                    </a>
+            <Authorized>
+                <div class="nav-item-wrapper">
+                    <button class="modern-nav-link logout-style btn-reset" @onclick="HandleLogout">
+                        <span class="icon">🚪</span>
+                        <span class="label">Chiqish</span>
+                    </button>
                 </div>
             </Authorized>
             <NotAuthorized>
-                <!-- Login -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="login">
-                        <span class="nav-icon">🔐</span>
-                        <span class="nav-text">Kirish</span>
-                    </NavLink>
-                </div>
-
-                <!-- Register -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="register">
-                        <span class="nav-icon">📝</span>
-                        <span class="nav-text">Ro'yxatdan o'tish</span>
+                <div class="nav-item-wrapper">
+                    <NavLink class="modern-nav-link" href="/login">
+                        <span class="icon">🔐</span>
+                        <span class="label">Kirish</span>
                     </NavLink>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
-
-        <!-- Footer Info -->
-        <div class="nav-footer px-3 mt-4">
-            <small class="text-muted d-block mb-1">
-                <strong>Sheenam v1.0</strong>
-            </small>
-            <small class="text-muted">
-                © 2025 Good-Hearted Engineers
-            </small>
-        </div>
     </nav>
 </div>
 
-<!-- CSS STYLES...  (oldingi CSS'ni qoldiring) -->
 @code {
-    private int hostCount = 0;
-    private int homeCount = 0;
-    private int guestCount = 0;
-    private int requestCount = 0;
-    private bool isDarkMode = false;
+    [Parameter] public EventCallback<bool> OnShowHelpModal { get; set; }
 
-    [Parameter]
-    public EventCallback<bool> OnShowHelpModal { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        Console.WriteLine("🔧 [NavMenu] Initializing...");
-
-        // ✅ Authentication state o'zgarishini kuzatish
-        ((Sheenam.Blazor.Services.CustomAuthStateProvider)AuthStateProvider)
-            .AuthenticationStateChanged += OnAuthenticationStateChanged;
-
-        await LoadCounts();
-        LoadDarkModePreference();
-
-        // ✅ Current auth state'ni check qilish
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        Console.WriteLine($"🔧 [NavMenu] User authenticated: {authState.User.Identity?.IsAuthenticated}");
-    }
-
-    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
-    {
-        Console.WriteLine("🔄 [NavMenu] Authentication state changed!");
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        ((Sheenam.Blazor.Services.CustomAuthStateProvider)AuthStateProvider)
-            .AuthenticationStateChanged -= OnAuthenticationStateChanged;
-    }
-
-    private async Task LoadCounts()
-    {
-        try
-        {
-            var hostsTask = HttpClient.GetFromJsonAsync<List<object>>("api/Hosts");
-            var homesTask = HttpClient.GetFromJsonAsync<List<object>>("api/Homes");
-            var guestsTask = HttpClient.GetFromJsonAsync<List<object>>("api/Guests");
-            var requestsTask = HttpClient.GetFromJsonAsync<List<object>>("api/HomeRequests");
-
-            await Task.WhenAll(hostsTask, homesTask, guestsTask, requestsTask);
-
-            hostCount = (await hostsTask)?.Count ?? 0;
-            homeCount = (await homesTask)?.Count ?? 0;
-            guestCount = (await guestsTask)?.Count ?? 0;
-            requestCount = (await requestsTask)?.Count ?? 0;
-
-            Console.WriteLine($"📊 [NavMenu] Counts loaded:  Hosts={hostCount}, Homes={homeCount}");
-
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ [NavMenu] Count load error: {ex.Message}");
-        }
-    }
-
-    private void LoadDarkModePreference()
-    {
-        // LocalStorage dan o'qish (kelajakda qo'shamiz)
-    }
-
-    private void ToggleDarkMode()
-    {
-        isDarkMode = !isDarkMode;
-        ApplyDarkMode();
-        StateHasChanged();
-    }
-
-    private void ApplyDarkMode()
-    {
-        try
-        {
-            if (isDarkMode)
-            {
-                _ = JSRuntime.InvokeVoidAsync("eval", "document.body.classList.add('dark-mode')");
-            }
-            else
-            {
-                _ = JSRuntime.InvokeVoidAsync("eval", "document.body.classList.remove('dark-mode')");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ [NavMenu] Dark mode error: {ex.Message}");
-        }
-    }
-
-    private async Task ShowHelp()
-    {
-        await OnShowHelpModal.InvokeAsync(true);
-    }
+    // Mock Data
+    private int hostsCount = 3;
+    private int homesCount = 4;
+    private readonly int guestsCount = 3;
+    private readonly int requestsCount = 2;
 
     private async Task HandleLogout()
     {
-        Console.WriteLine("🚪 [NavMenu] Logging out...");
-        await AuthService.LogoutAsync();
-        ((Sheenam.Blazor.Services.CustomAuthStateProvider)AuthStateProvider).NotifyUserLogout();
-        Navigation.NavigateTo("/login");
+        await TokenStorage.RemoveTokenAsync();
+        Navigation.NavigateTo("/login", forceLoad: true);
     }
 
-    private string GetUserFullName(AuthenticationState authState)
-    {
-        var firstName = authState.User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? "";
-        var lastName = authState.User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value ?? "";
-
-        Console.WriteLine($"🔍 [NavMenu] FirstName: '{firstName}', LastName: '{lastName}'");
-
-        if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
-        {
-            var email = authState.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "User";
-            Console.WriteLine($"🔍 [NavMenu] Using email: {email}");
-            return email;
-        }
-
-        var fullName = $"{firstName} {lastName}".Trim();
-        Console.WriteLine($"✅ [NavMenu] Full name: '{fullName}'");
-        return fullName;
-    }
-
-    private string GetUserRole(AuthenticationState authState)
-    {
-        var roleClaim = authState.User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
-        var role = roleClaim?.Value ??  "Guest";
-        Console.WriteLine($"✅ [NavMenu] Role:  {role}");
-        return role;
-    }
+    private string GetUserInitials(AuthenticationState context) => "ED";
+    private string GetFullName(AuthenticationState context) => "Elshod Developer";
+    private string GetUserRole(AuthenticationState context) => "Administrator";
 }

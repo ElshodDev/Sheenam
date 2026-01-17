@@ -1,0 +1,77 @@
+﻿//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
+using Microsoft.AspNetCore.Components.Authorization;
+using Sheenam.Blazor.Components;
+using Sheenam.Blazor.Services;
+
+namespace Sheenam.Blazor
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // ✅ Razor Components
+            builder.Services.AddRazorComponents()
+                .AddInteractiveServerComponents();
+
+            // ✅ HttpClient Configuration
+            builder.Services.AddHttpClient();
+            builder.Services.AddScoped(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var baseUrl = config["ApiSettings:BaseUrl"] ?? "https://localhost:5001/";
+                Console.WriteLine($"🌐 API Base URL: {baseUrl}");
+
+                return new HttpClient
+                {
+                    BaseAddress = new Uri(baseUrl)
+                };
+            });
+
+            // ✅ Application Services
+            builder.Services.AddScoped<ToastService>();
+            builder.Services.AddScoped<HomeRequestService>();
+            builder.Services.AddScoped<TokenStorageService>();
+            builder.Services.AddScoped<AuthService>();
+
+            // ✅ Authentication & Authorization
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddAuthorizationCore();
+
+            // ✅ CRITICAL: Add Authentication Service
+            builder.Services.AddAuthentication();
+
+            // ✅ Add Cascading Authentication State
+            builder.Services.AddCascadingAuthenticationState();
+
+            var app = builder.Build();
+
+            // ✅ Error Handling
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+
+            // ✅ CRITICAL: Authentication & Authorization Middleware
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseAntiforgery();
+            app.MapStaticAssets();
+
+            // ✅ Razor Components with Interactive Server
+            app.MapRazorComponents<App>()
+                .AddInteractiveServerRenderMode();
+
+            app.Run();
+        }
+    }
+}

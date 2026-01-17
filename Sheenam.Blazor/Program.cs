@@ -1,64 +1,54 @@
-﻿//===================================================
-// Copyright (c) Coalition of Good-Hearted Engineers
-// Free To Use To Find Comfort and Peace
-//===================================================
-
 using Microsoft.AspNetCore.Components.Authorization;
 using Sheenam.Blazor.Components;
 using Sheenam.Blazor.Services;
+using Sheenam.Blazor.Services.Brokers;
+using Sheenam.Blazor.Services.Foundations.Guests;
+using Sheenam.Blazor.Services.Views.Guests;
 
-namespace Sheenam.Blazor
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Configure HttpClient with base address
+builder.Services.AddScoped(sp => new HttpClient
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7001/")
+});
 
-            // ✅ Prerendering'siz Razor Components
-            builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+// Register Authentication
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TokenStorageService>();
+builder.Services.AddAuthorizationCore();
 
-            builder.Services.AddHttpClient();
+// Register Brokers
+builder.Services.AddScoped<IApiBroker, ApiBroker>();
 
-            builder.Services.AddScoped(sp =>
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                var baseUrl = config["ApiSettings:BaseUrl"] ?? "https://localhost:5001/";
+// Register Foundation Services
+builder.Services.AddScoped<IGuestService, GuestService>();
 
-                Console.WriteLine($"🌐 API Base URL: {baseUrl}");
+// Register View Services
+builder.Services.AddScoped<IGuestViewService, GuestViewService>();
 
-                return new HttpClient
-                {
-                    BaseAddress = new Uri(baseUrl)
-                };
-            });
+// Register other services
+builder.Services.AddScoped<ToastService>();
 
-            builder.Services.AddScoped<ToastService>();
-            builder.Services.AddScoped<HomeRequestService>();
+var app = builder.Build();
 
-            builder.Services.AddScoped<TokenStorageService>();
-            builder.Services.AddScoped<AuthService>();
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-            builder.Services.AddAuthorizationCore();
-
-            var app = builder.Build();
-
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();  // ✅ HTTPS redirect
-            app.UseAntiforgery();
-            app.MapStaticAssets();
-
-            // ✅ Prerendering mode'ni InteractiveServer'ga o'zgartirish
-            app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
-
-            app.Run();
-        }
-    }
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();
