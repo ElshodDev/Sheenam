@@ -12,9 +12,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Configure HttpClient with base address
-builder.Services.AddScoped(sp => new HttpClient 
-{ 
-    BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7001/") 
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7001/")
 });
 
 // Register Authentication

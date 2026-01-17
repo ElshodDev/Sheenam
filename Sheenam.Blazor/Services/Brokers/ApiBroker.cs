@@ -3,8 +3,6 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using System.Net.Http.Json;
-
 namespace Sheenam.Blazor.Services.Brokers
 {
     public partial class ApiBroker : IApiBroker
@@ -21,31 +19,31 @@ namespace Sheenam.Blazor.Services.Brokers
 
         private async ValueTask<T> PostAsync<T>(string relativeUrl, T content)
         {
-            HttpResponseMessage response = 
+            HttpResponseMessage response =
                 await this.httpClient.PostAsJsonAsync(relativeUrl, content);
-            
+
             response.EnsureSuccessStatusCode();
-            
+
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
         private async ValueTask<T> PutAsync<T>(string relativeUrl, T content)
         {
-            HttpResponseMessage response = 
+            HttpResponseMessage response =
                 await this.httpClient.PutAsJsonAsync(relativeUrl, content);
-            
+
             response.EnsureSuccessStatusCode();
-            
+
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
         private async ValueTask<T> DeleteAsync<T>(string relativeUrl)
         {
-            HttpResponseMessage response = 
+            HttpResponseMessage response =
                 await this.httpClient.DeleteAsync(relativeUrl);
-            
+
             response.EnsureSuccessStatusCode();
-            
+
             return await response.Content.ReadFromJsonAsync<T>();
         }
     }

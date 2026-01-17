@@ -14,10 +14,10 @@ namespace Sheenam.Blazor.Models.ViewModels
         public bool IsSubmitting { get; set; }
         public string ErrorMessage { get; set; }
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-        
-        public string FullName => 
+
+        public string FullName =>
             $"{Guest?.FirstName} {Guest?.LastName}".Trim();
-        
+
         public int Age
         {
             get
@@ -27,10 +27,10 @@ namespace Sheenam.Blazor.Models.ViewModels
 
                 var today = DateTimeOffset.Now;
                 var age = today.Year - Guest.DateOfBirth.Year;
-                
+
                 if (Guest.DateOfBirth.Date > today.AddYears(-age).Date)
                     age--;
-                
+
                 return age;
             }
         }
