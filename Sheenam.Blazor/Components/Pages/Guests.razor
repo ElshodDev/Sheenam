@@ -166,14 +166,9 @@
 
         try
         {
-            if (isEditMode)
-            {
-                result = await GuestViewService.ModifyGuestViewAsync(guest);
-            }
-            else
-            {
-                result = await GuestViewService.AddGuestViewAsync(guest);
-            }
+            result = await (isEditMode
+                ? GuestViewService.ModifyGuestViewAsync(guest)
+                : GuestViewService.AddGuestViewAsync(guest));
 
             if (!result.HasError)
             {
