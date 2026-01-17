@@ -1,5 +1,4 @@
 ﻿@page "/homes"
-@attribute [Authorize]
 @using Sheenam.Blazor.Models.Foundations.Homes
 @using Sheenam.Blazor.Models.Foundations.Hosts
 @using Sheenam.Blazor.Services
@@ -7,107 +6,102 @@
 @inject HttpClient HttpClient
 @inject ToastService ToastService
 
-<PageTitle>Uylar - Sheenam</PageTitle>
+<PageTitle>Uylar Boshqaruvi - Sheenam</PageTitle>
 
-<div class="container my-5">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-lg-4">
-            <h1 class="display-5 fw-bold text-primary mb-2">🏠 Uylar</h1>
-            <p class="text-muted">Jami @filteredHomes.Count ta</p>
-        </div>
-        <div class="col-lg-5">
-            <div class="input-group input-group-lg">
-                <span class="input-group-text">🔍</span>
-                <input type="text" class="form-control" placeholder="Manzil qidirish..."
-                       @bind="searchQuery" />
-                @if (!string.IsNullOrEmpty(searchQuery))
-                {
-                    <button class="btn btn-outline-secondary" @onclick="ClearSearch">✖️</button>
-                }
+<div class="container-fluid py-4 px-lg-5">
+    <div class="header-glass mb-4 p-4 p-lg-5 rounded-4 shadow-sm border-0">
+        <div class="row align-items-center g-4">
+            <div class="col-xl-4 col-lg-5">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="header-icon-box shadow-sm">🏠</div>
+                    <div>
+                        <h1 class="h2 fw-bold text-dark mb-1">Uylar Boshqaruvi</h1>
+                        <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i> Tizimda jami @filteredHomes.Count ta uy mavjud</p>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-3">
-            <button class="btn btn-primary btn-lg w-100" @onclick="ShowAddForm">
-                ➕ Yangi uy qo'shish
-            </button>
+            <div class="col-xl-5 col-lg-4">
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="form-control form-control-lg search-input shadow-none"
+                           placeholder="Manzil yoki hududni kiriting..." @bind="searchQuery" @bind:event="oninput" @onkeyup="ApplyFilters" />
+                    @if (!string.IsNullOrEmpty(searchQuery))
+                    {
+                        <button class="btn clear-btn shadow-none" @onclick="ClearSearch">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 text-lg-end">
+                <button class="btn btn-indigo btn-raise btn-glow btn-lg rounded-pill px-4 py-3 shadow-lg" @onclick="ShowAddForm">
+                    <i class="bi bi-plus-circle-fill me-2"></i> Yangi uy qo'shish
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Add/Edit Form -->
     @if (showAddForm)
     {
-        <div class="card shadow-lg border-0 mb-4">
-            <div class="card-header bg-primary text-white py-3">
-                <h5 class="mb-0">@(isEditing ? "✏️ Tahrirlash" : "➕ Yangi uy")</h5>
+        <div class="card form-card border-0 shadow-lg rounded-4 mb-5 overflow-hidden animate-slide-down">
+            <div class="card-header bg-indigo text-white py-3 border-0">
+                <h5 class="mb-0 fw-bold">@(isEditing ? "✏️ Ma'lumotlarni tahrirlash" : "➕ Yangi uy qo'shish")</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4 p-lg-5">
                 <EditForm Model="currentHome" OnValidSubmit="SaveHome">
-                    <div class="row g-3">
+                    <DataAnnotationsValidator />
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="fw-bold">Manzil *</label>
-                            <InputText @bind-Value="currentHome.Address" class="form-control" 
-                                       placeholder="Manzilni kiriting" />
+                            <label class="form-label fw-bold text-secondary small">Manzil *</label>
+                            <InputText @bind-Value="currentHome.Address" class="form-control form-control-lg custom-input" placeholder="Toshkent sh, Chilonzor..." />
                             <ValidationMessage For="@(() => currentHome.Address)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
-                            <label class="fw-bold">Uy turi *</label>
-                            <InputSelect @bind-Value="currentHome.Type" class="form-select">
+                            <label class="form-label fw-bold text-secondary small">Uy turi *</label>
+                            <InputSelect @bind-Value="currentHome.Type" class="form-select form-select-lg custom-input">
                                 <option value="">-- Tanlang --</option>
                                 <option value="@HouseType.Flat">Kvartira</option>
                                 <option value="@HouseType.Bungalow">Bungalov</option>
                                 <option value="@HouseType.Duplex">Duplex</option>
                                 <option value="@HouseType.other">Boshqa</option>
                             </InputSelect>
-                            <ValidationMessage For="@(() => currentHome.Type)" class="text-danger small" />
                         </div>
                         <div class="col-md-3">
-                            <label class="fw-bold">Narx (so'm) *</label>
-                            <InputNumber @bind-Value="currentHome.Price" class="form-control" 
-                                         placeholder="10,000 - 100,000,000" />
-                            <ValidationMessage For="@(() => currentHome.Price)" class="text-danger small" />
-                        </div>
-                        <div class="col-md-3">
-                            <label class="fw-bold">Maydon (m²) *</label>
-                            <InputNumber @bind-Value="currentHome.Area" class="form-control" 
-                                         placeholder="10 - 10,000" />
-                            <ValidationMessage For="@(() => currentHome.Area)" class="text-danger small" />
-                        </div>
-                        <div class="col-md-3">
-                            <label class="fw-bold">Yotoq xonalar *</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control" 
-                                         placeholder="0 - 20" />
-                            <ValidationMessage For="@(() => currentHome.NumberOfBedrooms)" class="text-danger small" />
-                        </div>
-                        <div class="col-md-3">
-                            <label class="fw-bold">Vanna xonalar *</label>
-                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control" 
-                                         placeholder="0 - 10" />
-                            <ValidationMessage For="@(() => currentHome.NumberOfBathrooms)" class="text-danger small" />
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end gap-2">
-                            <div class="form-check form-switch">
-                                <InputCheckbox @bind-Value="currentHome.IsVacant" class="form-check-input" />
-                                <label class="form-check-label">Bo'sh</label>
+                            <label class="form-label fw-bold text-secondary small">Narxi (oyiga) *</label>
+                            <div class="input-group input-group-lg">
+                                <InputNumber @bind-Value="currentHome.Price" class="form-control custom-input" />
+                                <span class="input-group-text bg-light border-start-0 small text-muted">so'm</span>
                             </div>
-                            <div class="form-check form-switch">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-secondary small">Maydoni (m²)</label>
+                            <InputNumber @bind-Value="currentHome.Area" class="form-control form-control-lg custom-input" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-secondary small">Yotoq xonalar</label>
+                            <InputNumber @bind-Value="currentHome.NumberOfBedrooms" class="form-control form-control-lg custom-input" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-secondary small">Vanna xonalar</label>
+                            <InputNumber @bind-Value="currentHome.NumberOfBathrooms" class="form-control form-control-lg custom-input" />
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end gap-3 pb-2">
+                            <div class="form-check form-switch custom-switch">
+                                <InputCheckbox @bind-Value="currentHome.IsVacant" class="form-check-input" />
+                                <label class="form-check-label fw-bold small">Bo'sh</label>
+                            </div>
+                            <div class="form-check form-switch custom-switch">
                                 <InputCheckbox @bind-Value="currentHome.IsPetAllowed" class="form-check-input" />
-                                <label class="form-check-label">Hayvon</label>
+                                <label class="form-check-label fw-bold small">Hayvonlar</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <label class="fw-bold">Qo'shimcha</label>
-                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control" 
-                                           rows="2" placeholder="500 belgigacha" />
-                            <ValidationMessage For="@(() => currentHome.AdditionalInfo)" class="text-danger small" />
+                            <label class="form-label fw-bold text-secondary small">Qo'shimcha ma'lumot</label>
+                            <InputTextArea @bind-Value="currentHome.AdditionalInfo" class="form-control custom-input" rows="2" />
                         </div>
-                        <div class="col-12 text-end">
-                            <button type="button" class="btn btn-secondary me-2" @onclick="CancelForm">
-                                Bekor qilish
-                            </button>
-                            <button type="submit" class="btn btn-primary px-4">
-                                @(isEditing ? "💾 Saqlash" : "➕ Qo'shish")
-                            </button>
+                        <div class="col-12 text-end pt-3">
+                            <button type="button" class="btn btn-light rounded-pill px-4 py-2 me-2" @onclick="CancelForm">Bekor qilish</button>
+                            <button type="submit" class="btn btn-indigo rounded-pill px-5 py-2 shadow-sm fw-bold">Saqlash</button>
                         </div>
                     </div>
                 </EditForm>
@@ -115,178 +109,124 @@
         </div>
     }
 
-    <!-- Filters -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="mb-3">🎛️ Filterlar</h5>
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label class="fw-bold">Narx (so'm)</label>
-                    <div class="input-group input-group-sm">
-                        <input type="number" class="form-control" placeholder="Min" @bind="minPrice" />
-                        <span class="input-group-text">—</span>
-                        <input type="number" class="form-control" placeholder="Max" @bind="maxPrice" />
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="fw-bold">Maydon (m²)</label>
-                    <div class="input-group input-group-sm">
-                        <input type="number" class="form-control" placeholder="Min" @bind="minArea" />
-                        <span class="input-group-text">—</span>
-                        <input type="number" class="form-control" placeholder="Max" @bind="maxArea" />
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label class="fw-bold">Yotoq xonalar</label>
-                    <select class="form-select form-select-sm" @bind="filterBedrooms">
-                        <option value="">Barchasi</option>
-                        <option value="1">1+</option>
-                        <option value="2">2+</option>
-                        <option value="3">3+</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="fw-bold">Uy turi</label>
-                    <select class="form-select form-select-sm" @bind="filterType">
-                        <option value="">Barchasi</option>
-                        <option value="@HouseType.Flat">Kvartira</option>
-                        <option value="@HouseType.Bungalow">Bungalov</option>
-                        <option value="@HouseType.Duplex">Duplex</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" @bind="filterVacantOnly" />
-                        <label class="form-check-label">Faqat bo'sh</label>
-                    </div>
-                </div>
-                <div class="col-12 text-end">
-                    <button class="btn btn-outline-secondary me-2" @onclick="ResetFilters">
-                        🔄 Tozalash
-                    </button>
-                    <button class="btn btn-success px-5" @onclick="ApplyFiltersWithNotification">
-                        ✅ Qo'llash
-                    </button>
+    <div class="filter-section p-4 rounded-4 mb-4 shadow-sm border-0">
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label small fw-bold text-muted">Narx oralig'i</label>
+                <div class="input-group input-group-sm">
+                    <input type="number" class="form-control border-end-0" placeholder="Min" @bind="minPrice" />
+                    <input type="number" class="form-control border-start-0" placeholder="Max" @bind="maxPrice" />
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Sorting & Results -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <strong>@filteredHomes.Count</strong> ta uy
-            @if (filteredHomes.Count > 0)
-            {
-                <span class="text-muted">
-                    (ko'rsatilmoqda: @((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, filteredHomes.Count))
-                </span>
-            }
-        </div>
-        <div class="d-flex gap-3 align-items-center">
-            <div class="d-flex gap-2 align-items-center">
-                <label class="mb-0 small">Sahifada:</label>
-                <select class="form-select form-select-sm" style="width: auto;" @bind="pageSize" @bind:after="OnPageSizeChanged">
-                    <option value="6">6</option>
-                    <option value="9">9</option>
-                    <option value="12">12</option>
-                    <option value="24">24</option>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label small fw-bold text-muted">Saralash</label>
+                <select class="form-select form-select-sm border-0 bg-light" @bind="sortBy" @bind:after="ApplyFilters">
+                    <option value="default">Odatiy</option>
+                    <option value="price-asc">Arzonroq ↑</option>
+                    <option value="price-desc">Qimmatroq ↓</option>
                 </select>
             </div>
-            <div class="d-flex gap-2 align-items-center">
-                <label class="mb-0 small">Saralash:</label>
-                <select class="form-select form-select-sm" style="width: auto;" @bind="sortBy" @bind:after="ApplyFilters">
-                    <option value="default">Default</option>
-                    <option value="price-asc">Narx ↑</option>
-                    <option value="price-desc">Narx ↓</option>
-                    <option value="area-asc">Maydon ↑</option>
-                    <option value="area-desc">Maydon ↓</option>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label small fw-bold text-muted">Sahifa hajmi</label>
+                <select class="form-select form-select-sm border-0 bg-light" @bind="pageSize" @bind:after="OnPageSizeChanged">
+                    <option value="6">6 ta</option>
+                    <option value="9">9 ta</option>
+                    <option value="12">12 ta</option>
                 </select>
+            </div>
+            <div class="col-lg-6 col-md-12 text-lg-end">
+                <button class="btn btn-outline-secondary btn-raise btn-sm rounded-pill px-3 me-2" @onclick="ResetFilters">
+                    <i class="bi bi-arrow-counterclockwise"></i> Tozalash
+                </button>
+                <button class="btn btn-success btn-raise btn-glow btn-sm rounded-pill px-4 shadow-sm" @onclick="ApplyFiltersWithNotification">
+                    <i class="bi bi-check2"></i> Qo'llash
+                </button>
             </div>
         </div>
     </div>
 
     @if (isLoading)
     {
-        <!-- Loading Skeleton -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
             @for (int i = 0; i < 6; i++)
             {
-                <div class="col">
-                    <div class="card h-100 shadow">
-                        <div class="skeleton skeleton-image" style="height: 200px;"></div>
-                        <div class="card-body">
-                            <div class="skeleton skeleton-title mb-3"></div>
-                            <div class="skeleton skeleton-text mb-2"></div>
-                            <div class="skeleton skeleton-text mb-2"></div>
-                            <div class="skeleton skeleton-text mb-3" style="width: 70%;"></div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <div class="skeleton skeleton-badge"></div>
-                                <div class="skeleton skeleton-badge"></div>
-                            </div>
-                            <div class="skeleton skeleton-button"></div>
-                        </div>
-                    </div>
-                </div>
+                <div class="col"><div class="skeleton-card shadow-sm"></div></div>
             }
         </div>
     }
     else if (filteredHomes.Count == 0)
     {
-        <div class="alert alert-warning text-center p-5">
-            <h3>🔍 Natija topilmadi</h3>
-            <button class="btn btn-primary mt-3" @onclick="ResetFilters">Tozalash</button>
+        <div class="empty-state py-5 text-center bg-white rounded-4 shadow-sm">
+            <div class="empty-icon">🏜️</div>
+            <h3 class="mt-4 text-dark fw-bold">Hech narsa topilmadi</h3>
+            <p class="text-muted">Qidiruv parametrlarini o'zgartirib ko'ring yoki filterlarni tozalang.</p>
+            <button class="btn btn-indigo btn-raise btn-glow rounded-pill px-4" @onclick="ResetFilters">Barcha uylar</button>
         </div>
     }
     else
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
             @foreach (var home in pagedHomes)
             {
                 <div class="col">
-                    <div class="card h-100 shadow hover-card">
-                        <div class="card-img-top bg-gradient text-center py-5"
-                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <span class="display-1">🏠</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between mb-2">
-                                <h5 class="text-primary mb-0">@home.Address</h5>
-                                <span class="badge @GetTypeBadge(home.Type)">@GetTypeText(home.Type)</span>
-                            </div>
-                            <p class="text-muted small">@(home.AdditionalInfo ?? "—")</p>
-                            
-                            <div class="small mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>🛏️ Yotoq:</span><strong>@home.NumberOfBedrooms</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>🚿 Vanna:</span><strong>@home.NumberOfBathrooms</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>📏 Maydon:</span><strong>@home.Area m²</strong>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="text-success mb-0">@home.Price.ToString("N0") so'm</h5>
-                                <span class="badge @(home.IsVacant ? "bg-success" : "bg-danger")">
-                                    @(home.IsVacant ? "Bo'sh" : "Band")
+                    <div class="card home-card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative animate-fade-in">
+                        <div class="home-card-header text-center py-5">
+                            <div class="status-badge position-absolute top-0 end-0 m-3">
+                                <span class="badge rounded-pill @(home.IsVacant ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") px-3 py-2 fw-bold">
+                                    @(home.IsVacant ? "● Bo'sh" : "● Band")
                                 </span>
                             </div>
+                            <span class="display-1">🏠</span>
+                        </div>
 
-                            @if (home.IsPetAllowed)
-                            {
-                                <span class="badge bg-info mb-2">🐕 Hayvon OK</span>
-                            }
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <span class="text-uppercase fw-bold text-indigo small tracking-wider">@GetTypeText(home.Type)</span>
+                                <h5 class="card-title fw-bold text-dark mb-2 mt-1 truncate">@home.Address</h5>
+                                <p class="text-muted small mb-0 truncate-2">@(home.AdditionalInfo ?? "Qo'shimcha tavsif kiritilmagan...")</p>
+                            </div>
 
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-sm btn-primary" @onclick="() => EditHome(home)">
-                                    ✏️ Tahrirlash
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ShowDeleteConfirm(home.Id)">
-                                    🗑️ O'chirish
-                                </button>
+                            <div class="features-row d-flex gap-4 py-3 mb-4 border-top border-bottom">
+                                <div class="feature-box">
+                                    <span class="d-block text-muted small mb-1">Yotoq</span>
+                                    <span class="fw-bold"><i class="bi bi-door-closed me-1"></i> @home.NumberOfBedrooms</span>
+                                </div>
+                                <div class="feature-box border-start ps-4">
+                                    <span class="d-block text-muted small mb-1">Maydon</span>
+                                    <span class="fw-bold"><i class="bi bi-aspect-ratio me-1"></i> @home.Area m²</span>
+                                </div>
+                                <div class="feature-box border-start ps-4">
+                                    @if (home.IsPetAllowed)
+                                    {
+                                        <span class="d-block text-muted small mb-1">Hayvonlar</span>
+                                        <span class="badge bg-light text-success fw-bold">Ruxsat</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-block text-muted small mb-1">Hayvonlar</span>
+                                        <span class="badge bg-light text-muted fw-bold">Yo'q</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <span class="text-muted small d-block mb-1">Narxi:</span>
+                                    <span class="h4 fw-bold text-indigo mb-0">@home.Price.ToString("N0") <small class="text-muted fw-normal" style="font-size: 0.6em;">UZS/oy</small></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <button class="btn btn-light-indigo btn-raise w-100 rounded-3 py-2 fw-bold" @onclick="() => EditHome(home)">
+                                        <i class="bi bi-pencil-square me-1"></i> Tahrirlash
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-danger btn-raise w-100 rounded-3 py-2 border-1 fw-bold" @onclick="() => ShowDeleteConfirm(home.Id)">
+                                        <i class="bi bi-trash3 me-1"></i> O'chirish
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -294,141 +234,400 @@
             }
         </div>
 
-        <!-- Pagination -->
-        <Pagination CurrentPage="@currentPage"
-                    TotalPages="@totalPages"
-                    TotalItems="@filteredHomes.Count"
-                    PageSize="@pageSize"
-                    OnPageChange="HandlePageChange" />
+        <div class="mt-5 d-flex justify-content-center">
+            <Pagination CurrentPage="@currentPage"
+                        TotalPages="@totalPages"
+                        TotalItems="@filteredHomes.Count"
+                        PageSize="@pageSize"
+                        OnPageChange="HandlePageChange" />
+        </div>
     }
 </div>
 
-<!-- Confirmation Dialog -->
 @if (showDeleteConfirm)
 {
-    <div class="modal-backdrop fade show" style="z-index: 1050;"></div>
-    <div class="modal fade show d-block" tabindex="-1" style="z-index: 1055;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        🗑️ Uyni o'chirish
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-0">Bu uyni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">
-                        ❌ Yo'q
-                    </button>
-                    <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">
-                        ✅ Ha, ishonchim komil
-                    </button>
-                </div>
+    <div class="modal-backdrop-custom d-flex align-items-center justify-content-center animate-fade-in">
+        <div class="modal-dialog-custom bg-white p-4 p-lg-5 rounded-4 shadow-lg text-center mx-3 animate-zoom-in">
+            <div class="delete-icon mb-4">🗑️</div>
+            <h2 class="h4 fw-bold text-dark mb-3">O'chirishni tasdiqlaysizmi?</h2>
+            <p class="text-muted mb-4 px-lg-5">Siz tanlagan uy ma'lumotlari tizimdan butunlay o'chirib tashlanadi. Bu amalni qaytarib bo'lmaydi.</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-light px-4 py-2 rounded-pill fw-bold" @onclick="CancelDelete">Yo'q, qolsin</button>
+                <button class="btn btn-danger px-4 py-2 rounded-pill fw-bold shadow-sm" @onclick="ConfirmDelete">Ha, o'chirilsin</button>
             </div>
         </div>
     </div>
 }
 
 <style>
-    .hover-card { transition: all 0.3s; }
-    .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important; }
-
-    .modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.7);
+    :root {
+        --indigo: #4f46e5;
+        --indigo-hover: #4338ca;
+        --indigo-light: #eef2ff;
+        --glass-bg: rgba(255, 255, 255, 0.7);
     }
 
-    .modal.show {
-        animation: fadeIn 0.2s ease-out;
+    body {
+        background-color: #f8fafc;
+        color: #1e293b;
     }
 
-    .modal-dialog {
-        animation: slideDown 0.3s ease-out;
+    /* Shared Elements */
+    .text-indigo {
+        color: var(--indigo);
     }
 
-    @@keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    .bg-indigo {
+        background-color: var(--indigo);
+    }
+
+    /* Button base improvements */
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .btn:active {
+        transform: translateY(1px) scale(0.99);
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+
+    .btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15) !important;
+    }
+
+    .btn-indigo {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+        color: #fff !important;
+        border: 1px solid #514bd6 !important;
+        box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25) !important;
+    }
+
+        .btn-indigo:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%) !important;
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(79, 70, 229, 0.35) !important;
+        }
+
+    /* Visual utility variations */
+    .btn-raise {
+        box-shadow: 0 6px 14px rgba(2, 6, 23, 0.08), 0 2px 6px rgba(2, 6, 23, 0.06);
+    }
+
+        .btn-raise:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.12), 0 4px 10px rgba(2, 6, 23, 0.08);
+        }
+
+        .btn-raise:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(2, 6, 23, 0.12);
+        }
+
+    .btn-glow {
+        position: relative;
+    }
+
+        .btn-glow::after {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            background: radial-gradient(120px 60px at 50% 120%, rgba(79,70,229,0.35), transparent 70%);
+            z-index: -1;
+            filter: blur(8px);
+            opacity: 0.7;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .btn-glow:hover::after {
+            opacity: 1;
+            transform: translateY(2px);
+        }
+
+    .btn-light-indigo {
+        background-color: var(--indigo-light);
+        color: var(--indigo);
+        border: none;
+        box-shadow: inset 0 0 0 1px rgba(79,70,229,0.15);
+    }
+
+        .btn-light-indigo:hover {
+            background-color: #e0e7ff;
+            color: var(--indigo-hover);
+            box-shadow: inset 0 0 0 1px rgba(79,70,229,0.2);
+        }
+
+    /* Success button */
+    .btn-success {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+        border: 1px solid #16a34a !important;
+        color: #fff !important;
+        box-shadow: 0 8px 18px rgba(34, 197, 94, 0.25) !important;
+    }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 100%) !important;
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(34, 197, 94, 0.35) !important;
+        }
+
+    /* Outline danger button */
+    .btn-outline-danger {
+        border: 1.5px solid #ef4444;
+        color: #dc2626;
+        background-color: #fff;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-color: #dc2626;
+        }
+
+    /* Outline secondary improvement */
+    .btn-outline-secondary {
+        border: 1.5px solid #cbd5e1;
+        color: #475569;
+        background-color: #fff;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8fafc;
+            color: #0f172a;
+            border-color: #94a3b8;
+        }
+
+    /* Light button (cancel) */
+    .btn-light {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+    }
+
+        .btn-light:hover {
+            background-color: #eef2f7;
+            border-color: #d1d9e6;
+            color: #0f172a;
+        }
+
+    /* Header & Glass Effect */
+    .header-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .header-icon-box {
+        width: 60px;
+        height: 60px;
+        background: white;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    /* Search Input Wrapper */
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2rem;
+    }
+
+    .search-input {
+        padding-left: 55px !important;
+        border-radius: 50px !important;
+        border: 2px solid #e2e8f0 !important;
+        height: 56px;
+        transition: 0.3s;
+    }
+
+        .search-input:focus {
+            border-color: var(--indigo) !important;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+        }
+
+    .clear-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color .2s ease, transform .15s ease, color .2s ease;
+    }
+
+        .clear-btn:hover {
+            background-color: #f1f5f9;
+            color: #64748b;
+            transform: translateY(-50%) scale(1.05);
+    }
+
+    /* Cards Styling */
+    .home-card {
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
+    }
+
+        .home-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        }
+
+    .home-card-header {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    }
+
+    .bg-success-subtle {
+        background-color: #dcfce7;
+    }
+
+    .bg-danger-subtle {
+        background-color: #fee2e2;
+    }
+
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Form Elements */
+    .custom-input {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 12px 16px;
+        transition: 0.3s;
+    }
+
+        .custom-input:focus {
+            border-color: var(--indigo) !important;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05) !important;
+        }
+
+    .custom-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        cursor: pointer;
+    }
+
+    .filter-section {
+        background: white;
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Modal Styling */
+    .modal-backdrop-custom {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 1050;
+    }
+
+    .modal-dialog-custom {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    .delete-icon {
+        font-size: 64px;
+    }
+
+    /* Animations */
+    .animate-slide-down {
+        animation: slideDown 0.4s ease-out;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .animate-zoom-in {
+        animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @@keyframes slideDown {
         from {
-            transform: translateY(-50px);
+            transform: translateY(-20px);
             opacity: 0;
         }
+
         to {
             transform: translateY(0);
             opacity: 1;
         }
     }
 
-    /* Loading Skeleton */
-    .skeleton {
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes zoomIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Skeleton Loading */
+    .skeleton-card {
+        height: 450px;
         background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
         background-size: 200% 100%;
-        animation: loading 1.5s ease-in-out infinite;
-        border-radius: 4px;
+        animation: skeleton-loading 1.5s infinite;
+        border-radius: 24px;
     }
 
-    .skeleton-image {
-        width: 100%;
-        border-radius: 0;
-    }
-
-    .skeleton-title {
-        height: 24px;
-        width: 80%;
-    }
-
-    .skeleton-text {
-        height: 16px;
-        width: 100%;
-    }
-
-    .skeleton-badge {
-        height: 24px;
-        width: 80px;
-        border-radius: 12px;
-    }
-
-    .skeleton-button {
-        height: 38px;
-        width: 100%;
-        border-radius: 6px;
-    }
-
-    @@keyframes loading {
+    @@keyframes skeleton-loading {
         0% {
             background-position: 200% 0;
         }
+
         100% {
             background-position: -200% 0;
         }
-    }
-
-    /* Dark mode */
-    body.dark-mode .skeleton {
-        background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
-        background-size: 200% 100%;
-    }
-
-    /* Validation */
-    .form-control.is-invalid,
-    .form-select.is-invalid {
-        border-color: #dc3545;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right calc(0.375em + 0.1875rem) center;
-        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
-
-    .validation-message {
-        display: block;
-        margin-top: 0.25rem;
-        font-size: 0.875em;
-        color: #dc3545;
     }
 </style>
 
@@ -443,7 +642,6 @@
     private bool showAddForm = false;
     private bool showDeleteConfirm = false;
     private Guid deleteHomeId = Guid.Empty;
-    private List<string> validationErrors = new();
 
     // Pagination
     private int currentPage = 1;
@@ -452,10 +650,6 @@
 
     private string searchQuery = "";
     private decimal? minPrice, maxPrice;
-    private double? minArea, maxArea;
-    private string filterBedrooms = "";
-    private string filterType = "";
-    private bool filterVacantOnly = false;
     private string sortBy = "default";
 
     protected override async Task OnInitializedAsync() => await LoadData();
@@ -469,8 +663,7 @@
             if (response.IsSuccessStatusCode)
             {
                 homes = await response.Content.ReadFromJsonAsync<List<Home>>() ?? new();
-                filteredHomes = homes;
-                UpdatePagination();
+                ApplyFilters();
             }
         }
         catch { }
@@ -486,137 +679,78 @@
 
         if (minPrice.HasValue) filteredHomes = filteredHomes.Where(h => h.Price >= minPrice.Value).ToList();
         if (maxPrice.HasValue) filteredHomes = filteredHomes.Where(h => h.Price <= maxPrice.Value).ToList();
-        if (minArea.HasValue) filteredHomes = filteredHomes.Where(h => h.Area >= minArea.Value).ToList();
-        if (maxArea.HasValue) filteredHomes = filteredHomes.Where(h => h.Area <= maxArea.Value).ToList();
-
-        if (!string.IsNullOrEmpty(filterBedrooms) && int.TryParse(filterBedrooms, out int beds))
-            filteredHomes = filteredHomes.Where(h => h.NumberOfBedrooms >= beds).ToList();
-
-        if (!string.IsNullOrEmpty(filterType) && Enum.TryParse<HouseType>(filterType, out var type))
-            filteredHomes = filteredHomes.Where(h => h.Type == type).ToList();
-
-        if (filterVacantOnly) filteredHomes = filteredHomes.Where(h => h.IsVacant).ToList();
 
         filteredHomes = sortBy switch
         {
             "price-asc" => filteredHomes.OrderBy(h => h.Price).ToList(),
             "price-desc" => filteredHomes.OrderByDescending(h => h.Price).ToList(),
-            "area-asc" => filteredHomes.OrderBy(h => h.Area).ToList(),
-            "area-desc" => filteredHomes.OrderByDescending(h => h.Area).ToList(),
             _ => filteredHomes
         };
 
-        StateHasChanged();
+        UpdatePagination();
     }
 
     private void UpdatePagination()
     {
         totalPages = (int)Math.Ceiling(filteredHomes.Count / (double)pageSize);
         if (currentPage > totalPages) currentPage = Math.Max(1, totalPages);
-        
+
         pagedHomes = filteredHomes
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
-        
+
         StateHasChanged();
     }
 
-    private void HandlePageChange(int page)
-    {
-        currentPage = page;
-        UpdatePagination();
-    }
-
-    private void OnPageSizeChanged()
-    {
-        currentPage = 1;
-        UpdatePagination();
-    }
+    private void HandlePageChange(int page) { currentPage = page; UpdatePagination(); }
+    private void OnPageSizeChanged() { currentPage = 1; UpdatePagination(); }
 
     private void ApplyFiltersWithNotification()
     {
         ApplyFilters();
-        currentPage = 1;
-        UpdatePagination();
-        ToastService.ShowInfo($"{filteredHomes.Count} ta uy topildi", "Qidiruv natijalari");
+        ToastService.ShowInfo($"{filteredHomes.Count} ta uy topildi");
     }
 
     private void ResetFilters()
     {
-        searchQuery = ""; minPrice = maxPrice = null; minArea = maxArea = null;
-        filterBedrooms = filterType = ""; filterVacantOnly = false; sortBy = "default";
-        filteredHomes = homes;
-        currentPage = 1;
-        UpdatePagination();
-        StateHasChanged();
+        searchQuery = ""; minPrice = maxPrice = null; sortBy = "default";
+        ApplyFilters();
     }
 
-    private void ClearSearch() { searchQuery = ""; ApplyFilters(); UpdatePagination(); }
+    private void ClearSearch() { searchQuery = ""; ApplyFilters(); }
 
     private void ShowAddForm()
     {
         showAddForm = true; isEditing = false;
         currentHome = new Home { IsVacant = true, Type = HouseType.Flat };
-        validationErrors.Clear();
     }
 
-    private void CancelForm() 
-    { 
-        showAddForm = false; 
-        isEditing = false; 
-        validationErrors.Clear();
-    }
-
-    private void HandleInvalidSubmit()
-    {
-        ToastService.ShowWarning("Formada xatoliklar mavjud! Iltimos, to'g'rilang.", "Validation xatosi");
-    }
-
-    private void ClearValidationErrors()
-    {
-        validationErrors.Clear();
-    }
+    private void CancelForm() { showAddForm = false; isEditing = false; }
 
     private async Task SaveHome()
     {
         try
         {
-            currentHome.HostId = Guid.Parse("00000000-0000-0000-0000-000000000003");
+            currentHome.HostId = Guid.Parse("00000000-0000-0000-0000-000000000003"); // Test uchun
+
+            HttpResponseMessage response;
             if (isEditing)
-            {
-                var response = await HttpClient.PutAsJsonAsync($"api/Homes/{currentHome.Id}", currentHome);
-                if (response.IsSuccessStatusCode)
-                {
-                    ToastService.ShowSuccess("Uy muvaffaqiyatli yangilandi!");
-                    showAddForm = false;
-                    await LoadData();
-                }
-                else
-                {
-                    ToastService.ShowError("Uyni yangilashda xato yuz berdi");
-                }
-            }
+                response = await HttpClient.PutAsJsonAsync($"api/Homes/{currentHome.Id}", currentHome);
             else
             {
                 currentHome.Id = Guid.NewGuid();
-                var response = await HttpClient.PostAsJsonAsync("api/Homes", currentHome);
-                if (response.IsSuccessStatusCode)
-                {
-                    ToastService.ShowSuccess("Yangi uy muvaffaqiyatli qo'shildi!");
-                    showAddForm = false;
-                    await LoadData();
-                }
-                else
-                {
-                    ToastService.ShowError("Uyni qo'shishda xato yuz berdi");
-                }
+                response = await HttpClient.PostAsJsonAsync("api/Homes", currentHome);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                ToastService.ShowSuccess(isEditing ? "Ma'lumotlar yangilandi!" : "Yangi uy qo'shildi!");
+                showAddForm = false;
+                await LoadData();
             }
         }
-        catch (Exception ex)
-        {
-            ToastService.ShowError($"Xato: {ex.Message}");
-        }
+        catch (Exception ex) { ToastService.ShowError($"Xato: {ex.Message}"); }
     }
 
     private void EditHome(Home home)
@@ -624,63 +758,38 @@
         showAddForm = true; isEditing = true;
         currentHome = new Home
         {
-            Id = home.Id, HostId = home.HostId, Address = home.Address,
-            AdditionalInfo = home.AdditionalInfo, IsVacant = home.IsVacant,
-            IsPetAllowed = home.IsPetAllowed, IsShared = home.IsShared,
-            NumberOfBedrooms = home.NumberOfBedrooms, NumberOfBathrooms = home.NumberOfBathrooms,
-            Area = home.Area, Price = home.Price, Type = home.Type
+            Id = home.Id,
+            HostId = home.HostId,
+            Address = home.Address,
+            AdditionalInfo = home.AdditionalInfo,
+            IsVacant = home.IsVacant,
+            IsPetAllowed = home.IsPetAllowed,
+            NumberOfBedrooms = home.NumberOfBedrooms,
+            NumberOfBathrooms = home.NumberOfBathrooms,
+            Area = home.Area,
+            Price = home.Price,
+            Type = home.Type
         };
     }
 
-    private void ShowDeleteConfirm(Guid id)
-    {
-        deleteHomeId = id;
-        showDeleteConfirm = true;
-    }
-
-    private void CancelDelete()
-    {
-        showDeleteConfirm = false;
-        deleteHomeId = Guid.Empty;
-    }
-
+    private void ShowDeleteConfirm(Guid id) { deleteHomeId = id; showDeleteConfirm = true; }
+    private void CancelDelete() { showDeleteConfirm = false; deleteHomeId = Guid.Empty; }
     private async Task ConfirmDelete()
     {
         showDeleteConfirm = false;
-        await DeleteHome(deleteHomeId);
-        deleteHomeId = Guid.Empty;
-    }
-
-    private async Task DeleteHome(Guid id)
-    {
-        try
+        var response = await HttpClient.DeleteAsync($"api/Homes/{deleteHomeId}");
+        if (response.IsSuccessStatusCode)
         {
-            var response = await HttpClient.DeleteAsync($"api/Homes/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                ToastService.ShowSuccess("Uy muvaffaqiyatli o'chirildi!");
-                await LoadData();
-            }
-            else
-            {
-                ToastService.ShowError("Uyni o'chirishda xato yuz berdi");
-            }
-        }
-        catch (Exception ex)
-        {
-            ToastService.ShowError($"Xato: {ex.Message}");
+            ToastService.ShowSuccess("Uy o'chirildi!");
+            await LoadData();
         }
     }
-
-    private string GetTypeBadge(HouseType type) => type switch
-    {
-        HouseType.Flat => "bg-primary", HouseType.Bungalow => "bg-success",
-        HouseType.Duplex => "bg-warning", _ => "bg-secondary"
-    };
 
     private string GetTypeText(HouseType type) => type switch
     {
-        HouseType.Flat => "Kvartira", HouseType.Bungalow => "Bungalov",
-        HouseType.Duplex => "Duplex", _ => "Boshqa"
+        HouseType.Flat => "Kvartira",
+        HouseType.Bungalow => "Bungalov",
+        HouseType.Duplex => "Duplex",
+        _ => "Boshqa"
     };
 }

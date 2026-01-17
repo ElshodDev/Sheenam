@@ -1,0 +1,365 @@
+@* ===================================================
+   Copyright (c) Coalition of Good-Hearted Engineers
+   Free To Use To Find Comfort and Peace
+   =================================================== *@
+
+@page "/guests/{GuestId:guid}"
+@using Sheenam.Blazor.Models.Foundations.Guests
+@using Sheenam.Blazor.Models.ViewModels
+@using Sheenam.Blazor.Services.Views.Guests
+@inject IGuestViewService GuestViewService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Guest Details - @guestViewModel?.FullName</PageTitle>
+
+<div class="guest-details-page">
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Loading guest details...</p>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <h4>❌ Error</h4>
+            <p>@errorMessage</p>
+            <button class="btn btn-primary" @onclick="GoBack">Go Back</button>
+        </div>
+    }
+    else if (guestViewModel?.Guest != null)
+    {
+        <div class="details-header">
+            <button class="btn btn-secondary" @onclick="GoBack">
+                ← Back to Guests
+            </button>
+            <div class="header-actions">
+                <button class="btn btn-primary" @onclick="EditGuest">
+                    ✏️ Edit
+                </button>
+                <button class="btn btn-danger" @onclick="DeleteGuest">
+                    🗑️ Delete
+                </button>
+            </div>
+        </div>
+
+        <div class="details-container">
+            <div class="details-card">
+                <div class="card-header">
+                    <div class="avatar-large">
+                        @GetInitials()
+                    </div>
+                    <div class="guest-title">
+                        <h1>@guestViewModel.FullName</h1>
+                        <p class="subtitle">Guest Profile</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="info-section">
+                        <h3>Personal Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">First Name</span>
+                                <span class="value">@guestViewModel.Guest.FirstName</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Last Name</span>
+                                <span class="value">@guestViewModel.Guest.LastName</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Date of Birth</span>
+                                <span class="value">@guestViewModel.Guest.DateOfBirth.ToString("MMMM dd, yyyy")</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Age</span>
+                                <span class="value">@guestViewModel.Age years old</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Gender</span>
+                                <span class="value">@guestViewModel.GenderDisplay</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Contact Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Email</span>
+                                <span class="value">
+                                    <a href="mailto:@guestViewModel.Guest.Email">@guestViewModel.Guest.Email</a>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Phone Number</span>
+                                <span class="value">
+                                    <a href="tel:@guestViewModel.Guest.PhoneNumber">@guestViewModel.Guest.PhoneNumber</a>
+                                </span>
+                            </div>
+                            <div class="info-item full-width">
+                                <span class="label">Address</span>
+                                <span class="value">@guestViewModel.Guest.Address</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>System Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Guest ID</span>
+                                <span class="value code">@guestViewModel.Guest.Id</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .guest-details-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .details-container {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .details-card .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .guest-title h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .info-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .info-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-section h3 {
+        color: #495057;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e9ecef;
+        font-size: 1.25rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .info-item .label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item .value {
+        font-size: 1.125rem;
+        color: #212529;
+        font-weight: 500;
+    }
+
+    .info-item .value.code {
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        display: inline-block;
+    }
+
+    .info-item a {
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .info-item a:hover {
+        text-decoration: underline;
+    }
+
+    @@media (max-width: 768px) {
+        .guest-details-page {
+            padding: 1rem;
+        }
+
+        .details-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .header-actions {
+            justify-content: stretch;
+        }
+
+        .header-actions button {
+            flex: 1;
+        }
+
+        .details-card .card-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .guest-title h1 {
+            font-size: 1.75rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Guid GuestId { get; set; }
+
+    private GuestViewModel? guestViewModel;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGuestAsync();
+    }
+
+    private async Task LoadGuestAsync()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            guestViewModel = await GuestViewService.RetrieveGuestViewByIdAsync(GuestId);
+
+            if (guestViewModel.HasError)
+            {
+                errorMessage = guestViewModel.ErrorMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load guest: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetInitials()
+    {
+        var firstName = guestViewModel?.Guest?.FirstName ?? "";
+        var lastName = guestViewModel?.Guest?.LastName ?? "";
+        return $"{firstName.FirstOrDefault()}{lastName.FirstOrDefault()}".ToUpper();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/guests");
+    }
+
+    private void EditGuest()
+    {
+        NavigationManager.NavigateTo($"/guests?edit={GuestId}");
+    }
+
+    private void DeleteGuest()
+    {
+        NavigationManager.NavigateTo($"/guests?delete={GuestId}");
+    }
+}

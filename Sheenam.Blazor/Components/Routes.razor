@@ -1,7 +1,9 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
+@using System.Reflection
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly">
+    <Router AppAssembly="@typeof(Program).Assembly" 
+            AdditionalAssemblies="new[] { typeof(Program).Assembly }">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
                 <NotAuthorized>
@@ -47,7 +49,6 @@
         align-items: center;
         min-height: 100vh;
     }
-
     .spinner {
         width: 50px;
         height: 50px;
@@ -56,10 +57,7 @@
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
-
     @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
+        to { transform: rotate(360deg); }
     }
 </style>

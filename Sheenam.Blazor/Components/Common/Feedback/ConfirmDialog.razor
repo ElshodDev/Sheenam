@@ -1,4 +1,4 @@
-@if (IsVisible)
+﻿@if (IsVisible)
 {
     <div class="modal-backdrop fade show"></div>
     <div class="modal fade show d-block" tabindex="-1" style="z-index: 1060;">
@@ -9,20 +9,16 @@
                         @GetIcon() @Title
                     </h5>
                     <button type="button" class="btn-close @(Type == ConfirmType.Danger ? "btn-close-white" : "")"
-                            @onclick="Cancel" disabled="@IsProcessing"></button>
+                            @onclick="Cancel"></button>
                 </div>
                 <div class="modal-body">
                     @Message
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="Cancel" disabled="@IsProcessing">
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">
                         ❌ Yo'q
                     </button>
-                    <button type="button" class="btn @GetButtonClass()" @onclick="Confirm" disabled="@IsProcessing">
-                        @if (IsProcessing)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                        }
+                    <button type="button" class="btn @GetButtonClass()" @onclick="Confirm">
                         ✅ Ha, ishonchim komil
                     </button>
                 </div>
@@ -35,34 +31,41 @@
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.7);
     }
+
     .modal.show {
         animation: fadeIn 0.2s ease-out;
     }
+
     .modal-dialog {
         animation: slideDown 0.3s ease-out;
     }
+
     .modal-header-danger {
         background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
         color: white;
     }
+
     .modal-header-warning {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
     }
-    .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.15em;
-    }
+
     @@keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
+
     @@keyframes slideDown {
         from {
             transform: translateY(-50px);
             opacity: 0;
         }
+
         to {
             transform: translateY(0);
             opacity: 1;
@@ -75,20 +78,17 @@
     [Parameter] public string Title { get; set; } = "Tasdiqlash";
     [Parameter] public string Message { get; set; } = "Ishonchingiz komilmi?";
     [Parameter] public ConfirmType Type { get; set; } = ConfirmType.Danger;
-    [Parameter] public bool IsProcessing { get; set; }
     [Parameter] public EventCallback OnConfirm { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 
     private async Task Confirm()
     {
-        if (!IsProcessing)
-            await OnConfirm.InvokeAsync();
+        await OnConfirm.InvokeAsync();
     }
 
     private async Task Cancel()
     {
-        if (!IsProcessing)
-            await OnCancel.InvokeAsync();
+        await OnCancel.InvokeAsync();
     }
 
     private string GetHeaderClass() => Type switch
