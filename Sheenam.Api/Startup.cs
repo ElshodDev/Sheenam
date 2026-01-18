@@ -12,7 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sheenam.Api.Brokers.Loggings;
+using Sheenam.Api.Brokers.MachineLearning;
 using Sheenam.Api.Brokers.Storages;
+using Sheenam.Api.Services.AI.Recommendations;
 using Sheenam.Api.Services.Foundations.Auth;
 using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -37,6 +39,7 @@ namespace Sheenam.Api
 
             AddBrokers(services);
             AddFoundationService(services);
+            AddAIServices(services);  // ⬅️ AI Services qo'shildi
 
             // ✅ JWT Authentication
             AddJwtAuthentication(services);
@@ -66,7 +69,7 @@ namespace Sheenam.Api
                 {
                     Title = "Sheenam.Api",
                     Version = "v1",
-                    Description = "Home rental API with JWT Authentication"
+                    Description = "Home rental API with JWT Authentication & AI Recommendations"
                 });
 
                 // JWT Authorization in Swagger
@@ -129,6 +132,15 @@ namespace Sheenam.Api
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+        }
+
+        private static void AddAIServices(IServiceCollection services)
+        {
+            // ML Broker - Singleton because it caches ML models
+            services.AddSingleton<IMLBroker, MLBroker>();
+
+            // AI Recommendation Service
+            services.AddTransient<IRecommendationService, RecommendationService>();
         }
 
         private static void AddFoundationService(IServiceCollection services)

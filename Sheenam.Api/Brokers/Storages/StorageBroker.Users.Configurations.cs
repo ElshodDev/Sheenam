@@ -44,6 +44,7 @@ namespace Sheenam.Api.Brokers.Storages
                 entity.Property(u => u.IsEmailVerified)
                     .IsRequired()
                     .HasDefaultValue(false);
+
             });
         }
     }
