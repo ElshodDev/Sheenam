@@ -39,12 +39,10 @@ namespace Sheenam.Api
 
             AddBrokers(services);
             AddFoundationService(services);
-            AddAIServices(services);  // ⬅️ AI Services qo'shildi
+            AddAIServices(services);
 
-            // ✅ JWT Authentication
             AddJwtAuthentication(services);
 
-            // CORS sozlamalari
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowBlazor", builder =>
@@ -62,7 +60,6 @@ namespace Sheenam.Api
                 });
             });
 
-            // ✅ Swagger with JWT support
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -72,7 +69,6 @@ namespace Sheenam.Api
                     Description = "Home rental API with JWT Authentication & AI Recommendations"
                 });
 
-                // JWT Authorization in Swagger
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -117,10 +113,8 @@ namespace Sheenam.Api
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // CORS middleware
             app.UseCors("AllowBlazor");
 
-            // ✅ Authentication & Authorization (CORS dan keyin!)
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -136,10 +130,8 @@ namespace Sheenam.Api
 
         private static void AddAIServices(IServiceCollection services)
         {
-            // ML Broker - Singleton because it caches ML models
             services.AddSingleton<IMLBroker, MLBroker>();
 
-            // AI Recommendation Service
             services.AddTransient<IRecommendationService, RecommendationService>();
         }
 
@@ -150,12 +142,10 @@ namespace Sheenam.Api
             services.AddTransient<IHostService, HostService>();
             services.AddTransient<IHomeRequestService, HomeRequestService>();
 
-            // ✅ User & Auth Services
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
         }
 
-        // ✅ JWT Configuration
         private void AddJwtAuthentication(IServiceCollection services)
         {
             var jwtSettings = Configuration.GetSection("JwtSettings");
