@@ -100,5 +100,87 @@ namespace Sheenam.Api.Tests.Unit.Services.AI.Recommendations
             featureData.IsPetAllowed.Should().Be(1f);
             featureData.IsShared.Should().Be(0f);
         }
+
+      
+
+        [Fact]
+        public async Task ShouldIgnoreNonVacantHomesAsync()
+        {
+            // given
+            var homes = new List<Home>
+            {
+                new Home { Id = Guid.NewGuid(), IsVacant = true, Price = 1200, NumberOfBedrooms = 2, IsPetAllowed = true },
+                new Home { Id = Guid.NewGuid(), IsVacant = false, Price = 900, NumberOfBedrooms = 3, IsPetAllowed = true },
+                new Home { Id = Guid.NewGuid(), IsVacant = true, Price = 1400, NumberOfBedrooms = 2, IsPetAllowed = false }
+            }.AsQueryable();
+
+            var preferences = new GuestPreferences
+            {
+                MaxPrice = 1500,
+                MinBedrooms = 2,
+                NeedsPetAllowed = false
+            };
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                    .Returns(homes);
+
+            // when
+            List<HomeRecommendation> actualRecommendations =
+                await this.recommendationService.GetRecommendedHomesAsync(preferences);
+
+            // then
+            actualRecommendations.Should().NotBeNull();
+            actualRecommendations.All(r => r.Price <= 1500).Should().BeTrue();
+            actualRecommendations.All(r => r.NumberOfBedrooms >= 2).Should().BeTrue();
+            actualRecommendations.All(r =>
+                homes.First(h => h.Id == r.HomeId).IsVacant).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task ShouldCalculateMatchScoreCorrectlyAsync()
+        {
+            // given
+            var home = new Home
+            {
+                Id = Guid.NewGuid(),
+                IsVacant = true,
+                Price = 900, 
+                NumberOfBedrooms = 3,
+                NumberOfBathrooms = 2,
+                Area = 80,
+                IsPetAllowed = true,
+                IsShared = false,
+                Type = HouseType.Flat
+            };
+
+            var preferences = new GuestPreferences
+            {
+                MaxPrice = 1200,
+                MinBedrooms = 2,
+                NeedsPetAllowed = true,
+                PreferPrivate = true,
+                PreferredType = "Flat"
+            };
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                    .Returns(new List<Home> { home }.AsQueryable());
+
+            // when
+            List<HomeRecommendation> actualRecommendations =
+                await this.recommendationService.GetRecommendedHomesAsync(preferences);
+
+            // then
+            actualRecommendations.Should().HaveCount(1);
+            var rec = actualRecommendations.First();
+            rec.MatchScore.Should().BeGreaterThan(80); // Eng mos uy uchun yuqori ball
+            rec.MatchScore.Should().BeLessOrEqualTo(100);
+            rec.MatchScore.Should().BeGreaterOrEqualTo(0);
+            rec.MatchReason.Should().Contain("Great price");
+            rec.MatchReason.Should().Contain("Extra bedrooms");
+            rec.MatchReason.Should().Contain("Pet-friendly");
+            rec.MatchReason.Should().Contain("Private space");
+        }
     }
 }

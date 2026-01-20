@@ -208,5 +208,93 @@ namespace Sheenam.Api.Tests.Unit.Services.AI.Recommendations
             actualRecommendations[0].MatchScore.Should()
                 .BeGreaterOrEqualTo(actualRecommendations[1].MatchScore);
         }
+
+        [Fact]
+        public async Task ShouldHandleNullPreferencesAsync()
+        {
+            // given
+            var vacantHomes = new List<Home>
+            {
+                new Home { Id = Guid.NewGuid(), IsVacant = true, Price = 1000, NumberOfBedrooms = 2, IsPetAllowed = true }
+            }.AsQueryable();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                    .Returns(vacantHomes);
+
+            // when
+            Func<Task> act = async () => await this.recommendationService.GetRecommendedHomesAsync(null);
+
+            // then
+            await act.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task ShouldHandleEmptyHomesListAsync()
+        {
+            // given
+            var emptyHomes = new List<Home>().AsQueryable();
+
+            var preferences = new GuestPreferences
+            {
+                MaxPrice = 2000,
+                MinBedrooms = 1,
+                NeedsPetAllowed = false
+            };
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                    .Returns(emptyHomes);
+
+            // when
+            List<HomeRecommendation> actualRecommendations =
+                await this.recommendationService.GetRecommendedHomesAsync(preferences);
+
+            // then
+            actualRecommendations.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ShouldLimitResultsToTopNAsync()
+        {
+            // given
+            var vacantHomes = Enumerable.Range(1, 20)
+                .Select(i => new Home
+                {
+                    Id = Guid.NewGuid(),
+                    IsVacant = true,
+                    Price = 1000 + i * 10,
+                    NumberOfBedrooms = 2 + (i % 3),
+                    IsPetAllowed = i % 2 == 0,
+                    IsShared = false
+                }).AsQueryable();
+
+            var preferences = new GuestPreferences
+            {
+                MaxPrice = 1500,
+                MinBedrooms = 2,
+                NeedsPetAllowed = false
+            };
+
+            int topN = 7;
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomes())
+                    .Returns(vacantHomes);
+
+            // when
+            List<HomeRecommendation> actualRecommendations =
+                await this.recommendationService.GetRecommendedHomesAsync(preferences, topN);
+
+            // then
+            actualRecommendations.Should().NotBeNull();
+            actualRecommendations.Count.Should().BeLessOrEqualTo(topN);
+
+            for (int i = 0; i < actualRecommendations.Count - 1; i++)
+            {
+                actualRecommendations[i].MatchScore.Should()
+                    .BeGreaterOrEqualTo(actualRecommendations[i + 1].MatchScore);
+            }
+        }
     }
 }
