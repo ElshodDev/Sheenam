@@ -242,26 +242,4 @@ namespace Sheenam.Api.Controllers
             }
         }
     }
-
-    // ✅ DTO Models (Request/Response)
-    public class RegisterRequest
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string PhoneNumber { get; set; }
-    }
-
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class LoginResponse
-    {
-        public string Token { get; set; }
-        public string Message { get; set; }
-    }
 }

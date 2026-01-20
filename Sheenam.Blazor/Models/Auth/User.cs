@@ -19,11 +19,4 @@ namespace Sheenam.Blazor.Models.Auth
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }
-
-    public enum UserRole
-    {
-        Guest = 0,
-        Host = 1,
-        Admin = 2
-    }
 }
