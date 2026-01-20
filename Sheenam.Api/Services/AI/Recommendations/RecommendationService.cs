@@ -36,6 +36,9 @@ namespace Sheenam.Api.Services.AI.Recommendations
             GuestPreferences preferences,
             int topN = 10)
         {
+            if (preferences is null)
+                throw new ArgumentNullException(nameof(preferences));
+
             var allHomes = this.storageBroker
                 .SelectAllHomes()
                 .Where(h => h.IsVacant)
@@ -46,6 +49,7 @@ namespace Sheenam.Api.Services.AI.Recommendations
 
             return scoredHomes
                 .OrderByDescending(h => h.MatchScore)
+                .ThenBy(h => h.Price) // Additional sorting by price
                 .Take(topN)
                 .Select((home, index) =>
                 {
