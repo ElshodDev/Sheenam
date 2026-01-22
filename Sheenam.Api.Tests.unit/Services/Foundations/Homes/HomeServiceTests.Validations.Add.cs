@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using FluentAssertions;
 using Moq;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
@@ -53,7 +54,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfHomeIsInvalidAndLogItAsync(
-            string invalidText)
+     string invalidText)
         {
             // given
             var invalidHome = new Home
@@ -62,7 +63,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                 HostId = Guid.Empty,
                 Address = invalidText,
                 AdditionalInfo = invalidText,
-                Type = (HouseType)999
+                Area = 0,
+                Type = (HouseType)999,
+                ListingType = (ListingType)999,
+                ListedDate = default
             };
 
             var invalidHomeException = new InvalidHomeException();
@@ -84,8 +88,20 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                 value: "Text is required");
 
             invalidHomeException.UpsertDataList(
+                key: nameof(Home.Area),
+                value: "Number must be greater than zero");
+
+            invalidHomeException.UpsertDataList(
                 key: nameof(Home.Type),
                 value: "Value is invalid");
+
+            invalidHomeException.UpsertDataList(
+                key: nameof(Home.ListingType),
+                value: "Value is invalid");
+
+            invalidHomeException.UpsertDataList(
+                key: nameof(Home.ListedDate),
+                value: "Date is required");
 
             var expectedHomeValidationException =
                 new HomeValidationException(invalidHomeException);
@@ -93,6 +109,25 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             // when
             ValueTask<Home> addHomeTask =
                 this.homeService.AddHomeAsync(invalidHome);
+
+            HomeValidationException actualHomeValidationException =
+                await Assert.ThrowsAsync<HomeValidationException>(
+                    addHomeTask.AsTask);
+
+            // then
+            actualHomeValidationException.Should().BeEquivalentTo(expectedHomeValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHomeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHomeAsync(It.IsAny<Home>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

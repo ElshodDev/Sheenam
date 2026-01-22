@@ -5,16 +5,10 @@
 
 namespace Sheenam.Api.Models.Foundations.Homes
 {
-    public enum HouseType
+    public enum ListingType
     {
-        Flat = 0,
-        Bungalow = 1,
-        Duplex = 2,
-        Villa = 3,
-        Townhouse = 4,
-        Studio = 5,
-        Penthouse = 6,
-        Cottage = 7,
-        Other = 99
+        ForRent = 0,
+        ForSale = 1,
+        Both = 2
     }
 }

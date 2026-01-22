@@ -101,7 +101,7 @@ namespace Sheenam.Api.Tests.Unit.Services.AI.Recommendations
             featureData.IsShared.Should().Be(0f);
         }
 
-      
+
 
         [Fact]
         public async Task ShouldIgnoreNonVacantHomesAsync()
@@ -145,7 +145,7 @@ namespace Sheenam.Api.Tests.Unit.Services.AI.Recommendations
             {
                 Id = Guid.NewGuid(),
                 IsVacant = true,
-                Price = 900, 
+                Price = 900,
                 NumberOfBedrooms = 3,
                 NumberOfBathrooms = 2,
                 Area = 80,

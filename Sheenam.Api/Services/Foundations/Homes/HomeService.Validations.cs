@@ -23,8 +23,11 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 (Rule: IsInvalid(home.NumberOfBedrooms), Parameter: nameof(Home.NumberOfBedrooms)),
                 (Rule: IsInvalid(home.NumberOfBathrooms), Parameter: nameof(Home.NumberOfBathrooms)),
                 (Rule: IsInvalid(home.Area), Parameter: nameof(Home.Area)),
-                (Rule: IsInvalid(home.Price), Parameter: nameof(Home.Price)),
-                (Rule: IsInvalid(home.Type), Parameter: nameof(Home.Type)));
+                (Rule: IsInvalid(home.Type), Parameter: nameof(Home.Type)),
+                (Rule: IsInvalid(home.ListingType), Parameter: nameof(Home.ListingType)),
+                (Rule: IsInvalid(home.ListedDate), Parameter: nameof(Home.ListedDate)));
+
+            ValidatePricingBasedOnListingType(home);
         }
 
         private static void ValidateHomeOnModify(Home home)
@@ -39,8 +42,13 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 (Rule: IsInvalid(home.NumberOfBedrooms), Parameter: nameof(Home.NumberOfBedrooms)),
                 (Rule: IsInvalid(home.NumberOfBathrooms), Parameter: nameof(Home.NumberOfBathrooms)),
                 (Rule: IsInvalid(home.Area), Parameter: nameof(Home.Area)),
-                (Rule: IsInvalid(home.Price), Parameter: nameof(Home.Price)),
-                (Rule: IsInvalid(home.Type), Parameter: nameof(Home.Type)));
+                (Rule: IsInvalid(home.Type), Parameter: nameof(Home.Type)),
+                (Rule: IsInvalid(home.SecurityDeposit ?? 0), Parameter: nameof(Home.SecurityDeposit)),
+                (Rule: IsInvalid(home.ImageUrls), Parameter: nameof(Home.ImageUrls)),
+                (Rule: IsInvalid(home.ListingType), Parameter: nameof(Home.ListingType)),
+                (Rule: IsInvalid(home.ListedDate), Parameter: nameof(Home.ListedDate)));
+
+            ValidatePricingBasedOnListingType(home);
         }
 
         private static void ValidateHomeId(Guid homeId) =>
@@ -60,6 +68,33 @@ namespace Sheenam.Api.Services.Foundations.Homes
             {
                 throw new NullHomeException();
             }
+        }
+
+        private static void ValidatePricingBasedOnListingType(Home home)
+        {
+            var invalidHomeException = new InvalidHomeException();
+
+            if (home.ListingType == ListingType.ForRent || home.ListingType == ListingType.Both)
+            {
+                if (!home.MonthlyRent.HasValue || home.MonthlyRent.Value <= 0)
+                {
+                    invalidHomeException.UpsertDataList(
+                        key: nameof(Home.MonthlyRent),
+                        value: "Monthly rent is required for rental listings");
+                }
+            }
+
+            if (home.ListingType == ListingType.ForSale || home.ListingType == ListingType.Both)
+            {
+                if (!home.SalePrice.HasValue || home.SalePrice.Value <= 0)
+                {
+                    invalidHomeException.UpsertDataList(
+                        key: nameof(Home.SalePrice),
+                        value: "Sale price is required for sale listings");
+                }
+            }
+
+            invalidHomeException.ThrowIfContainsErrors();
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -92,9 +127,21 @@ namespace Sheenam.Api.Services.Foundations.Homes
             Message = "Number must be greater than zero"
         };
 
+        private static dynamic IsInvalid(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is required"
+        };
+
         private static dynamic IsInvalid(HouseType type) => new
         {
             Condition = Enum.IsDefined(typeof(HouseType), type) == false,
+            Message = "Value is invalid"
+        };
+
+        private static dynamic IsInvalid(ListingType listingType) => new
+        {
+            Condition = Enum.IsDefined(typeof(ListingType), listingType) == false,
             Message = "Value is invalid"
         };
 

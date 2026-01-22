@@ -30,16 +30,15 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                 loggingBrokerMock.Object);
         }
 
-        // ✅ YANGI: Exception comparison helper
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
         private static Home CreateRandomHome() =>
-            CreateHomeFiller().Create();
+            CreateHomeFiller(GetRandomDateTimeOffset()).Create();
 
         private IQueryable<Home> CreateRandomHomes()
         {
-            int randomCount = new Random().Next(2, 10);
+            int randomCount = GetRandomNumber();
             var homesList = new List<Home>();
 
             for (int i = 0; i < randomCount; i++)
@@ -50,24 +49,37 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             return homesList.AsQueryable();
         }
 
-        private static Filler<Home> CreateHomeFiller()
+        private static Filler<Home> CreateHomeFiller(DateTimeOffset dates)
         {
             var filler = new Filler<Home>();
 
             filler.Setup()
+                .OnType<DateTimeOffset>().Use(dates)
                 .OnType<string>().Use(new MnemonicString())
+
                 .OnProperty(h => h.NumberOfBedrooms).Use(new IntRange(1, 10))
                 .OnProperty(h => h.NumberOfBathrooms).Use(new IntRange(1, 5))
                 .OnProperty(h => h.Area).Use(new DoubleRange(20, 500))
-                .OnProperty(h => h.Price).Use(() =>
-                    Convert.ToDecimal(new DoubleRange(100, 5000).GetValue()))
-                .OnProperty(h => h.Type).Use(GetRandomHouseType)
-                .OnProperty(h => h.IsVacant).Use(GetRandomBool)
-                .OnProperty(h => h.IsPetAllowed).Use(GetRandomBool)
-                .OnProperty(h => h.IsShared).Use(GetRandomBool);
+
+                .OnProperty(h => h.Type).Use(GetRandomHouseType())
+                .OnProperty(h => h.ListingType).Use(GetRandomListingType())
+                .OnProperty(h => h.IsVacant).Use(GetRandomBool())
+                .OnProperty(h => h.IsPetAllowed).Use(GetRandomBool())
+                .OnProperty(h => h.IsShared).Use(GetRandomBool())
+                .OnProperty(h => h.IsFeatured).Use(GetRandomBool())
+
+                .OnProperty(h => h.MonthlyRent).Use(GetRandomDecimal())
+                .OnProperty(h => h.SalePrice).Use(GetRandomDecimal())
+                .OnProperty(h => h.SecurityDeposit).Use(GetRandomDecimal())
+                .OnProperty(h => h.ImageUrls).Use(GetRandomString())
+                .OnProperty(h => h.ListedDate).Use(dates)
+                .OnProperty(h => h.Price).Use(GetRandomDecimal());
 
             return filler;
         }
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static HouseType GetRandomHouseType()
         {
@@ -75,7 +87,22 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             return (HouseType)values.GetValue(new Random().Next(values.Length));
         }
 
+        private static ListingType GetRandomListingType()
+        {
+            Array values = Enum.GetValues(typeof(ListingType));
+            return (ListingType)values.GetValue(new Random().Next(values.Length));
+        }
+
         private static bool GetRandomBool() =>
             new Random().Next(0, 2) == 0;
+
+        private static decimal GetRandomDecimal() =>
+            new Random().Next(100, 10000);
+
+        private static int GetRandomNumber() =>
+            new Random().Next(2, 10);
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
     }
 }
