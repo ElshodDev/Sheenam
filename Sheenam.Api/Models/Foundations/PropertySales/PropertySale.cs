@@ -22,7 +22,7 @@ namespace Sheenam.Api.Models.Foundations.PropertySales
         public PropertySaleStatus Status { get; set; } = PropertySaleStatus.Available;
         public DateTimeOffset ListedDate { get; set; }
         public DateTimeOffset? SoldDate { get; set; }
-        public string ImageUrls { get; set; } 
+        public string ImageUrls { get; set; }
         public string LegalDocuments { get; set; }
         public bool IsFeatured { get; set; }
         public DateTimeOffset CreatedDate { get; set; }

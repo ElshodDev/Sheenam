@@ -63,50 +63,42 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                 HostId = Guid.Empty,
                 Address = invalidText,
                 AdditionalInfo = invalidText,
-                Area = 0,               // Xato (<= 0)
-                Type = (HouseType)999,  // Xato (not defined)
-                ListingType = (ListingType)999, // Xato (not defined)
-                ListedDate = default    // Xato (default)
+                Area = 0,
+                Type = (HouseType)999,
+                ListingType = (ListingType)999,
+                ListedDate = default
             };
 
             var invalidHomeException = new InvalidHomeException();
 
-            // 1
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.Id),
                 value: "Id is required");
 
-            // 2
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.HostId),
                 value: "Id is required");
 
-            // 3
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.Address),
                 value: "Text is required");
 
-            // 4
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.AdditionalInfo),
                 value: "Text is required");
 
-            // 5
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.Area),
                 value: "Number must be greater than zero");
 
-            // 6
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.Type),
                 value: "Value is invalid");
 
-            // 7
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.ListingType),
                 value: "Value is invalid");
 
-            // 8
             invalidHomeException.UpsertDataList(
                 key: nameof(Home.ListedDate),
                 value: "Date is required");

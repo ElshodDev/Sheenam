@@ -57,20 +57,17 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
                 .OnType<DateTimeOffset>().Use(dates)
                 .OnType<string>().Use(new MnemonicString())
 
-                // Asosiy xususiyatlar
                 .OnProperty(h => h.NumberOfBedrooms).Use(new IntRange(1, 10))
                 .OnProperty(h => h.NumberOfBathrooms).Use(new IntRange(1, 5))
                 .OnProperty(h => h.Area).Use(new DoubleRange(20, 500))
 
-                // Enumlar va Boollar
                 .OnProperty(h => h.Type).Use(GetRandomHouseType())
-                .OnProperty(h => h.ListingType).Use(GetRandomListingType()) // Random ListingType
+                .OnProperty(h => h.ListingType).Use(GetRandomListingType())
                 .OnProperty(h => h.IsVacant).Use(GetRandomBool())
                 .OnProperty(h => h.IsPetAllowed).Use(GetRandomBool())
                 .OnProperty(h => h.IsShared).Use(GetRandomBool())
                 .OnProperty(h => h.IsFeatured).Use(GetRandomBool())
 
-                // Yangi Narx va Sana propertylari
                 .OnProperty(h => h.MonthlyRent).Use(GetRandomDecimal())
                 .OnProperty(h => h.SalePrice).Use(GetRandomDecimal())
                 .OnProperty(h => h.SecurityDeposit).Use(GetRandomDecimal())
@@ -90,7 +87,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             return (HouseType)values.GetValue(new Random().Next(values.Length));
         }
 
-        // Yangi qo'shilgan ListingType uchun random
         private static ListingType GetRandomListingType()
         {
             Array values = Enum.GetValues(typeof(ListingType));

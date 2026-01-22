@@ -6,7 +6,6 @@
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using System;
-using System.Data;
 
 namespace Sheenam.Api.Services.Foundations.Homes
 {
