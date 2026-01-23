@@ -13,7 +13,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldReturnUpdatedPropertySaleWhenUpdateIsSuccessfulAsync()
         {
             // given
-            PropertySale somePropertySale = CreateRandomPropertySale();
+            SaleOffer somePropertySale = CreateRandomPropertySale();
             Guid propertySaleId = somePropertySale.Id;
 
             this.storageBrokerMock
@@ -25,7 +25,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                 .ReturnsAsync(somePropertySale);
 
             // when
-            PropertySale updatedPropertySale =
+            SaleOffer updatedPropertySale =
                 await this.propertySaleService.ModifyPropertySaleAsync(somePropertySale);
 
             // then

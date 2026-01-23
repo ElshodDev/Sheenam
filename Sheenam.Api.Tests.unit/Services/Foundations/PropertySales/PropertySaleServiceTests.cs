@@ -31,7 +31,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private static PropertySale CreateRandomPropertySale() =>
+        private static SaleOffer CreateRandomPropertySale() =>
             CreatePropertySaleFiller(date: GetRandomDateTimeOffset()).Create();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
@@ -61,9 +61,9 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private static Filler<PropertySale> CreatePropertySaleFiller(DateTimeOffset date)
+        private static Filler<SaleOffer> CreatePropertySaleFiller(DateTimeOffset date)
         {
-            var filler = new Filler<PropertySale>();
+            var filler = new Filler<SaleOffer>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)

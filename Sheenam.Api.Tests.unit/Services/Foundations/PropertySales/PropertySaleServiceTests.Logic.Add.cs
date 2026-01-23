@@ -15,17 +15,17 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldAddPropertySaleAsync()
         {
             // given
-            PropertySale randomPropertySale = CreateRandomPropertySale();
-            PropertySale inputPropertySale = randomPropertySale;
-            PropertySale storagePropertySale = inputPropertySale;
-            PropertySale expectedPropertySale = storagePropertySale.DeepClone();
+            SaleOffer randomPropertySale = CreateRandomPropertySale();
+            SaleOffer inputPropertySale = randomPropertySale;
+            SaleOffer storagePropertySale = inputPropertySale;
+            SaleOffer expectedPropertySale = storagePropertySale.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertPropertySaleAsync(inputPropertySale))
                     .ReturnsAsync(storagePropertySale);
 
             // when
-            PropertySale actualPropertySale =
+            SaleOffer actualPropertySale =
                 await this.propertySaleService.AddPropertySaleAsync(inputPropertySale);
 
             // then

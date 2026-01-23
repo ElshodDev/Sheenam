@@ -13,7 +13,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldDeletePropertySaleWhenPropertySaleExistsAsync()
         {
             // given
-            PropertySale randomPropertySale = CreateRandomPropertySale();
+            SaleOffer randomPropertySale = CreateRandomPropertySale();
             Guid propertySaleId = randomPropertySale.Id;
 
             this.storageBrokerMock
@@ -25,7 +25,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                 .ReturnsAsync(randomPropertySale);
 
             // when
-            PropertySale deletedPropertySale =
+            SaleOffer deletedPropertySale =
                 await this.propertySaleService.RemovePropertySaleByIdAsync(propertySaleId);
 
             // then

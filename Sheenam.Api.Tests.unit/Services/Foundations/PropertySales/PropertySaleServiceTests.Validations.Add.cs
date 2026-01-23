@@ -15,14 +15,14 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldThrowValidationExceptionOnAddIfPropertySaleIsNullAndLogItAsync()
         {
             // given
-            PropertySale nullPropertySale = null;
+            SaleOffer nullPropertySale = null;
             var nullPropertySaleException = new NullPropertySaleException();
 
             var expectedPropertySaleValidationException =
                 new PropertySaleValidationException(nullPropertySaleException);
 
             // when
-            ValueTask<PropertySale> addPropertySaleTask =
+            ValueTask<SaleOffer> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(nullPropertySale);
 
             // then
@@ -37,7 +37,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertPropertySaleAsync(It.IsAny<PropertySale>()),
+                broker.InsertPropertySaleAsync(It.IsAny<SaleOffer>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -52,7 +52,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
             string invalidText)
         {
             // given
-            var invalidPropertySale = new PropertySale
+            var invalidPropertySale = new SaleOffer
             {
                 Address = invalidText,
                 Description = invalidText
@@ -61,42 +61,42 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
             var invalidPropertySaleException = new InvalidPropertySaleException();
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.Id),
+                nameof(SaleOffer.Id),
                 values: "Id is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.HostId),
+                nameof(SaleOffer.HostId),
                 values: "Id is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.Address),
+                nameof(SaleOffer.Address),
                 values: "Text is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.Description),
+                nameof(SaleOffer.Description),
                 values: "Text is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.SalePrice),
+                nameof(SaleOffer.SalePrice),
                 values: "Price must be greater than zero");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.ListedDate),
+                nameof(SaleOffer.ListedDate),
                 values: "Date is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.CreatedDate),
+                nameof(SaleOffer.CreatedDate),
                 values: "Date is Required");
 
             invalidPropertySaleException.AddData(
-                nameof(PropertySale.UpdatedDate),
+                nameof(SaleOffer.UpdatedDate),
                 values: "Date is Required");
 
             var expectedPropertySaleValidationException =
                 new PropertySaleValidationException(invalidPropertySaleException);
 
             // when
-            ValueTask<PropertySale> addPropertySaleTask =
+            ValueTask<SaleOffer> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(invalidPropertySale);
 
             // then
@@ -111,7 +111,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                 Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertPropertySaleAsync(It.IsAny<PropertySale>()),
+                broker.InsertPropertySaleAsync(It.IsAny<SaleOffer>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -122,21 +122,21 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldThrowValidationExceptionOnAddIfHouseTypeIsInvalidAndLogItAsync()
         {
             // given
-            PropertySale randomPropertySale = CreateRandomPropertySale();
-            PropertySale invalidPropertySale = randomPropertySale;
+            SaleOffer randomPropertySale = CreateRandomPropertySale();
+            SaleOffer invalidPropertySale = randomPropertySale;
             invalidPropertySale.Type = GetInvalidEnum<HouseType>();
 
             var invalidPropertySaleException = new InvalidPropertySaleException();
 
             invalidPropertySaleException.AddData(
-                key: nameof(PropertySale.Type),
+                key: nameof(SaleOffer.Type),
                 values: "Value is invalid");
 
             var expectedPropertySaleValidationException =
                 new PropertySaleValidationException(invalidPropertySaleException);
 
             // when
-            ValueTask<PropertySale> addPropertySaleTask =
+            ValueTask<SaleOffer> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(invalidPropertySale);
 
             // then
@@ -151,7 +151,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                 Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertPropertySaleAsync(It.IsAny<PropertySale>()),
+                broker.InsertPropertySaleAsync(It.IsAny<SaleOffer>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
