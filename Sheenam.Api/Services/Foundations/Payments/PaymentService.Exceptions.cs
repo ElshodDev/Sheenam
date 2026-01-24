@@ -5,6 +5,7 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.Payments;
 using Sheenam.Api.Models.Foundations.Payments.Exceptions;
 using System;
@@ -33,19 +34,58 @@ namespace Sheenam.Api.Services.Foundations.Payments
             {
                 throw CreateAndLogValidationException(invalidPaymentException);
             }
+            catch (NotFoundPaymentException notFoundPaymentException)
+            {
+                throw CreateAndLogValidationException(notFoundPaymentException);
+            }
             catch (SqlException sqlException)
             {
                 var failedPaymentStorageException = new FailedPaymentStorageException(sqlException);
+
                 throw CreateAndLogCriticalDependencyException(failedPaymentStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsPaymentException = new AlreadyExistsPaymentException(duplicateKeyException);
+
                 throw CreateAndLogDependencyValidationException(alreadyExistsPaymentException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedPaymentException = new LockedPaymentException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedPaymentException);
+            }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedPaymentStorageException = new FailedPaymentStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedPaymentStorageException);
             }
             catch (Exception exception)
             {
                 var failedPaymentServiceException = new FailedPaymentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPaymentServiceException);
+            }
+        }
+
+        private IQueryable<Payment> TryCatch(ReturningPaymentsFunction returningPaymentsFunction)
+        {
+            try
+            {
+                return returningPaymentsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedPaymentStorageException = new FailedPaymentStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedPaymentStorageException);
+            }
+            catch (Exception serviceException)
+            {
+                var failedPaymentServiceException = new FailedPaymentServiceException(serviceException);
+
                 throw CreateAndLogServiceException(failedPaymentServiceException);
             }
         }
@@ -53,28 +93,41 @@ namespace Sheenam.Api.Services.Foundations.Payments
         private PaymentValidationException CreateAndLogValidationException(Xeption exception)
         {
             var paymentValidationException = new PaymentValidationException(exception);
-            this.loggingBroker.LogError(paymentValidationException);
+            loggingBroker.LogError(paymentValidationException);
+
             return paymentValidationException;
         }
 
         private PaymentDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
+            var PaymentDependencyException = new PaymentDependencyException(exception);
+            loggingBroker.LogCritical(PaymentDependencyException);
+
+            return PaymentDependencyException;
+        }
+
+        private PaymentDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
             var paymentDependencyException = new PaymentDependencyException(exception);
-            this.loggingBroker.LogCritical(paymentDependencyException);
+            loggingBroker.LogError(paymentDependencyException);
+
             return paymentDependencyException;
         }
+
 
         private PaymentDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var paymentDependencyValidationException = new PaymentDependencyValidationException(exception);
-            this.loggingBroker.LogError(paymentDependencyValidationException);
+            loggingBroker.LogError(paymentDependencyValidationException);
+
             return paymentDependencyValidationException;
         }
 
-        private PaymentServiceException CreateAndLogServiceException(Xeption exception)
+        private PaymentServiceException CreateAndLogServiceException(Xeption innerException)
         {
-            var paymentServiceException = new PaymentServiceException(exception);
-            this.loggingBroker.LogError(paymentServiceException);
+            var paymentServiceException = new PaymentServiceException(innerException);
+            loggingBroker.LogError(paymentServiceException);
+
             return paymentServiceException;
         }
     }

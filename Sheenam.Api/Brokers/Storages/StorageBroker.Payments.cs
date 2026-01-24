@@ -33,13 +33,17 @@ namespace Sheenam.Api.Brokers.Storages
             await this.SaveChangesAsync();
             return paymentEntityEntry.Entity;
         }
-
-        public async ValueTask<Payment> DeletePaymentAsync(Payment payment)
+        public async ValueTask<Payment> DeletePaymentAsync(Guid paymentId)
         {
-            EntityEntry<Payment> paymentEntityEntry =
-                this.Payments.Remove(payment);
-            await this.SaveChangesAsync();
-            return paymentEntityEntry.Entity;
+            Payment maybePayment = await Payments.FindAsync(paymentId);
+
+            if (maybePayment is not null)
+            {
+                Payments.Remove(maybePayment);
+                await SaveChangesAsync();
+            }
+
+            return maybePayment;
         }
     }
 }
