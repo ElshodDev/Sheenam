@@ -4,6 +4,7 @@
 //===================================================
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sheenam.Api.Models.Foundations.SaleOffers
 {
@@ -12,6 +13,7 @@ namespace Sheenam.Api.Models.Foundations.SaleOffers
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid PropertySaleId { get; set; }
         public Guid BuyerId { get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero")]
         public decimal OfferPrice { get; set; }
         public string Message { get; set; }
         public SaleOfferStatus Status { get; set; } = SaleOfferStatus.Pending;

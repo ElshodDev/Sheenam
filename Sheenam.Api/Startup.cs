@@ -21,6 +21,7 @@ using Sheenam.Api.Services.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Hosts;
 using Sheenam.Api.Services.Foundations.PropertySales;
+using Sheenam.Api.Services.Foundations.SaleOffers;
 using Sheenam.Api.Services.Foundations.Users;
 using System.Text;
 
@@ -143,7 +144,7 @@ namespace Sheenam.Api
             services.AddTransient<IHostService, HostService>();
             services.AddTransient<IHomeRequestService, HomeRequestService>();
             services.AddTransient<IPropertySaleService, PropertySaleService>();
-
+            services.AddTransient<ISaleOfferService, SaleOfferService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
         }
