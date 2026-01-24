@@ -16,7 +16,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            SaleOffer somePropertySale = CreateRandomPropertySale();
+            PropertySale somePropertySale = CreateRandomPropertySale();
             SqlException sqlException = GetSqlError();
 
             var failedPropertySaleStorageException =
@@ -30,7 +30,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<SaleOffer> addPropertySaleTask =
+            ValueTask<PropertySale> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(somePropertySale);
 
             // then
@@ -54,7 +54,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldThrowDependencyValidationOnAddIfDuplicateKeyErrorOccursAndLogItAsync()
         {
             // given
-            SaleOffer somePropertySale = CreateRandomPropertySale();
+            PropertySale somePropertySale = CreateRandomPropertySale();
             string someMessage = GetRandomString();
 
             var duplicateKeyException =
@@ -71,7 +71,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                     .ThrowsAsync(duplicateKeyException);
 
             // when
-            ValueTask<SaleOffer> addPropertySaleTask =
+            ValueTask<PropertySale> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(somePropertySale);
 
             // then
@@ -95,7 +95,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            SaleOffer somePropertySale = CreateRandomPropertySale();
+            PropertySale somePropertySale = CreateRandomPropertySale();
             var serviceException = new Exception();
 
             var failedPropertySaleServiceException =
@@ -109,7 +109,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<SaleOffer> addPropertySaleTask =
+            ValueTask<PropertySale> addPropertySaleTask =
                 this.propertySaleService.AddPropertySaleAsync(somePropertySale);
 
             // then

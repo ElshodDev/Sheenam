@@ -25,11 +25,11 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<IActionResult> PostPropertySaleAsync(SaleOffer propertySale)
+        public async ValueTask<IActionResult> PostPropertySaleAsync(PropertySale propertySale)
         {
             try
             {
-                SaleOffer postedPropertySale =
+                PropertySale postedPropertySale =
                     await this.propertySaleService.AddPropertySaleAsync(propertySale);
 
                 return Created(postedPropertySale);
@@ -59,11 +59,11 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<SaleOffer>> GetAllPropertySales()
+        public ActionResult<IQueryable<PropertySale>> GetAllPropertySales()
         {
             try
             {
-                IQueryable<SaleOffer> allPropertySales =
+                IQueryable<PropertySale> allPropertySales =
                     this.propertySaleService.RetrieveAllPropertySales();
 
                 return Ok(allPropertySales);
@@ -79,11 +79,11 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet("{propertySaleId}")]
-        public async ValueTask<ActionResult<SaleOffer>> GetPropertySaleByIdAsync(Guid propertySaleId)
+        public async ValueTask<ActionResult<PropertySale>> GetPropertySaleByIdAsync(Guid propertySaleId)
         {
             try
             {
-                SaleOffer propertySale =
+                PropertySale propertySale =
                     await this.propertySaleService.RetrievePropertySaleByIdAsync(propertySaleId);
 
                 return Ok(propertySale);
@@ -108,15 +108,15 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpPut("{propertySaleId}")]
-        public async ValueTask<ActionResult<SaleOffer>> PutPropertySaleAsync(
+        public async ValueTask<ActionResult<PropertySale>> PutPropertySaleAsync(
             Guid propertySaleId,
-            SaleOffer propertySale)
+            PropertySale propertySale)
         {
             try
             {
                 propertySale.Id = propertySaleId;
 
-                SaleOffer updatedPropertySale =
+                PropertySale updatedPropertySale =
                     await this.propertySaleService.ModifyPropertySaleAsync(propertySale);
 
                 return Ok(updatedPropertySale);
@@ -141,11 +141,11 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpDelete("{propertySaleId}")]
-        public async ValueTask<ActionResult<SaleOffer>> DeletePropertySaleByIdAsync(Guid propertySaleId)
+        public async ValueTask<ActionResult<PropertySale>> DeletePropertySaleByIdAsync(Guid propertySaleId)
         {
             try
             {
-                SaleOffer deletedPropertySale =
+                PropertySale deletedPropertySale =
                     await this.propertySaleService.RemovePropertySaleByIdAsync(propertySaleId);
 
                 return Ok(deletedPropertySale);
