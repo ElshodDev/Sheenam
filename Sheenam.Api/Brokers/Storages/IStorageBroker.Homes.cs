@@ -4,6 +4,7 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.Payments;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,5 +20,6 @@ namespace Sheenam.Api.Brokers.Storages
         ValueTask<Home> UpdateHomeAsync(Home home);
         ValueTask<Home> DeleteHomeAsync(Home home);
         ValueTask<Home> DeleteHomeByIdAsync(Guid homeId);
+        ValueTask<Payment> DeletePaymentAsync(Guid paymentId);
     }
 }
