@@ -12,8 +12,8 @@ using Sheenam.Api.Brokers.Storages;
 namespace Sheenam.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20260122134529_UpdatePropertySales")]
-    partial class UpdatePropertySales
+    [Migration("20260124052350_PropertySaleCreateTables")]
+    partial class PropertySaleCreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

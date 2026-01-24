@@ -1,12 +1,6 @@
-﻿//===================================================
-// Copyright (c) Coalition of Good-Hearted Engineers
-// Free To Use To Find Comfort and Peace
-//===================================================
-using Microsoft.Data.SqlClient;
-using Sheenam.Api.Brokers.Loggings;
+﻿using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.PropertySales;
-using Sheenam.Api.Models.Foundations.PropertySales.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,109 +20,68 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<PropertySale> AddPropertySaleAsync(PropertySale propertySale)
+        public ValueTask<PropertySale> AddPropertySaleAsync(PropertySale propertySale) =>
+        TryCatch(async () =>
         {
-            return TryCatch(async () =>
-            {
-                ValidatePropertySaleOnAdd(propertySale);
+            ValidatePropertySaleOnAdd(propertySale);
 
-                return await this.storageBroker.InsertPropertySaleAsync(propertySale);
-            });
-        }
+            return await this.storageBroker.InsertPropertySaleAsync(propertySale);
+        });
 
-        public IQueryable<PropertySale> RetrieveAllPropertySales()
+        public IQueryable<PropertySale> RetrieveAllPropertySales() =>
+            TryCatch(() => this.storageBroker.SelectAllPropertySales());
+
+        public ValueTask<PropertySale> RetrievePropertySaleByIdAsync(Guid propertySaleId) =>
+        TryCatch(async () =>
         {
-            return this.storageBroker.SelectAllPropertySales();
-        }
+            ValidatePropertySaleId(propertySaleId);
 
-        public async ValueTask<PropertySale> RetrievePropertySaleByIdAsync(Guid id)
-        {
             PropertySale maybePropertySale =
-                await this.storageBroker.SelectPropertySaleByIdAsync(id);
+                await this.storageBroker.SelectPropertySaleByIdAsync(propertySaleId);
 
-            if (maybePropertySale is null)
-            {
-                throw new NotFoundPropertySaleException(id);
-            }
+            ValidateStoragePropertySale(maybePropertySale, propertySaleId);
 
             return maybePropertySale;
-        }
+        });
 
-        public async ValueTask<PropertySale> ModifyPropertySaleAsync(PropertySale propertySale)
+        public ValueTask<PropertySale> ModifyPropertySaleAsync(PropertySale propertySale) =>
+        TryCatch(async () =>
         {
             ValidatePropertySaleOnModify(propertySale);
 
-            PropertySale trackedPropertySale =
+            PropertySale maybePropertySale =
                 await this.storageBroker.SelectPropertySaleByIdAsync(propertySale.Id);
 
-            ValidateStoragePropertySale(trackedPropertySale, propertySale.Id);
+            ValidateStoragePropertySale(maybePropertySale, propertySale.Id);
 
-            trackedPropertySale.HostId = propertySale.HostId;
-            trackedPropertySale.Address = propertySale.Address;
-            trackedPropertySale.Description = propertySale.Description;
-            trackedPropertySale.Type = propertySale.Type;
-            trackedPropertySale.NumberOfBedrooms = propertySale.NumberOfBedrooms;
-            trackedPropertySale.NumberOfBathrooms = propertySale.NumberOfBathrooms;
-            trackedPropertySale.Area = propertySale.Area;
-            trackedPropertySale.SalePrice = propertySale.SalePrice;
-            trackedPropertySale.Status = propertySale.Status;
-            trackedPropertySale.ImageUrls = propertySale.ImageUrls;
-            trackedPropertySale.LegalDocuments = propertySale.LegalDocuments;
-            trackedPropertySale.IsFeatured = propertySale.IsFeatured;
-            trackedPropertySale.UpdatedDate = DateTimeOffset.UtcNow;
+            return await this.storageBroker.UpdatePropertySaleAsync(propertySale);
+        });
 
-            return await this.storageBroker.UpdatePropertySaleAsync(trackedPropertySale);
-        }
-
-        public async ValueTask<PropertySale> RemovePropertySaleByIdAsync(Guid propertySaleId)
+        public ValueTask<PropertySale> RemovePropertySaleByIdAsync(Guid propertySaleId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                PropertySale maybePropertySale =
-                    await this.storageBroker.SelectPropertySaleByIdAsync(propertySaleId);
+            ValidatePropertySaleId(propertySaleId);
 
-                if (maybePropertySale == null)
-                {
-                    throw new NotFoundPropertySaleException(propertySaleId);
-                }
+            PropertySale maybePropertySale =
+                await this.storageBroker.SelectPropertySaleByIdAsync(propertySaleId);
 
-                PropertySale deletedPropertySale =
-                    await this.storageBroker.DeletePropertySaleAsync(maybePropertySale);
+            ValidateStoragePropertySale(maybePropertySale, propertySaleId);
 
-                return deletedPropertySale;
-            }
-            catch (NotFoundPropertySaleException notFoundPropertySaleException)
-            {
-                throw new PropertySaleValidationException(notFoundPropertySaleException);
-            }
-            catch (SqlException sqlException)
-            {
-                throw new PropertySaleDependencyException(
-                    new FailedPropertySaleStorageException(sqlException));
-            }
-            catch (Exception exception)
-            {
-                throw new PropertySaleServiceException(
-                    new FailedPropertySaleServiceException(exception));
-            }
-        }
+            // FIX: Bu yerda DeleteHomeRequestAsync emas, DeletePropertySaleAsync bo'lishi kerak
+            return await this.storageBroker.DeletePropertySaleAsync(maybePropertySale);
+        });
 
-        private void ValidatePropertySaleOnModify(PropertySale propertySale)
-        {
-            if (propertySale == null)
-                throw new PropertySaleValidationException("PropertySale cannot be null.");
+        // Boshqa metodlar uchun placeholderlar (Interfeysga moslab nomlandi)
+        public ValueTask<PropertySale> ApprovePropertySaleAsync(Guid propertySaleId) =>
+            throw new NotImplementedException();
 
-            if (string.IsNullOrWhiteSpace(propertySale.Address))
-                throw new PropertySaleValidationException("PropertySale address is required.");
+        public ValueTask<PropertySale> RejectPropertySaleAsync(Guid propertySaleId, string rejectionReason = null) =>
+            throw new NotImplementedException();
 
-            if (propertySale.SalePrice <= 0)
-                throw new PropertySaleValidationException("PropertySale price must be greater than zero.");
-        }
+        public ValueTask<PropertySale> CancelPropertySaleAsync(Guid propertySaleId) =>
+            throw new NotImplementedException();
 
-        private void ValidateStoragePropertySale(PropertySale maybePropertySale, Guid id)
-        {
-            if (maybePropertySale == null)
-                throw new NotFoundPropertySaleException($"PropertySale with id {id} not found.");
-        }
+        public IQueryable<PropertySale> RetrievePropertySalesByStatusAsync(PropertySaleStatus status) =>
+            throw new NotImplementedException();
     }
 }

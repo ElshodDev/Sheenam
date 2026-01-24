@@ -2,11 +2,13 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Models.Foundations.PropertySales.Exceptions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -14,10 +16,36 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
 {
     public partial class PropertySaleService
     {
+        private delegate IQueryable<PropertySale> ReturningPropertySalesFunction();
         private delegate ValueTask<PropertySale> ReturningPropertySaleFunction();
 
+        // 1. IQueryable uchun maxsus TryCatch (YANGI QO'SHILDI)
+        private IQueryable<PropertySale> TryCatch(ReturningPropertySalesFunction returningPropertySalesFunction)
+        {
+            try
+            {
+                return returningPropertySalesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedPropertySaleStorageException =
+                    new FailedPropertySaleStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(
+                    failedPropertySaleStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedPropertySaleServiceException =
+                    new FailedPropertySaleServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPropertySaleServiceException);
+            }
+        }
+
+        // 2. ValueTask (Async) uchun mavjud TryCatch
         private async ValueTask<PropertySale> TryCatch(
-            ReturningPropertySaleFunction returningPropertySaleFunction)
+           ReturningPropertySaleFunction returningPropertySaleFunction)
         {
             try
             {
@@ -36,14 +64,15 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
                 var failedPropertySaleStorageException =
                     new FailedPropertySaleStorageException(sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedPropertySaleStorageException);
+                throw CreateAndLogCriticalDependencyException(
+                    failedPropertySaleStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
-                var alreadyExistPropertySaleException =
+                var alreadyExistsPropertySaleException =
                     new AlreadyExistPropertySaleException(duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistPropertySaleException);
+                throw CreateAndLogDependencyValidationException(alreadyExistsPropertySaleException);
             }
             catch (Exception exception)
             {
@@ -54,7 +83,8 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             }
         }
 
-        private PropertySaleValidationException CreateAndLogValidationException(Xeption exception)
+        private PropertySaleValidationException CreateAndLogValidationException(
+            Xeption exception)
         {
             var propertySaleValidationException =
                 new PropertySaleValidationException(exception);
@@ -64,19 +94,17 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             return propertySaleValidationException;
         }
 
-        private PropertySaleDependencyException CreateAndLogCriticalDependencyException(
-            Xeption exception)
+        private PropertySaleDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var propertySaleDependencyException =
-                new PropertySaleDependencyException(exception);
+                 new PropertySaleDependencyException(exception);
 
             this.loggingBroker.LogCritical(propertySaleDependencyException);
 
             return propertySaleDependencyException;
         }
 
-        private PropertySaleDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private PropertySaleDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var propertySaleDependencyValidationException =
                 new PropertySaleDependencyValidationException(exception);
