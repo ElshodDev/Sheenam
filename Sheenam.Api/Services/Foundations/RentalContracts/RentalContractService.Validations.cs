@@ -16,20 +16,14 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
             ValidateRentalContractNotNull(rentalContract);
 
             Validate(
-               (Rule: IsInvalid(rentalContract.Id), Parameter: nameof(RentalContract.Id)),
-               (Rule: IsInvalid(rentalContract.HomeRequestId), Parameter: nameof(RentalContract.HomeRequestId)),
-               (Rule: IsInvalid(rentalContract.GuestId), Parameter: nameof(RentalContract.GuestId)),
-               (Rule: IsInvalid(rentalContract.HostId), Parameter: nameof(RentalContract.HostId)),
-               (Rule: IsInvalid(rentalContract.HomeId), Parameter: nameof(RentalContract.HomeId)),
-               (Rule: IsInvalid(rentalContract.StartDate), Parameter: nameof(RentalContract.StartDate)),
-               (Rule: IsInvalid(rentalContract.EndDate), Parameter: nameof(RentalContract.EndDate)),
-               (Rule: IsInvalid(rentalContract.MonthlyRent), Parameter: nameof(RentalContract.MonthlyRent)),
-               (Rule: IsInvalid(rentalContract.SecurityDeposit), Parameter: nameof(RentalContract.SecurityDeposit)),
-               (Rule: IsInvalid(rentalContract.Terms), Parameter: nameof(RentalContract.Terms)),
-               (Rule: IsInvalid(rentalContract.Status), Parameter: nameof(RentalContract.Status)),
-               (Rule: IsInvalid(rentalContract.SignedDate), Parameter: nameof(RentalContract.SignedDate)),
-               (Rule: IsInvalid(rentalContract.CreatedDate), Parameter: nameof(RentalContract.CreatedDate)),
-               (Rule: IsInvalid(rentalContract.UpdatedDate), Parameter: nameof(RentalContract.UpdatedDate)));
+         (Rule: IsInvalid(rentalContract.HomeRequestId), Parameter: nameof(RentalContract.HomeRequestId)),
+         (Rule: IsInvalid(rentalContract.GuestId), Parameter: nameof(RentalContract.GuestId)),
+         (Rule: IsInvalid(rentalContract.HostId), Parameter: nameof(RentalContract.HostId)),
+         (Rule: IsInvalid(rentalContract.HomeId), Parameter: nameof(RentalContract.HomeId)),
+         (Rule: IsInvalid(rentalContract.StartDate), Parameter: nameof(RentalContract.StartDate)),
+         (Rule: IsInvalid(rentalContract.EndDate), Parameter: nameof(RentalContract.EndDate)),
+         (Rule: IsInvalid(rentalContract.MonthlyRent), Parameter: nameof(RentalContract.MonthlyRent)),
+         (Rule: IsInvalid(rentalContract.Terms), Parameter: nameof(RentalContract.Terms)));
         }
         private void ValidateRentalContractNotNull(RentalContract rentalContract)
         {

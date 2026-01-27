@@ -22,12 +22,17 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
         }
 
         public ValueTask<RentalContract> AddRentalContactAsync(RentalContract rentalContract) =>
-             TryCatch(async () =>
-             {
-                 ValidateRentalContractOnAdd(rentalContract);
+      TryCatch(async () =>
+      {
+          rentalContract.Id = Guid.NewGuid();
+          rentalContract.CreatedDate = DateTimeOffset.UtcNow;
+          rentalContract.SignedDate = rentalContract.CreatedDate;
+          rentalContract.UpdatedDate = rentalContract.CreatedDate;
 
-                 return await this.storageBroker.InsertRentalContractAsync(rentalContract);
-             });
+          this.ValidateRentalContractOnAdd(rentalContract);
+
+          return await this.storageBroker.InsertRentalContractAsync(rentalContract);
+      });
 
         public IQueryable<RentalContract> RetrieveAllRentalContracts()
         {
