@@ -9,7 +9,7 @@ namespace Sheenam.Api.Models.Foundations.RentalContracts
 {
     public class RentalContract
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid HomeRequestId { get; set; }
         public Guid GuestId { get; set; }
         public Guid HostId { get; set; }
