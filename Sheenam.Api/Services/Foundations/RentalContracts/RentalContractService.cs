@@ -1,4 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
+using Sheenam.Api.Brokers.DateTimes;
+using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.RentalContracts;
@@ -13,23 +15,35 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IGuidBroker guidBroker;
         public RentalContractService(
             IStorageBroker storageBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker,
+            IGuidBroker guidBroker)
         {
             this.storageBroker = storageBroker;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.guidBroker = guidBroker;
         }
 
         public ValueTask<RentalContract> AddRentalContactAsync(RentalContract rentalContract) =>
       TryCatch(async () =>
       {
-          rentalContract.Id = Guid.NewGuid();
-          rentalContract.CreatedDate = DateTimeOffset.UtcNow;
-          rentalContract.SignedDate = rentalContract.CreatedDate;
-          rentalContract.UpdatedDate = rentalContract.CreatedDate;
-
           this.ValidateRentalContractOnAdd(rentalContract);
+
+          rentalContract.Id = this.guidBroker.GetGuid();
+
+          DateTimeOffset now =
+              this.dateTimeBroker.GetCurrentDateTime();
+
+          rentalContract.CreatedDate = now;
+          rentalContract.SignedDate = now;
+          rentalContract.UpdatedDate = now;
+          rentalContract.Status = ContractStatus.Active;
+
 
           return await this.storageBroker.InsertRentalContractAsync(rentalContract);
       });

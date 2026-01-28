@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sheenam.Api.Brokers.DateTimes;
+using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.MachineLearning;
 using Sheenam.Api.Brokers.Storages;
@@ -130,6 +132,8 @@ namespace Sheenam.Api
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IGuidBroker, GuidBroker>();
         }
 
         private static void AddAIServices(IServiceCollection services)

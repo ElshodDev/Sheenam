@@ -3,7 +3,6 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Payments;
@@ -59,7 +58,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet]
-      //  [Authorize(Roles = "Admin, Host")]
+        //  [Authorize(Roles = "Admin, Host")]
         public ActionResult<IQueryable<Payment>> GetAllPayments()
         {
             try
@@ -80,7 +79,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet("{paymentId}")]
-       // [Authorize]
+        // [Authorize]
         public async ValueTask<ActionResult<Payment>> GetPaymentByIdAsync(Guid paymentId)
         {
             try
@@ -109,7 +108,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpPut("{paymentId}")]
-       // [Authorize(Roles = "Admin, Host")]
+        // [Authorize(Roles = "Admin, Host")]
         public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Guid paymentId, Payment payment)
         {
             try
@@ -149,7 +148,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpDelete("{paymentId}")]
-       // [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async ValueTask<ActionResult<Payment>> DeletePaymentByIdAsync(Guid paymentId)
         {
             try
