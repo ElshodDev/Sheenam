@@ -37,13 +37,13 @@ namespace Sheenam.Api.Services.SaleTransactions
             {
                 var failedStorageException =
                     new FailedSaleTransactionStorageException(sqlServerException);
-                throw CreateAndLogDependencyException(failedStorageException);
+                throw CreateAndLogCriticalDependencyException(failedStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsException =
                     new AlreadyExistsSaleTransactionException(duplicateKeyException);
-                throw CreateAndLogDependencyException(alreadyExistsException);
+                throw CreateAndLogDependencyValidationException(alreadyExistsException);
             }
             catch (Exception exception)
             {
