@@ -22,12 +22,6 @@ namespace Sheenam.Api.Services.Foundations.Reviews
                 (Rule: IsInvalid(review.CreatedDate), Parameter: nameof(Review.CreatedDate)),
                 (Rule: IsInvalid(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate)),
 
-                (Rule: IsSame(
-                    firstDate: review.CreatedDate,
-                    secondDate: review.UpdatedDate,
-                    secondDateName: nameof(Review.UpdatedDate)),
-                Parameter: nameof(Review.CreatedDate)),
-
                 (Rule: IsNotRecent(review.CreatedDate), Parameter: nameof(Review.CreatedDate))
             );
         }
@@ -55,7 +49,13 @@ namespace Sheenam.Api.Services.Foundations.Reviews
                     firstDate: inputReview.CreatedDate,
                     secondDate: storageReview.CreatedDate,
                     secondDateName: nameof(Review.CreatedDate)),
-                Parameter: nameof(Review.CreatedDate))
+                Parameter: nameof(Review.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstDate: inputReview.UpdatedDate,
+                    secondDate: storageReview.UpdatedDate,
+                    secondDateName: nameof(Review.UpdatedDate)),
+                Parameter: nameof(Review.UpdatedDate))
             );
         }
 
@@ -109,15 +109,6 @@ namespace Sheenam.Api.Services.Foundations.Reviews
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not same as {secondDateName}"
-            };
-
-        private dynamic IsSame(
-            DateTimeOffset firstDate,
-            DateTimeOffset secondDate,
-            string secondDateName) => new
-            {
-                Condition = firstDate == secondDate,
-                Message = $"Date is same as {secondDateName}"
             };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
