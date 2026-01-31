@@ -34,7 +34,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
                 broker.GetGuid()).Returns(randomGuid);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTime()).Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffset()).Returns(randomDateTime);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertRentalContractAsync(inputRentalContract))
@@ -51,7 +51,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
             broker.GetGuid(), Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-            broker.GetCurrentDateTime(), Times.Once);
+            broker.GetCurrentDateTimeOffset(), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertRentalContractAsync(inputRentalContract), Times.Once);
