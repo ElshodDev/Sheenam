@@ -37,7 +37,7 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
           rentalContract.Id = this.guidBroker.GetGuid();
 
           DateTimeOffset now =
-              this.dateTimeBroker.GetCurrentDateTime();
+              this.dateTimeBroker.GetCurrentDateTimeOffset();
 
           rentalContract.CreatedDate = now;
           rentalContract.SignedDate = now;

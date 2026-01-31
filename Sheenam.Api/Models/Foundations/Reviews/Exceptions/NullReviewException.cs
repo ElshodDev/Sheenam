@@ -3,12 +3,14 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-using System;
+using Xeptions;
 
-namespace Sheenam.Api.Brokers.DateTimes
+namespace Sheenam.Api.Models.Foundations.Reviews.Exceptions
 {
-    public interface IDateTimeBroker
+    public class NullReviewException : Xeption
     {
-        DateTimeOffset GetCurrentDateTimeOffset();
+        public NullReviewException()
+            : base(message: "The review is null.")
+        { }
     }
 }
