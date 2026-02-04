@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sheenam.Api.Services.SaleTransactions
+namespace Sheenam.Api.Services.Foundations.SaleTransactions
 {
     public interface ISaleTransactionService
     {

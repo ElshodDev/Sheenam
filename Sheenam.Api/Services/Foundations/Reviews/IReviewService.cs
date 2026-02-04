@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sheenam.Api.Services.Reviews
+namespace Sheenam.Api.Services.Foundations.Reviews
 {
     public interface IReviewService
     {

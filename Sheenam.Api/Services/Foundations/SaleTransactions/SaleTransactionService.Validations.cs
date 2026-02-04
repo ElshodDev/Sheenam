@@ -2,7 +2,7 @@
 using Sheenam.Api.Models.Foundations.SaleTransactions.Exceptions;
 using System;
 
-namespace Sheenam.Api.Services.SaleTransactions
+namespace Sheenam.Api.Services.Foundations.SaleTransactions
 {
     public partial class SaleTransactionService
     {
