@@ -22,6 +22,7 @@ using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Hosts;
+using Sheenam.Api.Services.Foundations.Notifications;
 using Sheenam.Api.Services.Foundations.Payments;
 using Sheenam.Api.Services.Foundations.PropertySales;
 using Sheenam.Api.Services.Foundations.RentalContacts;
@@ -158,6 +159,7 @@ namespace Sheenam.Api
             services.AddTransient<IRentalContractService, RentalContractService>();
             services.AddTransient<ISaleTransactionService, SaleTransactionService>();
             services.AddTransient<IReviewService, ReviewService>();
+            services.AddTransient<INotificationService, NotificationService>();
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
