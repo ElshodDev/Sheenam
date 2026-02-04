@@ -8,7 +8,7 @@ using Moq;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.SaleTransactions;
-using Sheenam.Api.Services.SaleTransactions;
+using Sheenam.Api.Services.Foundations.SaleTransactions;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;

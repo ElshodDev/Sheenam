@@ -11,7 +11,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sheenam.Api.Services.SaleTransactions
+namespace Sheenam.Api.Services.Foundations.SaleTransactions
 {
     public partial class SaleTransactionService : ISaleTransactionService
     {
@@ -30,18 +30,18 @@ namespace Sheenam.Api.Services.SaleTransactions
             TryCatch(async () =>
             {
                 ValidateSaleTransactionOnAdd(saleTransaction);
-                return await this.storageBroker.InsertSaleTransactionAsync(saleTransaction);
+                return await storageBroker.InsertSaleTransactionAsync(saleTransaction);
             });
 
         public IQueryable<SaleTransaction> RetrieveAllSaleTransactions() =>
-            this.storageBroker.SelectAllSaleTransactions();
+            storageBroker.SelectAllSaleTransactions();
 
         public ValueTask<SaleTransaction> RetrieveSaleTransactionByIdAsync(Guid saleTransactionId) =>
             TryCatch(async () =>
             {
                 ValidateSaleTransactionId(saleTransactionId);
                 SaleTransaction maybeSaleTransaction =
-                    await this.storageBroker.SelectSaleTransactionByIdAsync(saleTransactionId);
+                    await storageBroker.SelectSaleTransactionByIdAsync(saleTransactionId);
                 ValidateStorageSaleTransaction(maybeSaleTransaction, saleTransactionId);
                 return maybeSaleTransaction;
             });
@@ -50,18 +50,18 @@ namespace Sheenam.Api.Services.SaleTransactions
             {
                 ValidateSaleTransactionOnModify(saleTransaction);
                 SaleTransaction maybeSaleTransaction =
-                    await this.storageBroker.SelectSaleTransactionByIdAsync(saleTransaction.Id);
+                    await storageBroker.SelectSaleTransactionByIdAsync(saleTransaction.Id);
                 ValidateStorageSaleTransaction(maybeSaleTransaction, saleTransaction.Id);
-                return await this.storageBroker.UpdateSaleTransactionAsync(saleTransaction);
+                return await storageBroker.UpdateSaleTransactionAsync(saleTransaction);
             });
 
         public ValueTask<SaleTransaction> RemoveSaleTransactionByIdAsync(Guid saleTransactionId) =>
             TryCatch(async () =>
             {
                 ValidateSaleTransactionId(saleTransactionId);
-                SaleTransaction maybeSaleTransaction = await this.storageBroker.SelectSaleTransactionByIdAsync(saleTransactionId);
+                SaleTransaction maybeSaleTransaction = await storageBroker.SelectSaleTransactionByIdAsync(saleTransactionId);
                 ValidateStorageSaleTransaction(maybeSaleTransaction, saleTransactionId);
-                return await this.storageBroker.DeleteSaleTransactionAsync(maybeSaleTransaction);
+                return await storageBroker.DeleteSaleTransactionAsync(maybeSaleTransaction);
             });
 
         private void ValidateStorageSaleTransaction(

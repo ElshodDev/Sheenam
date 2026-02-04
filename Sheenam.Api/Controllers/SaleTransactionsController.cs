@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.SaleTransactions;
 using Sheenam.Api.Models.Foundations.SaleTransactions.Exceptions;
-using Sheenam.Api.Services.SaleTransactions;
+using Sheenam.Api.Services.Foundations.SaleTransactions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xeptions;
 
-namespace Sheenam.Api.Services.SaleTransactions
+namespace Sheenam.Api.Services.Foundations.SaleTransactions
 {
     public partial class SaleTransactionService
     {

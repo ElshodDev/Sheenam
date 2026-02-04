@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Reviews;
 using Sheenam.Api.Models.Foundations.Reviews.Exceptions;
-using Sheenam.Api.Services.Reviews;
+using Sheenam.Api.Services.Foundations.Reviews;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

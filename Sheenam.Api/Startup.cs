@@ -28,9 +28,8 @@ using Sheenam.Api.Services.Foundations.PropertySales;
 using Sheenam.Api.Services.Foundations.RentalContacts;
 using Sheenam.Api.Services.Foundations.Reviews;
 using Sheenam.Api.Services.Foundations.SaleOffers;
+using Sheenam.Api.Services.Foundations.SaleTransactions;
 using Sheenam.Api.Services.Foundations.Users;
-using Sheenam.Api.Services.Reviews;
-using Sheenam.Api.Services.SaleTransactions;
 using System.Text;
 
 namespace Sheenam.Api
