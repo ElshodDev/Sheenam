@@ -77,12 +77,14 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)
-                .OnProperty(review => review.Rating).Use(() => new IntRange(min: 1, max: 5).GetValue());
+                .OnProperty(review => review.Rating).Use(() => new IntRange(min: 1, max: 5).GetValue())
+                .OnProperty(review => review.IsPositive).Use(GetRandomBoolean());
 
             return filler;
         }
 
-        // ✅ To'g'rilangan TheoryData
+        private static bool GetRandomBoolean() =>
+           new Random().Next(2) == 1;
         public static TheoryData<int> InvalidMinuteCases()
         {
             int randomMoreThanMinuteFromNow = GetRandomNumber();
