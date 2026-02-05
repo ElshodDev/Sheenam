@@ -142,8 +142,6 @@ namespace Sheenam.Api
         private static void AddAIServices(IServiceCollection services)
         {
             services.AddSingleton<IMLBroker, MLBroker>();
-
-            services.AddTransient<IRecommendationService, RecommendationService>();
         }
 
         private static void AddFoundationService(IServiceCollection services)
