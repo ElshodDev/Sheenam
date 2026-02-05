@@ -11,10 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sheenam.Api.Brokers.AIs;
 using Sheenam.Api.Brokers.DateTimes;
 using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
+using Sheenam.Api.Services.Foundations.AIs;
 using Sheenam.Api.Services.Foundations.Auth;
 using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -28,6 +30,7 @@ using Sheenam.Api.Services.Foundations.Reviews;
 using Sheenam.Api.Services.Foundations.SaleOffers;
 using Sheenam.Api.Services.Foundations.SaleTransactions;
 using Sheenam.Api.Services.Foundations.Users;
+using Sheenam.Api.Services.Orchestrations.Reviews;
 using System.Text;
 
 namespace Sheenam.Api
@@ -134,6 +137,7 @@ namespace Sheenam.Api
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IGuidBroker, GuidBroker>();
+            services.AddTransient<IAiBroker, AiBroker>();
         }
 
         private static void AddFoundationService(IServiceCollection services)
@@ -149,6 +153,8 @@ namespace Sheenam.Api
             services.AddTransient<ISaleTransactionService, SaleTransactionService>();
             services.AddTransient<IReviewService, ReviewService>();
             services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IAiService, AiService>();
+            services.AddTransient<IReviewOrchestrationService, ReviewOrchestrationService>();
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
