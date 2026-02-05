@@ -14,9 +14,7 @@ using Microsoft.OpenApi.Models;
 using Sheenam.Api.Brokers.DateTimes;
 using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
-using Sheenam.Api.Brokers.MachineLearning;
 using Sheenam.Api.Brokers.Storages;
-using Sheenam.Api.Services.AI.Recommendations;
 using Sheenam.Api.Services.Foundations.Auth;
 using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -48,7 +46,6 @@ namespace Sheenam.Api
 
             AddBrokers(services);
             AddFoundationService(services);
-            AddAIServices(services);
 
             AddJwtAuthentication(services);
 
@@ -137,11 +134,6 @@ namespace Sheenam.Api
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IGuidBroker, GuidBroker>();
-        }
-
-        private static void AddAIServices(IServiceCollection services)
-        {
-            services.AddSingleton<IMLBroker, MLBroker>();
         }
 
         private static void AddFoundationService(IServiceCollection services)
