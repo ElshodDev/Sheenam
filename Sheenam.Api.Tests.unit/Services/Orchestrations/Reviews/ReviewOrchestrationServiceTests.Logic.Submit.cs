@@ -4,11 +4,9 @@
 //===================================================
 
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.Reviews;
-using Xunit;
-using Force.DeepCloner;
-using System.Threading.Tasks;
 
 namespace Sheenam.Api.Tests.Unit.Services.Orchestrations.Reviews
 {
@@ -33,7 +31,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Orchestrations.Reviews
                     .ReturnsAsync(expectedReview);
 
             // when
-            Review actualReview = 
+            Review actualReview =
                 await this.reviewOrchestrationService.SubmitReviewAsync(inputReview);
 
             // then

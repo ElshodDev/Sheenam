@@ -35,6 +35,25 @@ namespace Sheenam.Api.Services.Foundations.Homes
         public IQueryable<Home> RetrieveAllHomes() =>
             this.storageBroker.SelectAllHomes();
 
+        public IQueryable<Home> RetrieveAllHomes(HomeFilter filter)
+        {
+            IQueryable<Home> homes = this.storageBroker.SelectAllHomes();
+
+            if (filter != null)
+            {
+                if (filter.MinPrice.HasValue)
+                    homes = homes.Where(home => home.MonthlyRent >= filter.MinPrice.Value);
+
+                if (filter.MaxPrice.HasValue)
+                    homes = homes.Where(home => home.MonthlyRent <= filter.MaxPrice.Value);
+
+                if (filter.NumberOfRooms.HasValue)
+                    homes = homes.Where(home => home.NumberOfBedrooms == filter.NumberOfRooms.Value);
+            }
+
+            return homes;
+        }
+
         public ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
             TryCatch(async () =>
             {
