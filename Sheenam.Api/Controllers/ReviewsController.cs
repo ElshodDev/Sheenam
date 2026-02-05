@@ -7,6 +7,7 @@ using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Reviews;
 using Sheenam.Api.Models.Foundations.Reviews.Exceptions;
 using Sheenam.Api.Services.Foundations.Reviews;
+using Sheenam.Api.Services.Orchestrations.Reviews;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,10 +18,16 @@ namespace Sheenam.Api.Controllers
     [Route("api/[controller]")]
     public class ReviewsController : RESTFulController
     {
+        private readonly IReviewOrchestrationService reviewOrchestrationService;
         private readonly IReviewService reviewService;
 
-        public ReviewsController(IReviewService reviewService) =>
+        public ReviewsController(
+            IReviewOrchestrationService reviewOrchestrationService,
+            IReviewService reviewService)
+        {
+            this.reviewOrchestrationService = reviewOrchestrationService;
             this.reviewService = reviewService;
+        }
 
         [HttpPost]
         public async ValueTask<ActionResult<Review>> PostReviewAsync(Review review)
@@ -32,7 +39,7 @@ namespace Sheenam.Api.Controllers
                 review.UpdatedDate = DateTimeOffset.UtcNow;
 
                 Review addedReview =
-                    await this.reviewService.AddReviewAsync(review);
+                    await this.reviewOrchestrationService.SubmitReviewAsync(review);
 
                 return Created(addedReview);
             }

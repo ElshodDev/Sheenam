@@ -13,6 +13,7 @@ namespace Sheenam.Api.Models.Foundations.Reviews
         public Guid UserId { get; set; }
         public Guid? HomeId { get; set; }
         public Guid? PropertySaleId { get; set; }
+        public bool? IsPositive { get; set; }
         public int Rating { get; set; }
         public string Comment { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
