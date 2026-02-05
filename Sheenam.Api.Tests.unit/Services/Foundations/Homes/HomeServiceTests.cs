@@ -78,6 +78,8 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
             return filler;
         }
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
@@ -98,9 +100,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Homes
 
         private static decimal GetRandomDecimal() =>
             new Random().Next(100, 10000);
-
-        private static int GetRandomNumber() =>
-            new Random().Next(2, 10);
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
