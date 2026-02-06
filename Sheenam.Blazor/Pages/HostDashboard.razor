@@ -1,0 +1,105 @@
+﻿@page "/host-dashboard/{HostId:guid}"
+@using Sheenam.Blazor.Models.Views.HostDashboards
+@using Sheenam.Blazor.Services.Views.HostDashboards
+
+<div class="container-fluid mt-4">
+    <h3 class="mb-4 text-primary"><i class="oi oi-dashboard"></i> Mezbon Paneli</h3>
+
+    @if (dashboardView == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yuklanmoqda...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-left-success py-2 h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Umumiy Daromad
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    $@dashboardView.TotalEarnings.ToString("N2")
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="oi oi-dollar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-left-primary py-2 h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Mening Uylarim
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @dashboardView.Houses.Count ta uy
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="oi oi-home fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Uylar haqida ma'lumot</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Uy ID</th>
+                                <th>Turi</th>
+                                <th>Manzil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var house in dashboardView.Houses)
+                            {
+                                <tr>
+                                    <td>@house.Id</td>
+                                    <td>@house.Type</td>
+                                    <td>@house.Address</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid HostId { get; set; }
+
+    [Inject]
+    public IHostDashboardViewService HostDashboardViewService { get; set; }
+
+    private HostDashboardView dashboardView;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Haqiqiy loyihada HostId logindan keyin avtomatik olinadi
+        this.dashboardView = await HostDashboardViewService.RetrieveHostDashboardViewAsync(HostId);
+    }
+}
