@@ -1,4 +1,6 @@
+using Sheenam.Blazor.Brokers.Apis;
 using Sheenam.Blazor.Data;
+using Sheenam.Blazor.Services.Views.HostDashboards;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+
+builder.Services.AddHttpClient<IApiBroker, ApiBroker>(client =>
+{
+    var apiSettings = builder.Configuration.GetSection("ApiSettings");
+    client.BaseAddress = new Uri(apiSettings["BaseUrl"]);
+});
+
+builder.Services.AddTransient<IHostDashboardViewService, HostDashboardViewService>();
 
 var app = builder.Build();
 
