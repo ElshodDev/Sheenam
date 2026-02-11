@@ -1,3 +1,5 @@
+using Sheenam.Blazor.Brokers.Loggings;
+using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Brokers.Apis;
 using Sheenam.Blazor.Data;
 using Sheenam.Blazor.Services.Views.HostDashboards;
@@ -15,8 +17,10 @@ builder.Services.AddHttpClient<IApiBroker, ApiBroker>(client =>
     var apiSettings = builder.Configuration.GetSection("ApiSettings");
     client.BaseAddress = new Uri(apiSettings["BaseUrl"]);
 });
+builder.Services.AddTransient<ILoggingBroker, LoggingBroker>();
 
 builder.Services.AddTransient<IHostDashboardViewService, HostDashboardViewService>();
+builder.Services.AddTransient<IGuestService, GuestService>();
 
 var app = builder.Build();
 

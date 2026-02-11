@@ -9,10 +9,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ML" Version="5.0.0" />
     <PackageReference Include="RESTFulSense.WebAssembly" Version="3.0.0" />
+    <PackageReference Include="Xeption" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sheenam.Api\Sheenam.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Foundations\Guests\" />
   </ItemGroup>
 
 </Project>

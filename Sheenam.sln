@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheenam.Api.Infrastructure.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheenam.Blazor", "Sheenam.Blazor\Sheenam.Blazor.csproj", "{1512106C-CEE6-4F0A-8193-D8DD8912EE05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheenam.Blazor.Tests.Unit", "Sheenam.Blazor.Tests.Unit\Sheenam.Blazor.Tests.Unit.csproj", "{17550B9A-6F84-41AB-AF29-347C55B50C14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{1512106C-CEE6-4F0A-8193-D8DD8912EE05}.Release|x64.Build.0 = Release|Any CPU
 		{1512106C-CEE6-4F0A-8193-D8DD8912EE05}.Release|x86.ActiveCfg = Release|Any CPU
 		{1512106C-CEE6-4F0A-8193-D8DD8912EE05}.Release|x86.Build.0 = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|x64.Build.0 = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Debug|x86.Build.0 = Debug|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|x64.ActiveCfg = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|x64.Build.0 = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|x86.ActiveCfg = Release|Any CPU
+		{17550B9A-6F84-41AB-AF29-347C55B50C14}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
