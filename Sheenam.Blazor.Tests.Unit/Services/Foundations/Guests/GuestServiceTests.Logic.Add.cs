@@ -3,11 +3,9 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Sheenam.Blazor.Models.Foundations.Guests;
-using Xunit;
 
 namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
 {
@@ -27,7 +25,7 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
                     .ReturnsAsync(retrievedGuest);
 
             // when
-            Guest actualGuest = 
+            Guest actualGuest =
                 await this.guestService.AddGuestAsync(inputGuest);
 
             // then
