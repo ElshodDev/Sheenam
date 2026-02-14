@@ -12,20 +12,20 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllGuestsAsync()
+        public async Task ShouldRetrieveAllGuestsAsync() 
         {
             // given
-            List<Guest> randomGuests = CreateRandomGuests().ToList();
-            List<Guest> retrievedGuests = randomGuests;
-            List<Guest> expectedGuests = retrievedGuests;
+            IQueryable<Guest> randomGuests = CreateRandomGuests();
+            IQueryable<Guest> storageGuests = randomGuests;
+            IQueryable<Guest> expectedGuests = storageGuests;
 
             this.apiBrokerMock.Setup(broker =>
                 broker.GetAllGuestsAsync())
-                    .ReturnsAsync(retrievedGuests);
+                    .ReturnsAsync(storageGuests.ToList());
 
             // when
             IQueryable<Guest> actualGuests =
-                this.guestService.RetrieveAllGuests();
+                await this.guestService.RetrieveAllGuestsAsync();
 
             // then
             actualGuests.Should().BeEquivalentTo(expectedGuests);

@@ -6,6 +6,7 @@
 using RESTFulSense.WebAssembly.Exceptions;
 using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Models.Foundations.Guests.Exceptions;
+using System.Threading.Tasks;
 using Xeptions;
 
 namespace Sheenam.Blazor.Services.Foundations.Guests
@@ -13,7 +14,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
     public partial class GuestService
     {
         private delegate ValueTask<Guest> ReturningGuestFunction();
-        private delegate IQueryable<Guest> ReturningGuestsFunction();
+        private delegate ValueTask<IQueryable<Guest>> ReturningGuestsFunction();
 
         private async ValueTask<Guest> TryCatch(ReturningGuestFunction returningGuestFunction)
         {
@@ -58,11 +59,11 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
-        private IQueryable<Guest> TryCatch(ReturningGuestsFunction returningGuestsFunction)
+        private async Task<IQueryable<Guest>> TryCatch(ReturningGuestsFunction returningGuestsFunction)
         {
             try
             {
-                return returningGuestsFunction();
+                return await returningGuestsFunction();
             }
             catch (AggregateException aggregateException)
                 when (aggregateException.InnerException is HttpResponseException httpResponseException)

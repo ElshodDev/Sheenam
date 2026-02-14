@@ -5,6 +5,7 @@
 
 using Moq;
 using RESTFulSense.WebAssembly.Exceptions;
+using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Models.Foundations.Guests.Exceptions;
 
 namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
@@ -12,13 +13,12 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfCriticalErrorOccursAndLogIt()
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfCriticalErrorOccursAndLogIt()
         {
             // given
             var httpResponseMessage = new HttpResponseMessage();
             var httpResponseException =
-        new HttpResponseException(httpResponseMessage, "Critical error");
-
+                new HttpResponseException(httpResponseMessage, "Critical error");
 
             var failedGuestDependencyException =
                 new FailedGuestDependencyException(httpResponseException);
@@ -31,27 +31,28 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
                     .ThrowsAsync(httpResponseException);
 
             // when
-            Action retrieveAllGuestsAction = () =>
-                this.guestService.RetrieveAllGuests();
+            ValueTask<IQueryable<Guest>> retrieveAllGuestsTask =
+                this.guestService.RetrieveAllGuestsAsync();
 
             // then
-            Assert.Throws<GuestDependencyException>(retrieveAllGuestsAction);
+            await Assert.ThrowsAsync<GuestDependencyException>(() =>
+                retrieveAllGuestsTask.AsTask());
 
             this.apiBrokerMock.Verify(broker =>
                 broker.GetAllGuestsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-              broker.LogError(It.Is(SameExceptionAs(
-                expectedGuestDependencyException))),
-                  Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestDependencyException))),
+                        Times.Once);
 
             this.apiBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
+        
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
         {
             // given
             var serviceException = new Exception();
@@ -67,11 +68,12 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
                     .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllGuestsAction = () =>
-                this.guestService.RetrieveAllGuests();
+            ValueTask<IQueryable<Guest>> retrieveAllGuestsTask =
+                this.guestService.RetrieveAllGuestsAsync();
 
             // then
-            Assert.Throws<GuestServiceException>(retrieveAllGuestsAction);
+            await Assert.ThrowsAsync<GuestServiceException>(() =>
+                retrieveAllGuestsTask.AsTask());
 
             this.apiBrokerMock.Verify(broker =>
                 broker.GetAllGuestsAsync(),

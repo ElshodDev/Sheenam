@@ -10,6 +10,6 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
     public interface IGuestService
     {
         ValueTask<Guest> AddGuestAsync(Guest guest);
-        IQueryable<Guest> RetrieveAllGuests();
+        ValueTask<IQueryable<Guest>> RetrieveAllGuestsAsync();
     }
 }
