@@ -12,7 +12,7 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllIfCriticalErrorOccursAndLogIt()
+        public void ShouldThrowDependencyExceptionOnRetrieveAllIfCriticalErrorOccursAndLogIt()
         {
             // given
             var httpResponseMessage = new HttpResponseMessage();
