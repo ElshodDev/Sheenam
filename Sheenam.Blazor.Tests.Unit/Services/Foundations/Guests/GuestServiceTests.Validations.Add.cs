@@ -3,10 +3,8 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using System.Threading.Tasks;
 using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Models.Foundations.Guests.Exceptions;
-using Xunit;
 
 namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
 {
@@ -19,15 +17,15 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
             Guest nullGuest = null;
             var nullGuestException = new NullGuestException();
 
-            var expectedGuestValidationException = 
+            var expectedGuestValidationException =
                 new GuestValidationException(nullGuestException);
 
             // when
-            ValueTask<Guest> addGuestTask = 
+            ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(nullGuest);
 
             // then
-            await Assert.ThrowsAsync<GuestValidationException>(() => 
+            await Assert.ThrowsAsync<GuestValidationException>(() =>
                 addGuestTask.AsTask());
         }
     }

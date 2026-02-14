@@ -13,6 +13,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
     public partial class GuestService
     {
         private delegate ValueTask<Guest> ReturningGuestFunction();
+        private delegate IQueryable<Guest> ReturningGuestsFunction();
 
         private async ValueTask<Guest> TryCatch(ReturningGuestFunction returningGuestFunction)
         {
@@ -57,32 +58,61 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
+        private IQueryable<Guest> TryCatch(ReturningGuestsFunction returningGuestsFunction)
+        {
+            try
+            {
+                return returningGuestsFunction();
+            }
+            catch (AggregateException aggregateException)
+                when (aggregateException.InnerException is HttpResponseException httpResponseException)
+            {
+                var failedGuestDependencyException =
+                    new FailedGuestDependencyException(httpResponseException);
+
+                throw CreateAndLogDependencyException(failedGuestDependencyException);
+            }
+            catch (HttpResponseException httpResponseException)
+            {
+                var failedGuestDependencyException =
+                    new FailedGuestDependencyException(httpResponseException);
+
+                throw CreateAndLogDependencyException(failedGuestDependencyException);
+            }
+            catch (Exception exception)
+            {
+                var failedGuestServiceException =
+                    new FailedGuestServiceException(exception);
+
+                throw CreateAndLogServiceException(failedGuestServiceException);
+            }
+        }
 
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
             var guestValidationException = new GuestValidationException(exception);
-            this.loggingBroker.LogError(guestValidationException); 
+            this.loggingBroker.LogError(guestValidationException);
             return guestValidationException;
         }
 
         private GuestDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var guestDependencyValidationException = new GuestDependencyValidationException(exception);
-            this.loggingBroker.LogError(guestDependencyValidationException); 
+            this.loggingBroker.LogError(guestDependencyValidationException);
             return guestDependencyValidationException;
         }
 
         private GuestDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var guestDependencyException = new GuestDependencyException(exception);
-            this.loggingBroker.LogError(guestDependencyException); 
+            this.loggingBroker.LogError(guestDependencyException);
             return guestDependencyException;
         }
 
         private GuestServiceException CreateAndLogServiceException(Xeption exception)
         {
             var guestServiceException = new GuestServiceException(exception);
-            this.loggingBroker.LogError(guestServiceException); 
+            this.loggingBroker.LogError(guestServiceException);
             return guestServiceException;
         }
     }

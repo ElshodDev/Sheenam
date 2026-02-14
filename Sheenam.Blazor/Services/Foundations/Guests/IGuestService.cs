@@ -3,7 +3,6 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using System.Threading.Tasks;
 using Sheenam.Blazor.Models.Foundations.Guests;
 
 namespace Sheenam.Blazor.Services.Foundations.Guests
@@ -11,5 +10,6 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
     public interface IGuestService
     {
         ValueTask<Guest> AddGuestAsync(Guest guest);
+        IQueryable<Guest> RetrieveAllGuests();
     }
 }

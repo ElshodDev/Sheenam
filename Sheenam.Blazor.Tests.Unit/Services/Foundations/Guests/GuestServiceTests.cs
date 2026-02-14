@@ -8,7 +8,6 @@ using Sheenam.Blazor.Brokers.Apis;
 using Sheenam.Blazor.Brokers.Loggings;
 using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.Guests;
-using System;
 using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -50,5 +49,11 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
                 && actualException.InnerException.Message == expectedException.InnerException.Message
                 && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
         }
+
+        private static IQueryable<Guest> CreateRandomGuests() =>
+           CreateGuestFiller().Create(count: GetRandomNumber()).AsQueryable();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
     }
 }

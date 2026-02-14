@@ -30,5 +30,8 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
 
         return await this.apiBroker.PostGuestAsync(guest);
     });
+        public IQueryable<Guest> RetrieveAllGuests() =>
+      TryCatch(() =>
+          this.apiBroker.GetAllGuestsAsync().GetAwaiter().GetResult().AsQueryable());
     }
 }
