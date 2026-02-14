@@ -16,5 +16,8 @@ namespace Sheenam.Blazor.Brokers.Apis
 
         public async ValueTask<List<Guest>> GetAllGuestsAsync() =>
             await this.GetContentAsync<List<Guest>>(GuestsRelativeUrl);
+
+        public async ValueTask<Guest> PutGuestAsync(Guest guest) =>
+            await this.PutContentAsync(GuestsRelativeUrl, guest);
     }
 }

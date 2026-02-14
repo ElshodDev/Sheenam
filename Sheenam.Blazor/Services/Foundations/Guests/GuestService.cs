@@ -37,5 +37,10 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 var guests = await this.apiBroker.GetAllGuestsAsync();
                 return guests.AsQueryable();
             });
+
+        public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
