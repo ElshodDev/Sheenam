@@ -70,5 +70,53 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
             this.apiBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnModifyIfGuestIsInvalidAndLogItAsync(
+    string invalidText)
+        {
+            // given
+            var invalidGuest = new Guest
+            {
+                FirstName = invalidText
+            };
+
+            var invalidGuestException = new InvalidGuestException();
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Id),
+                values: "Id is required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.FirstName),
+                values: "Text is required");
+
+
+            var expectedGuestValidationException =
+                new GuestValidationException(invalidGuestException);
+
+            // when
+            ValueTask<Guest> modifyGuestTask =
+                this.guestService.ModifyGuestAsync(invalidGuest);
+
+            // then
+            await Assert.ThrowsAsync<GuestValidationException>(() =>
+                modifyGuestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestValidationException))),
+                        Times.Once);
+
+            this.apiBrokerMock.Verify(broker =>
+                broker.PutGuestAsync(It.IsAny<Guest>()),
+                    Times.Never);
+
+            this.apiBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
