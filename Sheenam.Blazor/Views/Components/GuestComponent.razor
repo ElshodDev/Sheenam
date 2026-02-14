@@ -1,0 +1,38 @@
+﻿@using Sheenam.Blazor.Models.Foundations.Guests
+
+<h3>Barcha Mehmonlar</h3>
+
+@if (Guests is null)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Yuklanmoqda...</span>
+    </div>
+}
+else if (!Guests.Any())
+{
+    <p>Mehmonlar topilmadi.</p>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Ism</th>
+                <th>Familiya</th>
+                <th>Email</th>
+                <th>Telefon</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var guest in Guests)
+            {
+                <tr>
+                    <td>@guest.FirstName</td>
+                    <td>@guest.LastName</td>
+                    <td>@guest.Email</td>
+                    <td>@guest.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
