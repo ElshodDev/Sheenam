@@ -19,5 +19,8 @@ namespace Sheenam.Blazor.Brokers.Apis
 
         public async ValueTask<Guest> PutGuestAsync(Guest guest) =>
             await this.PutContentAsync(GuestsRelativeUrl, guest);
+
+        public async ValueTask<Guest> DeleteGuestByIdAsync(Guid guestId) =>
+    await this.DeleteContentAsync<Guest>($"{GuestsRelativeUrl}/{guestId}");
     }
 }

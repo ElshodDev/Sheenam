@@ -45,5 +45,10 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
 
           return await this.apiBroker.PutGuestAsync(guest);
       });
+
+        public async ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId)
+        {
+          throw new  NotImplementedException();
+        }
     }
 }
