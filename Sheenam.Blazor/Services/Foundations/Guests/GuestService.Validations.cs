@@ -36,6 +36,9 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)));
         }
 
+        private static void ValidateGuestId(Guid guestId) =>
+    Validate((Rule: IsInvalid(guestId), Parameter: nameof(Guest.Id)));
+
         private static void ValidateGuestNotNull(Guest guest)
         {
             if (guest is null)
