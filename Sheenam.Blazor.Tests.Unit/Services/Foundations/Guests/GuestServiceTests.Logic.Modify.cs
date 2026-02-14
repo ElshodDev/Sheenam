@@ -76,12 +76,18 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnModifyIfGuestIsInvalidAndLogItAsync(
-    string invalidText)
+      string invalidText)
         {
             // given
             var invalidGuest = new Guest
             {
-                FirstName = invalidText
+                Id = Guid.Empty, 
+                FirstName = invalidText,
+                LastName = invalidText,
+                Email = invalidText,
+                Address = invalidText,
+                PhoneNumber = invalidText,
+                DateOfBirth = default 
             };
 
             var invalidGuestException = new InvalidGuestException();
@@ -94,6 +100,25 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
                 key: nameof(Guest.FirstName),
                 values: "Text is required");
 
+            invalidGuestException.AddData(
+                key: nameof(Guest.LastName),
+                values: "Text is required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.DateOfBirth),
+                values: "Date is required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Email),
+                values: "Text is required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Address),
+                values: "Text is required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.PhoneNumber),
+                values: "Text is required");
 
             var expectedGuestValidationException =
                 new GuestValidationException(invalidGuestException);
