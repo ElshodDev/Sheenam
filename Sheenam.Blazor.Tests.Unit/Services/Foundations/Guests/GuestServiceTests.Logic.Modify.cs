@@ -6,6 +6,7 @@
 using FluentAssertions;
 using Moq;
 using Sheenam.Blazor.Models.Foundations.Guests;
+using Sheenam.Blazor.Models.Foundations.Guests.Exceptions;
 
 namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
 {
@@ -34,6 +35,37 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
             this.apiBrokerMock.Verify(broker =>
                 broker.PutGuestAsync(inputGuest),
                     Times.Once);
+
+            this.apiBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfGuestIsNullAndLogItAsync()
+        {
+            // given
+            Guest nullGuest = null;
+            var nullGuestException = new NullGuestException();
+
+            var expectedGuestValidationException =
+                new GuestValidationException(nullGuestException);
+
+            // when
+            ValueTask<Guest> modifyGuestTask =
+                this.guestService.ModifyGuestAsync(nullGuest);
+
+            // then
+            await Assert.ThrowsAsync<GuestValidationException>(() =>
+                modifyGuestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestValidationException))),
+                        Times.Once);
+
+            this.apiBrokerMock.Verify(broker =>
+                broker.PutGuestAsync(It.IsAny<Guest>()),
+                    Times.Never);
 
             this.apiBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
