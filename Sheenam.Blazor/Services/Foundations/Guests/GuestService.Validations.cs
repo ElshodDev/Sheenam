@@ -1,7 +1,8 @@
 //===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
+
 using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Models.Foundations.Guests.Exceptions;
 
@@ -20,8 +21,10 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 (Rule: IsInvalid(guest.DateOfBirth), Parameter: nameof(Guest.DateOfBirth)),
                 (Rule: IsInvalid(guest.Email), Parameter: nameof(Guest.Email)),
                 (Rule: IsInvalid(guest.Address), Parameter: nameof(Guest.Address)),
-                (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)));
+                (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)),
+                (Rule: IsInvalid(guest.Gender), Parameter: nameof(Guest.Gender)));
         }
+
         private static void ValidateGuestOnModify(Guest guest)
         {
             ValidateGuestNotNull(guest);
@@ -33,11 +36,12 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 (Rule: IsInvalid(guest.DateOfBirth), Parameter: nameof(Guest.DateOfBirth)),
                 (Rule: IsInvalid(guest.Email), Parameter: nameof(Guest.Email)),
                 (Rule: IsInvalid(guest.Address), Parameter: nameof(Guest.Address)),
-                (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)));
+                (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)),
+                (Rule: IsInvalid(guest.Gender), Parameter: nameof(Guest.Gender)));
         }
 
         private static void ValidateGuestId(Guid guestId) =>
-    Validate((Rule: IsInvalid(guestId), Parameter: nameof(Guest.Id)));
+            Validate((Rule: IsInvalid(guestId), Parameter: nameof(Guest.Id)));
 
         private static void ValidateGuestNotNull(Guest guest)
         {
@@ -63,6 +67,12 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsInvalid(GenderType gender) => new
+        {
+            Condition = Enum.IsDefined(typeof(GenderType), gender) is false,
+            Message = "Value is invalid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

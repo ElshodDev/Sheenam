@@ -35,7 +35,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(It.IsAny<Guest>()),
+            broker.InsertGuestAsync(It.IsAny<Guest>()),
             Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -47,60 +47,73 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfGuestIsInvalidAndLogAsync(
-            string invalidText)
+    string invalidText)
         {
-            //given 
+            // given 
             var invalidGuest = new Guest
             {
-                FirstName = invalidText
+                Id = Guid.Empty,
+                FirstName = invalidText,
+                LastName = invalidText,
+                DateOfBirth = default,
+                Email = invalidText,
+                Address = invalidText,
+                Gender = (GenderType)9
             };
 
             var invalidGuestException = new InvalidGuestException();
 
             invalidGuestException.AddData(
-                nameof(Guest.FirstName),
+                key: nameof(Guest.Id),
+                values: "Id is Required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.FirstName),
                 values: "Text is Required");
 
             invalidGuestException.AddData(
-                nameof(Guest.LastName),
+                key: nameof(Guest.LastName),
                 values: "Text is Required");
 
             invalidGuestException.AddData(
-                nameof(Guest.DateOfBirth),
+                key: nameof(Guest.DateOfBirth),
                 values: "Date is Required");
 
             invalidGuestException.AddData(
-                nameof(Guest.Email),
+                key: nameof(Guest.Email),
                 values: "Text is Required");
 
             invalidGuestException.AddData(
-                nameof(Guest.Address),
+                key: nameof(Guest.Address),
                 values: "Text is Required");
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Gender),
+                values: "Value is invalid");
 
             var expectedGuestValidationException =
                 new GuestValidationException(invalidGuestException);
 
-            //when
+            // when
             ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(invalidGuest);
 
-            //then
+            // then
             await Assert.ThrowsAsync<GuestValidationException>(() =>
-            addGuestTask.AsTask());
+                addGuestTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-            broker.LogError(It.Is(SameExceptionAs(
-                expectedGuestValidationException))),
-                Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(It.IsAny<Guest>()),
-            Times.Never);
+                broker.InsertGuestAsync(It.IsAny<Guest>()),
+                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
-
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddifGenderIsinvalidAndLogItAsync()
         {
@@ -132,7 +145,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
                 Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(It.IsAny<Guest>()),
+            broker.InsertGuestAsync(It.IsAny<Guest>()),
             Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

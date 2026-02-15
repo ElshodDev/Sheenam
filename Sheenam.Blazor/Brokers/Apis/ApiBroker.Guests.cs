@@ -12,7 +12,7 @@ namespace Sheenam.Blazor.Brokers.Apis
         private const string GuestsRelativeUrl = "api/guests";
 
         public async ValueTask<Guest> PostGuestAsync(Guest guest) =>
-            await this.PostContentAsync(GuestsRelativeUrl, guest);
+            await this.PostContentAsync("api/guests", guest);
 
         public async ValueTask<List<Guest>> GetAllGuestsAsync() =>
             await this.GetContentAsync<List<Guest>>(GuestsRelativeUrl);

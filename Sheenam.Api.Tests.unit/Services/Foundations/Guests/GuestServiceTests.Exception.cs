@@ -27,7 +27,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
                 GuestDependecyException(failedGuestStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-            broker.InserGuestAsync(someGuest))
+            broker.InsertGuestAsync(someGuest))
                 .ThrowsAsync(sqlException);
 
 
@@ -41,7 +41,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             addGuestTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(someGuest),
+            broker.InsertGuestAsync(someGuest),
             Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -71,7 +71,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
                 new GuestDependecyValidationException(alreadyExistGuestException);
 
             this.storageBrokerMock.Setup(broker =>
-            broker.InserGuestAsync(someGuest))
+            broker.InsertGuestAsync(someGuest))
                 .ThrowsAsync(duplicateKeyException);
 
             //when 
@@ -84,7 +84,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
 
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(someGuest),
+            broker.InsertGuestAsync(someGuest),
             Times.Once);
 
 
@@ -113,7 +113,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
                 new GuestServiceException(failedGuestServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-            broker.InserGuestAsync(someGuest))
+            broker.InsertGuestAsync(someGuest))
                 .ThrowsAsync(serviceException);
 
             //when
@@ -125,7 +125,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             addGuestTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(someGuest),
+            broker.InsertGuestAsync(someGuest),
             Times.Once);
 
 

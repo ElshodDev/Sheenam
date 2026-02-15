@@ -1,13 +1,15 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -16,6 +18,7 @@ namespace Sheenam.Api.Services.Foundations.Guests
     public partial class GuestService
     {
         private delegate ValueTask<Guest> ReturningGuestFunction();
+        private delegate IQueryable<Guest> ReturningGuestsFunction();
 
         private async ValueTask<Guest> TryCatch(ReturningGuestFunction returningGuestFunction)
         {
@@ -31,62 +34,85 @@ namespace Sheenam.Api.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
-            catch (SqlException sqlserverException)
+            catch (NotFoundGuestException notFoundGuestException)
             {
-                var failedGuestStorageException = new
-                     FailedGuestStorageException(sqlserverException);
-
+                throw CreateAndLogValidationException(notFoundGuestException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedGuestStorageException = new FailedGuestStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
-                var alreadyExistGuestException =
-                   new AlreadyExistGuestException(duplicateKeyException);
-
+                var alreadyExistGuestException = new AlreadyExistGuestException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistGuestException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedGuestException = new LockedGuestException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyException(lockedGuestException);
             }
             catch (Exception exception)
             {
-                var failedGuestServiceException =
-                    new FailedGuestServiceException(exception);
+                var failedGuestServiceException = new FailedGuestServiceException(exception);
+                throw CreateAndLogServiceException(failedGuestServiceException);
+            }
+        }
 
-
+        private IQueryable<Guest> TryCatch(ReturningGuestsFunction returningGuestsFunction)
+        {
+            try
+            {
+                return returningGuestsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedGuestStorageException = new FailedGuestStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedGuestServiceException = new FailedGuestServiceException(exception);
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
 
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var guestValidationException =
-                new GuestValidationException(exception);
-
+            var guestValidationException = new GuestValidationException(exception);
             this.loggingBroker.LogError(guestValidationException);
 
             return guestValidationException;
         }
+
         private GuestDependecyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var guestDependencyException =
-                new GuestDependecyException(exception);
-
+            var guestDependencyException = new GuestDependecyException(exception);
             this.loggingBroker.LogCritical(guestDependencyException);
 
             return guestDependencyException;
         }
+
         private GuestDependecyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
-            var guestDependecyValidationException =
-                new GuestDependecyValidationException(exception);
+            var guestDependencyValidationException = new GuestDependecyValidationException(exception);
+            this.loggingBroker.LogError(guestDependencyValidationException);
 
-            this.loggingBroker.LogError(guestDependecyValidationException);
-
-            return guestDependecyValidationException;
+            return guestDependencyValidationException;
         }
+
+        private GuestDependecyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var guestDependencyException = new GuestDependecyException(exception);
+            this.loggingBroker.LogError(guestDependencyException);
+
+            return guestDependencyException;
+        }
+
         private GuestServiceException CreateAndLogServiceException(Xeption serviceException)
         {
-            var guestServiceException =
-                 new GuestServiceException(serviceException);
-
+            var guestServiceException = new GuestServiceException(serviceException);
             this.loggingBroker.LogError(guestServiceException);
 
             return guestServiceException;

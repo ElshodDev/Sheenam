@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using FluentAssertions;
@@ -15,97 +15,124 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
         [Fact]
         public async Task ShouldAddGuestAsync()
         {
-
-            //given
+            // given
             Guest randomGuest = CreateRandomGuest();
             Guest inputGuest = randomGuest;
             Guest storageGuest = inputGuest;
             Guest expectedGuest = storageGuest.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-            broker.InserGuestAsync(inputGuest))
-                .ReturnsAsync(storageGuest);
+                broker.InsertGuestAsync(inputGuest))
+                    .ReturnsAsync(storageGuest);
+
             // when
             Guest actualGuest =
                 await this.guestService.AddGuestAsync(inputGuest);
 
-            //then
+            // then
             actualGuest.Should().BeEquivalentTo(expectedGuest);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InserGuestAsync(inputGuest), Times.Once());
+                broker.InsertGuestAsync(inputGuest), Times.Once());
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
         [Fact]
-        public async Task ShouldReturnGuestWhenGuestExistsAsync()
+        public async Task ShouldRetrieveGuestByIdAsync()
+        {
+            // given
+            Guid randomGuestId = Guid.NewGuid();
+            Guest randomGuest = CreateRandomGuest();
+            Guest storageGuest = randomGuest;
+            Guest expectedGuest = storageGuest.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectGuestByIdAsync(randomGuestId))
+                    .ReturnsAsync(storageGuest);
+
+            // when
+            Guest actualGuest =
+                await this.guestService.RetrieveGuestByIdAsync(randomGuestId);
+
+            // then
+            actualGuest.Should().BeEquivalentTo(expectedGuest);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(randomGuestId), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldModifyGuestAsync()
         {
             // given
             Guest randomGuest = CreateRandomGuest();
-            Guid guestId = randomGuest.Id;
+            Guest inputGuest = randomGuest;
+            Guest storageGuest = inputGuest;
+            Guest expectedGuest = storageGuest.DeepClone();
+            Guid guestId = inputGuest.Id;
 
-            this.storageBrokerMock
-                .Setup(broker => broker.SelectGuestByIdAsync(guestId))
-                .ReturnsAsync(randomGuest);
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectGuestByIdAsync(guestId))
+                    .ReturnsAsync(storageGuest);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateGuestAsync(inputGuest))
+                    .ReturnsAsync(storageGuest);
 
             // when
-            Guest actualGuest = await this.guestService.RetrieveGuestByIdAsync(guestId);
+            Guest actualGuest =
+                await this.guestService.ModifyGuestAsync(inputGuest);
 
             // then
-            Assert.Equal(randomGuest, actualGuest);
+            actualGuest.Should().BeEquivalentTo(expectedGuest);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectGuestByIdAsync(guestId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateGuestAsync(inputGuest), Times.Once);
+
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldReturnUpdatedGuestWhenUpdateIsSuccessfulAsync()
+        public async Task ShouldRemoveGuestByIdAsync()
         {
             // given
-            Guest someGuest = CreateRandomGuest();
-            Guid guestId = someGuest.Id;
-
-            this.storageBrokerMock
-                .Setup(broker => broker.SelectGuestByIdAsync(someGuest.Id))
-                .ReturnsAsync(someGuest);
-
-            this.storageBrokerMock
-                .Setup(broker => broker.UpdateGuestAsync(someGuest))
-                .ReturnsAsync(someGuest);
-
-            // when
-            Guest updatedGuest = await this.guestService.ModifyGuestAsync(someGuest);
-
-            // then
-            Assert.Equal(someGuest, updatedGuest);
-
-            this.storageBrokerMock.Verify(broker => broker.SelectGuestByIdAsync(someGuest.Id), Times.Once);
-            this.storageBrokerMock.Verify(broker => broker.UpdateGuestAsync(someGuest), Times.Once);
-            this.storageBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldDeleteGuestWhenGuestExistsAsync()
-        {
-            // given
+            Guid randomId = Guid.NewGuid();
             Guest randomGuest = CreateRandomGuest();
-            Guid guestId = randomGuest.Id;
-            this.storageBrokerMock
-                .Setup(broker => broker.SelectGuestByIdAsync(guestId))
-                .ReturnsAsync(randomGuest);
+            Guest storageGuest = randomGuest;
+            Guest expectedGuest = storageGuest.DeepClone();
 
-            this.storageBrokerMock
-                .Setup(broker => broker.DeleteGuestByIdAsync(guestId))
-                .ReturnsAsync(randomGuest);
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectGuestByIdAsync(randomId))
+                    .ReturnsAsync(storageGuest);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteGuestAsync(storageGuest))
+                    .ReturnsAsync(expectedGuest);
 
             // when
-            Guest deletedGuest = await this.guestService.RemoveGuestByIdAsync(guestId);
+            Guest actualGuest =
+                await this.guestService.RemoveGuestByIdAsync(randomId);
+
             // then
-            Assert.Equal(randomGuest, deletedGuest);
-            this.storageBrokerMock.Verify(broker => broker.SelectGuestByIdAsync(guestId), Times.Once);
-            this.storageBrokerMock.Verify(broker => broker.DeleteGuestByIdAsync(guestId), Times.Once);
+            actualGuest.Should().BeEquivalentTo(expectedGuest);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(randomId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteGuestAsync(storageGuest), Times.Once);
+
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,3 +1,34 @@
 ﻿@page "/guests"
+@using Sheenam.Blazor.Models.Foundations.Guests
 
-<GuestComponent/>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <GuestFormComponent @ref="guestFormComponent" OnGuestAdded="ReloadTable" />
+        </div>
+        <div class="col-md-8">
+            <GuestComponent @ref="guestComponent" OnEditSelected="LoadGuestToEdit" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private GuestComponent guestComponent;
+    private GuestFormComponent guestFormComponent;
+
+    private async Task ReloadTable()
+    {
+        if (guestComponent != null)
+        {
+            await guestComponent.RefreshAsync();
+        }
+    }
+
+    private void LoadGuestToEdit(Guest selectedGuest)
+    {
+        if (guestFormComponent != null)
+        {
+            guestFormComponent.EditGuest(selectedGuest);
+        }
+    }
+}
