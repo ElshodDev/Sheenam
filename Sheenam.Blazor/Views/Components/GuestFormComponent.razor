@@ -1,0 +1,72 @@
+﻿@using Sheenam.Blazor.Models.Foundations.Guests
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(guest.Id == Guid.Empty ? "Yangi Mehmon Qo'shish" : "Mehmonni Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+        <EditForm Model="@guest" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Ism:</label>
+                    <InputText @bind-Value="guest.FirstName" class="form-control" placeholder="Ism kiriting" />
+                    <ValidationMessage For="@(() => guest.FirstName)" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Familiya:</label>
+                    <InputText @bind-Value="guest.LastName" class="form-control" placeholder="Familiya kiriting" />
+                    <ValidationMessage For="@(() => guest.LastName)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email:</label>
+                    <InputText @bind-Value="guest.Email" class="form-control" placeholder="example@mail.com" />
+                    <ValidationMessage For="@(() => guest.Email)" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Telefon:</label>
+                    <InputText @bind-Value="guest.PhoneNumber" class="form-control" placeholder="+998901234567" />
+                    <ValidationMessage For="@(() => guest.PhoneNumber)" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Manzil:</label>
+                <InputText @bind-Value="guest.Address" class="form-control" placeholder="Manzilni kiriting" />
+                <ValidationMessage For="@(() => guest.Address)" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tug'ilgan sana:</label>
+                    <InputDate @bind-Value="guest.DateOfBirth" class="form-control" />
+                    <ValidationMessage For="@(() => guest.DateOfBirth)" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jins:</label>
+                    <InputSelect @bind-Value="guest.Gender" class="form-control">
+                        @foreach (var gender in Enum.GetValues(typeof(GenderType)))
+                        {
+                            <option value="@gender">@gender</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (guest.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">Bekor qilish</button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(guest.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

@@ -81,13 +81,13 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
             // given
             var invalidGuest = new Guest
             {
-                Id = Guid.Empty, 
+                Id = Guid.Empty,
                 FirstName = invalidText,
                 LastName = invalidText,
                 Email = invalidText,
                 Address = invalidText,
                 PhoneNumber = invalidText,
-                DateOfBirth = default 
+                DateOfBirth = default
             };
 
             var invalidGuestException = new InvalidGuestException();

@@ -12,7 +12,7 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllGuestsAsync() 
+        public async Task ShouldRetrieveAllGuestsAsync()
         {
             // given
             IQueryable<Guest> randomGuests = CreateRandomGuests();

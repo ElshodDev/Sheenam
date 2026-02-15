@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Guests;
@@ -12,10 +12,10 @@ namespace Sheenam.Api.Brokers.Storages
 {
     public partial interface IStorageBroker
     {
-        ValueTask<Guest> InserGuestAsync(Guest guest);
-        ValueTask<Guest> SelectGuestByIdAsync(Guid id);
+        ValueTask<Guest> InsertGuestAsync(Guest guest);
         IQueryable<Guest> SelectAllGuests();
+        ValueTask<Guest> SelectGuestByIdAsync(Guid guestId);
         ValueTask<Guest> UpdateGuestAsync(Guest guest);
-        Task<Guest> DeleteGuestByIdAsync(Guid guestId);
+        ValueTask<Guest> DeleteGuestAsync(Guest guest);
     }
 }

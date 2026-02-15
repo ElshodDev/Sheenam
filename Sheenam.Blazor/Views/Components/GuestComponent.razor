@@ -1,38 +1,61 @@
 ﻿@using Sheenam.Blazor.Models.Foundations.Guests
+@namespace Sheenam.Blazor.Views.Components
 
-<h3>Barcha Mehmonlar</h3>
-
-@if (Guests is null)
+@if (Guests == null)
 {
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Yuklanmoqda...</span>
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yuklanmoqda...</span>
+        </div>
+        <span class="ms-2">Ma'lumotlar yuklanmoqda...</span>
     </div>
 }
 else if (!Guests.Any())
 {
-    <p>Mehmonlar topilmadi.</p>
+    <div class="alert alert-info mt-3" role="alert">
+        Hozircha mehmonlar ro'yxati bo'sh. Yangi mehmon qo'shishingiz mumkin.
+    </div>
 }
 else
 {
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Ism</th>
-                <th>Familiya</th>
-                <th>Email</th>
-                <th>Telefon</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var guest in Guests)
-            {
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-striped table-hover mt-3 mb-0">
+            <thead class="table-dark">
                 <tr>
-                    <td>@guest.FirstName</td>
-                    <td>@guest.LastName</td>
-                    <td>@guest.Email</td>
-                    <td>@guest.PhoneNumber</td>
+                    <th>Ism</th>
+                    <th>Familiya</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Manzil</th>
+                    <th>Jins</th>
+                    <th class="text-nowrap">Tug'ilgan sana</th>
+                    <th class="text-center">Amallar</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var guest in Guests)
+                {
+                    <tr>
+                        <td class="align-middle">@guest.FirstName</td>
+                        <td class="align-middle">@guest.LastName</td>
+                        <td class="align-middle">@guest.Email</td>
+                        <td class="align-middle">@guest.PhoneNumber</td>
+                        <td class="align-middle">@guest.Address</td>
+                        <td class="align-middle">@guest.Gender</td>
+                        <td class="align-middle text-nowrap">@guest.DateOfBirth.ToString("dd.MM.yyyy")</td>
+                        <td class="text-center align-middle text-nowrap">
+                            <button class="btn btn-outline-info btn-sm me-1 shadow-sm"
+                                    @onclick="() => OnEditSelected.InvokeAsync(guest)">
+                                <i class="oi oi-pencil"></i> Tahrirlash
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm shadow-sm"
+                                    @onclick="() => DeleteGuest(guest.Id)">
+                                <i class="oi oi-trash"></i> O'chirish
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

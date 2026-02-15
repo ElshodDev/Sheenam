@@ -41,7 +41,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
         public async ValueTask<Guest> ModifyGuestAsync(Guest guest) =>
       await TryCatch(async () =>
       {
-          ValidateGuestOnModify(guest); 
+          ValidateGuestOnModify(guest);
 
           return await this.apiBroker.PutGuestAsync(guest);
       });
@@ -49,7 +49,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
         public async ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId) =>
       await TryCatch(async () =>
       {
-          ValidateGuestId(guestId); 
+          ValidateGuestId(guestId);
 
           return await this.apiBroker.DeleteGuestByIdAsync(guestId);
       });
