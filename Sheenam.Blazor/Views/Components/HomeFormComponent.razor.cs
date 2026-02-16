@@ -39,15 +39,13 @@ namespace Sheenam.Blazor.Views.Components
             var imageFile = e.File;
             if (imageFile != null)
             {
-                // Rasmni serverga yuklashdan oldin brauzerda 800x600 o'lchamga keltiramiz
                 var format = "image/png";
                 var resizedImage = await imageFile.RequestImageFileAsync(format, 800, 600);
 
-                using var stream = resizedImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5); // Max 5MB
+                using var stream = resizedImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5); 
                 using var ms = new MemoryStream();
                 await stream.CopyToAsync(ms);
 
-                // Base64 string formatiga o'tkazamiz
                 var base64String = Convert.ToBase64String(ms.ToArray());
                 this.Home.ImageUrls = $"data:{format};base64,{base64String}";
 
@@ -82,7 +80,7 @@ namespace Sheenam.Blazor.Views.Components
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Xatolik saqlashda: {ex.Message}");
+                Console.WriteLine(ex.Message);
             }
         }
     }

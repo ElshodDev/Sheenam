@@ -73,8 +73,6 @@ namespace Sheenam.Blazor.Views.Components
                 }
             }
         }
-
-        // Enum qiymatlarini o'zbekcha matnga aylantirish
         private string GetHouseTypeDisplay(HouseType type) => type switch
         {
             HouseType.Flat => "Kvartira",
