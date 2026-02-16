@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using EFxceptions.Models.Exceptions;
@@ -9,122 +9,131 @@ using Moq;
 using Sheenam.Api.Models.Foundations.RentalContracts;
 using Sheenam.Api.Models.Foundations.RentalContracts.Exceptions;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 {
     public partial class RentalContractServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogitAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
         {
-            //given 
+            // given 
             RentalContract someRentalContract = CreateRandomRentalContract();
             SqlException sqlException = GetSqlError();
 
-            var failedRentalContractStorageException = new
-                FailedRentalContractStorageException(sqlException);
+            var failedRentalContractStorageException =
+                new FailedRentalContractStorageException(sqlException);
 
-            var expectedRentalContractDependecyException = new
-                RentalContractDependencyException(failedRentalContractStorageException);
+            var expectedRentalContractDependencyException =
+                new RentalContractDependencyException(failedRentalContractStorageException);
 
-            this.storageBrokerMock.Setup(broker =>
-            broker.InsertRentalContractAsync(someRentalContract))
-                .ThrowsAsync(sqlException);
+            this.guidBrokerMock.Setup(broker =>
+                broker.GetGuid()).Throws(sqlException);
 
-            //when
+            // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(someRentalContract);
+                this.rentalContractService.AddRentalContractAsync(someRentalContract);
 
-            //then
+            // then
             await Assert.ThrowsAsync<RentalContractDependencyException>(() =>
                 addRentalContractTask.AsTask());
 
+            this.guidBrokerMock.Verify(broker =>
+                broker.GetGuid(), Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
-                    expectedRentalContractDependecyException))),
-                    Times.Once);
+                    expectedRentalContractDependencyException))), Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertRentalContractAsync(someRentalContract),
-                    Times.Once);
-            this.storageBrokerMock.VerifyNoOtherCalls();
+                broker.InsertRentalContractAsync(It.IsAny<RentalContract>()), Times.Never);
+
+            this.guidBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationOnAddIfDublicateKeyErrorOccursAndlogitAsync()
+        public async Task ShouldThrowDependencyValidationOnAddIfDuplicateKeyErrorOccursAndLogItAsync()
         {
-            //given 
+            // given 
             RentalContract someRentalContract = CreateRandomRentalContract();
             string someMessage = GetRandomString();
 
-            var dublicateKeyException = new
-                DuplicateKeyException(someMessage);
+            var duplicateKeyException =
+                new DuplicateKeyException(someMessage);
 
-            var alreadyExistsRentalContractException = new
-                AlreadyExistsRentalContractException(dublicateKeyException);
+            var alreadyExistsRentalContractException =
+                new AlreadyExistsRentalContractException(duplicateKeyException);
 
-            var expectedRentalContractDependecyValidationException = new
-                RentalContractDependencyValidationException(alreadyExistsRentalContractException);
+            var expectedRentalContractDependencyValidationException =
+                new RentalContractDependencyValidationException(alreadyExistsRentalContractException);
 
-            this.storageBrokerMock.Setup(broker =>
-            broker.InsertRentalContractAsync(someRentalContract))
-                .ThrowsAsync(dublicateKeyException);
+            this.guidBrokerMock.Setup(broker =>
+                broker.GetGuid()).Throws(duplicateKeyException);
 
-            //when
+            // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(someRentalContract);
+                this.rentalContractService.AddRentalContractAsync(someRentalContract);
 
-            //then
+            // then
             await Assert.ThrowsAsync<RentalContractDependencyValidationException>(() =>
                 addRentalContractTask.AsTask());
+
+            this.guidBrokerMock.Verify(broker =>
+                broker.GetGuid(), Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedRentalContractDependecyValidationException))),
-                    Times.Once);
+                    expectedRentalContractDependencyValidationException))), Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertRentalContractAsync(someRentalContract),
-                    Times.Once);
-            this.storageBrokerMock.VerifyNoOtherCalls();
+                broker.InsertRentalContractAsync(It.IsAny<RentalContract>()), Times.Never);
+
+            this.guidBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
         {
+            // given
             RentalContract someRentalContract = CreateRandomRentalContract();
-            string ErrorDetermine = string.Empty;
-
             var serviceException = new Exception();
 
-            var failedRentalContractServiceException = new
-                FailedRentalContractServiceException(serviceException);
+            var failedRentalContractServiceException =
+                new FailedRentalContractServiceException(serviceException);
 
-            var expectedRentalContractServiceException = new
-                RentalContractServiceException(failedRentalContractServiceException);
+            var expectedRentalContractServiceException =
+                new RentalContractServiceException(failedRentalContractServiceException);
 
-            this.storageBrokerMock.Setup(broker =>
-            broker.InsertRentalContractAsync(someRentalContract))
-                .ThrowsAsync(serviceException);
+            this.guidBrokerMock.Setup(broker =>
+                broker.GetGuid()).Throws(serviceException);
 
-            //when
+            // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(someRentalContract);
+                this.rentalContractService.AddRentalContractAsync(someRentalContract);
 
-            //then
+            // then
             await Assert.ThrowsAsync<RentalContractServiceException>(() =>
                 addRentalContractTask.AsTask());
 
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertRentalContractAsync(someRentalContract),
-                    Times.Once);
+            this.guidBrokerMock.Verify(broker =>
+                broker.GetGuid(), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedRentalContractServiceException))),
-                    Times.Once);
+                    expectedRentalContractServiceException))), Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRentalContractAsync(It.IsAny<RentalContract>()), Times.Never);
+
+            this.guidBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

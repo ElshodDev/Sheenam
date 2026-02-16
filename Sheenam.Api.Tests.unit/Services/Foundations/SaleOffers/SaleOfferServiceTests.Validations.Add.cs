@@ -57,8 +57,9 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleOffers
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfSaleOfferIsInvalidAndLogItAsync(
-            string invalidText)
+       string invalidText)
         {
+            // given
             var invalidSaleOffer = new SaleOffer
             {
                 Id = Guid.Empty,
@@ -83,6 +84,11 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleOffers
             invalidSaleOfferException.UpsertDataList(
                 key: nameof(SaleOffer.BuyerId),
                 value: "Id is required");
+
+            // This was the missing 7th item!
+            invalidSaleOfferException.UpsertDataList(
+                key: nameof(SaleOffer.Message),
+                value: "Text is required");
 
             invalidSaleOfferException.UpsertDataList(
                 key: nameof(SaleOffer.OfferPrice),

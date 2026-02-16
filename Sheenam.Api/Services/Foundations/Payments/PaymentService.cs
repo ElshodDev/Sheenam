@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Sheenam.Api.Brokers.Loggings;
@@ -24,6 +24,7 @@ namespace Sheenam.Api.Services.Foundations.Payments
             this.storageBroker = storageBroker;
             this.loggingBroker = loggingBroker;
         }
+
         public ValueTask<Payment> AddPaymentAsync(Payment payment) =>
             TryCatch(async () =>
             {
@@ -33,15 +34,10 @@ namespace Sheenam.Api.Services.Foundations.Payments
             });
 
         public IQueryable<Payment> RetrieveAllPayments() =>
-            this.storageBroker.SelectAllPayments();
+            TryCatch(() => this.storageBroker.SelectAllPayments());
 
         public ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId) =>
-            this.storageBroker.SelectPaymentByIdAsync(paymentId);
-
-        public ValueTask<Payment> ModifyPaymentAsync(Payment payment) =>
-            this.storageBroker.UpdatePaymentAsync(payment);
-        public async ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId) =>
-            await TryCatch(async () =>
+            TryCatch(async () =>
             {
                 ValidatePaymentId(paymentId);
 
@@ -50,7 +46,33 @@ namespace Sheenam.Api.Services.Foundations.Payments
 
                 ValidateStoragePayment(maybePayment, paymentId);
 
-                return await this.storageBroker.DeletePaymentAsync(paymentId);
+                return maybePayment;
+            });
+
+        public ValueTask<Payment> ModifyPaymentAsync(Payment payment) =>
+            TryCatch(async () =>
+            {
+                ValidatePaymentOnModify(payment);
+
+                Payment maybePayment =
+                    await this.storageBroker.SelectPaymentByIdAsync(payment.Id);
+
+                ValidateAgainstStoragePaymentOnModify(inputPayment: payment, storagePayment: maybePayment);
+
+                return await this.storageBroker.UpdatePaymentAsync(payment);
+            });
+
+        public ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId) =>
+            TryCatch(async () =>
+            {
+                ValidatePaymentId(paymentId);
+
+                Payment maybePayment =
+                    await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+
+                ValidateStoragePayment(maybePayment, paymentId);
+
+                return await this.storageBroker.DeletePaymentAsync(maybePayment);
             });
     }
 }

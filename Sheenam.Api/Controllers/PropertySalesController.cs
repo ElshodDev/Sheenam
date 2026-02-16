@@ -2,6 +2,7 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.PropertySales;
@@ -19,10 +20,8 @@ namespace Sheenam.Api.Controllers
     {
         private readonly IPropertySaleService propertySaleService;
 
-        public PropertySalesController(IPropertySaleService propertySaleService)
-        {
+        public PropertySalesController(IPropertySaleService propertySaleService) =>
             this.propertySaleService = propertySaleService;
-        }
 
         [HttpPost]
         public async ValueTask<IActionResult> PostPropertySaleAsync(PropertySale propertySale)
@@ -39,8 +38,7 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(propertySaleValidationException.InnerException);
             }
             catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
-                when (propertySaleDependencyValidationException.InnerException
-                    is AlreadyExistPropertySaleException)
+                when (propertySaleDependencyValidationException.InnerException is AlreadyExistPropertySaleException)
             {
                 return Conflict(propertySaleDependencyValidationException.InnerException);
             }
@@ -129,6 +127,11 @@ namespace Sheenam.Api.Controllers
             catch (PropertySaleValidationException propertySaleValidationException)
             {
                 return BadRequest(propertySaleValidationException.InnerException);
+            }
+            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
+                when (propertySaleDependencyValidationException.InnerException is LockedPropertySaleException)
+            {
+                return Locked(propertySaleDependencyValidationException.InnerException);
             }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {

@@ -7,7 +7,7 @@ using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.PropertySales;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
 {
     public partial class PropertySaleServiceTests
     {

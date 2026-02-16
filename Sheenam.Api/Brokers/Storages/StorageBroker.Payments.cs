@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sheenam.Api.Models.Foundations.Payments;
 using System;
 using System.Linq;
@@ -11,39 +10,20 @@ namespace Sheenam.Api.Brokers.Storages
     {
         public DbSet<Payment> Payments { get; set; }
 
-        public async ValueTask<Payment> InsertPaymentAsync(Payment payment)
-        {
-            EntityEntry<Payment> paymentEntityEntry =
-                await this.Payments.AddAsync(payment);
-            await this.SaveChangesAsync();
-            return paymentEntityEntry.Entity;
-        }
+        public async ValueTask<Payment> InsertPaymentAsync(Payment payment) =>
+            await this.InsertAsync(payment);
 
         public IQueryable<Payment> SelectAllPayments() =>
-
-            this.Payments.AsQueryable();
+            this.SelectAll<Payment>();
 
         public async ValueTask<Payment> SelectPaymentByIdAsync(Guid paymentId) =>
-                        await this.Payments.FindAsync(paymentId);
+            await this.SelectAsync<Payment>(paymentId);
 
-        public async ValueTask<Payment> UpdatePaymentAsync(Payment payment)
-        {
-            EntityEntry<Payment> paymentEntityEntry =
-                this.Payments.Update(payment);
-            await this.SaveChangesAsync();
-            return paymentEntityEntry.Entity;
-        }
-        public async ValueTask<Payment> DeletePaymentAsync(Guid paymentId)
-        {
-            Payment maybePayment = await Payments.FindAsync(paymentId);
+        public async ValueTask<Payment> UpdatePaymentAsync(Payment payment) =>
+            await this.UpdateAsync(payment);
 
-            if (maybePayment is not null)
-            {
-                Payments.Remove(maybePayment);
-                await SaveChangesAsync();
-            }
+        public async ValueTask<Payment> DeletePaymentAsync(Payment payment) =>
+            await this.DeleteAsync(payment);
 
-            return maybePayment;
-        }
     }
 }

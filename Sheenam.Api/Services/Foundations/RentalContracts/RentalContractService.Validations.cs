@@ -1,69 +1,101 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Sheenam.Api.Models.Foundations.RentalContracts;
 using Sheenam.Api.Models.Foundations.RentalContracts.Exceptions;
 using System;
 
-namespace Sheenam.Api.Services.Foundations.RentalContacts
+namespace Sheenam.Api.Services.Foundations.RentalContracts
 {
     public partial class RentalContractService
     {
         private void ValidateRentalContractOnAdd(RentalContract rentalContract)
         {
-            ValidateRentalContractNotNull(rentalContract);
+            ValidateRentalContractIsNotNull(rentalContract);
 
             Validate(
-                (Rule: IsInvalid(rentalContract.Id, nameof(RentalContract.Id)), Parameter: nameof(RentalContract.Id)),
-                (Rule: IsInvalid(rentalContract.HomeRequestId, nameof(RentalContract.HomeRequestId)), Parameter: nameof(RentalContract.HomeRequestId)),
-                (Rule: IsInvalid(rentalContract.GuestId, nameof(RentalContract.GuestId)), Parameter: nameof(RentalContract.GuestId)),
-                (Rule: IsInvalid(rentalContract.HostId, nameof(RentalContract.HostId)), Parameter: nameof(RentalContract.HostId)),
-                (Rule: IsInvalid(rentalContract.HomeId, nameof(RentalContract.HomeId)), Parameter: nameof(RentalContract.HomeId)),
-                (Rule: IsInvalid(rentalContract.StartDate, nameof(RentalContract.StartDate)), Parameter: nameof(RentalContract.StartDate)),
-                (Rule: IsInvalid(rentalContract.EndDate, nameof(RentalContract.EndDate)), Parameter: nameof(RentalContract.EndDate)),
-                (Rule: IsInvalid(rentalContract.MonthlyRent, nameof(RentalContract.MonthlyRent)), Parameter: nameof(RentalContract.MonthlyRent)),
-                (Rule: IsInvalid(rentalContract.SecurityDeposit, nameof(RentalContract.SecurityDeposit)), Parameter: nameof(RentalContract.SecurityDeposit)),
-                (Rule: IsInvalid(rentalContract.Terms, nameof(RentalContract.Terms)), Parameter: nameof(RentalContract.Terms)),
-                (Rule: IsInvalid(rentalContract.Status, nameof(RentalContract.Status)), Parameter: nameof(RentalContract.Status)));
+                (Rule: IsInvalid(rentalContract.HomeRequestId), Parameter: nameof(RentalContract.HomeRequestId)),
+                (Rule: IsInvalid(rentalContract.GuestId), Parameter: nameof(RentalContract.GuestId)),
+                (Rule: IsInvalid(rentalContract.HostId), Parameter: nameof(RentalContract.HostId)),
+                (Rule: IsInvalid(rentalContract.HomeId), Parameter: nameof(RentalContract.HomeId)),
+                (Rule: IsInvalid(rentalContract.StartDate), Parameter: nameof(RentalContract.StartDate)),
+                (Rule: IsInvalid(rentalContract.EndDate), Parameter: nameof(RentalContract.EndDate)),
+                (Rule: IsInvalid(rentalContract.MonthlyRent), Parameter: nameof(RentalContract.MonthlyRent)),
+                (Rule: IsInvalid(rentalContract.SecurityDeposit), Parameter: nameof(RentalContract.SecurityDeposit)),
+                (Rule: IsInvalid(rentalContract.Terms), Parameter: nameof(RentalContract.Terms)),
+                (Rule: IsInvalid(rentalContract.Status), Parameter: nameof(RentalContract.Status))
+            );
         }
 
-        private static dynamic IsInvalid(Guid id, string parameterName) => new
+        private void ValidateRentalContractOnModify(RentalContract rentalContract)
         {
-            Condition = id == Guid.Empty,
-            Message = $"{parameterName} is required"
-        };
+            ValidateRentalContractIsNotNull(rentalContract);
 
-        private static dynamic IsInvalid(DateTimeOffset date, string parameterName) => new
-        {
-            Condition = date == default,
-            Message = $"{parameterName} is required"
-        };
+            Validate(
+                (Rule: IsInvalid(rentalContract.Id), Parameter: nameof(RentalContract.Id)),
+                (Rule: IsInvalid(rentalContract.HomeRequestId), Parameter: nameof(RentalContract.HomeRequestId)),
+                (Rule: IsInvalid(rentalContract.GuestId), Parameter: nameof(RentalContract.GuestId)),
+                (Rule: IsInvalid(rentalContract.HostId), Parameter: nameof(RentalContract.HostId)),
+                (Rule: IsInvalid(rentalContract.HomeId), Parameter: nameof(RentalContract.HomeId)),
+                (Rule: IsInvalid(rentalContract.StartDate), Parameter: nameof(RentalContract.StartDate)),
+                (Rule: IsInvalid(rentalContract.EndDate), Parameter: nameof(RentalContract.EndDate)),
+                (Rule: IsInvalid(rentalContract.MonthlyRent), Parameter: nameof(RentalContract.MonthlyRent)),
+                (Rule: IsInvalid(rentalContract.SecurityDeposit), Parameter: nameof(RentalContract.SecurityDeposit)),
+                (Rule: IsInvalid(rentalContract.Terms), Parameter: nameof(RentalContract.Terms)),
+                (Rule: IsInvalid(rentalContract.Status), Parameter: nameof(RentalContract.Status))
+            );
+        }
 
-        private static dynamic IsInvalid(decimal amount, string parameterName) => new
-        {
-            Condition = amount <= 0,
-            Message = $"{parameterName} is required"
-        };
+        public void ValidateRentalContractId(Guid rentalContractId) =>
+            Validate((Rule: IsInvalid(rentalContractId), Parameter: nameof(RentalContract.Id)));
 
-        private static dynamic IsInvalid(string text, string parameterName) => new
+        private static void ValidateStorageRentalContract(RentalContract maybeRentalContract, Guid rentalContractId)
         {
-            Condition = string.IsNullOrWhiteSpace(text),
-            Message = $"{parameterName} is required"
-        };
-        private static dynamic IsInvalid(ContractStatus status, string parameterName) => new
-        {
-            Condition = Enum.IsDefined(typeof(ContractStatus), status) is false,
-            Message = "Status is invalid."
-        };
-        private void ValidateRentalContractNotNull(RentalContract rentalContract)
+            if (maybeRentalContract is null)
+            {
+                throw new NotFoundRentalContractException(rentalContractId);
+            }
+        }
+
+        private void ValidateRentalContractIsNotNull(RentalContract rentalContract)
         {
             if (rentalContract is null)
             {
                 throw new NullRentalContractException();
             }
         }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is required"
+        };
+
+        private static dynamic IsInvalid(decimal amount) => new
+        {
+            Condition = amount <= 0,
+            Message = "Amount is required"
+        };
+
+        private static dynamic IsInvalid<T>(T value) where T : Enum => new
+        {
+            Condition = Enum.IsDefined(typeof(T), value) is false,
+            Message = "Value is invalid"
+        };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

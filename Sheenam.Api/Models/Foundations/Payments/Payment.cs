@@ -12,7 +12,7 @@ namespace Sheenam.Api.Models.Foundations.Payments
 {
     public class Payment
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid? RentalContractId { get; set; }
         public Guid? SaleTransactionId { get; set; }

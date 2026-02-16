@@ -2,10 +2,12 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.PropertySales;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
 {
     public partial class PropertySaleServiceTests
     {
@@ -13,33 +15,41 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         public async Task ShouldReturnUpdatedPropertySaleWhenUpdateIsSuccessfulAsync()
         {
             // given
-            PropertySale somePropertySale = CreateRandomPropertySale();
-            Guid propertySaleId = somePropertySale.Id;
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            PropertySale randomPropertySale = CreateRandomPropertySale(randomDate);
+            PropertySale inputPropertySale = randomPropertySale;
+            PropertySale storagePropertySale = inputPropertySale.DeepClone();
 
-            this.storageBrokerMock
-                .Setup(broker => broker.SelectPropertySaleByIdAsync(somePropertySale.Id))
-                .ReturnsAsync(somePropertySale);
+            inputPropertySale.UpdatedDate = randomDate.AddMinutes(GetRandomNumber());
 
-            this.storageBrokerMock
-                .Setup(broker => broker.UpdatePropertySaleAsync(somePropertySale))
-                .ReturnsAsync(somePropertySale);
+            PropertySale expectedPropertySale = inputPropertySale.DeepClone();
+            Guid propertySaleId = inputPropertySale.Id;
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPropertySaleByIdAsync(propertySaleId))
+                    .ReturnsAsync(storagePropertySale);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdatePropertySaleAsync(inputPropertySale))
+                    .ReturnsAsync(expectedPropertySale);
 
             // when
-            PropertySale updatedPropertySale =
-                await this.propertySaleService.ModifyPropertySaleAsync(somePropertySale);
+            PropertySale actualPropertySale =
+                await this.propertySaleService.ModifyPropertySaleAsync(inputPropertySale);
 
             // then
-            Assert.Equal(somePropertySale, updatedPropertySale);
+            actualPropertySale.Should().BeEquivalentTo(expectedPropertySale);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectPropertySaleByIdAsync(somePropertySale.Id),
+                broker.SelectPropertySaleByIdAsync(propertySaleId),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdatePropertySaleAsync(somePropertySale),
+                broker.UpdatePropertySaleAsync(inputPropertySale),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

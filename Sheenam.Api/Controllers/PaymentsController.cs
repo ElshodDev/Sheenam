@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +21,9 @@ namespace Sheenam.Api.Controllers
         private readonly IPaymentService paymentService;
 
         public PaymentsController(IPaymentService paymentService) =>
-              this.paymentService = paymentService;
+            this.paymentService = paymentService;
+
         [HttpPost]
-        //[Authorize]
         public async ValueTask<ActionResult<Payment>> PostPaymentAsync(Payment payment)
         {
             try
@@ -38,7 +38,7 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(paymentValidationException.InnerException);
             }
             catch (PaymentDependencyValidationException paymentDependencyValidationException)
-               when (paymentDependencyValidationException.InnerException is AlreadyExistsPaymentException)
+                when (paymentDependencyValidationException.InnerException is AlreadyExistsPaymentException)
             {
                 return Conflict(paymentDependencyValidationException.InnerException);
             }
@@ -54,17 +54,16 @@ namespace Sheenam.Api.Controllers
             {
                 return InternalServerError(paymentServiceException.InnerException);
             }
-
         }
 
         [HttpGet]
-        //  [Authorize(Roles = "Admin, Host")]
         public ActionResult<IQueryable<Payment>> GetAllPayments()
         {
             try
             {
                 IQueryable<Payment> retrievedPayments =
                     this.paymentService.RetrieveAllPayments();
+
                 return Ok(retrievedPayments);
             }
             catch (PaymentDependencyException paymentDependencyException)
@@ -75,21 +74,20 @@ namespace Sheenam.Api.Controllers
             {
                 return InternalServerError(paymentServiceException.InnerException);
             }
-
         }
 
         [HttpGet("{paymentId}")]
-        // [Authorize]
         public async ValueTask<ActionResult<Payment>> GetPaymentByIdAsync(Guid paymentId)
         {
             try
             {
                 Payment retrievedPayment =
                     await this.paymentService.RetrievePaymentByIdAsync(paymentId);
+
                 return Ok(retrievedPayment);
             }
             catch (PaymentValidationException paymentValidationException)
-             when (paymentValidationException.InnerException is NotFoundPaymentException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
             {
                 return NotFound(paymentValidationException.InnerException);
             }
@@ -107,19 +105,18 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut("{paymentId}")]
-        // [Authorize(Roles = "Admin, Host")]
-        public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Guid paymentId, Payment payment)
+        [HttpPut]
+        public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Payment payment)
         {
             try
             {
-                payment.Id = paymentId;
                 Payment modifiedPayment =
                     await this.paymentService.ModifyPaymentAsync(payment);
+
                 return Ok(modifiedPayment);
             }
             catch (PaymentValidationException paymentValidationException)
-             when (paymentValidationException.InnerException is NotFoundPaymentException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
             {
                 return NotFound(paymentValidationException.InnerException);
             }
@@ -128,9 +125,14 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(paymentValidationException.InnerException);
             }
             catch (PaymentDependencyValidationException paymentDependencyValidationException)
-               when (paymentDependencyValidationException.InnerException is NotFoundPaymentException)
+                when (paymentDependencyValidationException.InnerException is NotFoundPaymentException)
             {
                 return NotFound(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+                when (paymentDependencyValidationException.InnerException is LockedPaymentException)
+            {
+                return Locked(paymentDependencyValidationException.InnerException);
             }
             catch (PaymentDependencyValidationException paymentDependencyValidationException)
             {
@@ -144,21 +146,20 @@ namespace Sheenam.Api.Controllers
             {
                 return InternalServerError(paymentServiceException.InnerException);
             }
-
         }
 
         [HttpDelete("{paymentId}")]
-        // [Authorize(Roles = "Admin")]
         public async ValueTask<ActionResult<Payment>> DeletePaymentByIdAsync(Guid paymentId)
         {
             try
             {
                 Payment deletedPayment =
                     await this.paymentService.RemovePaymentByIdAsync(paymentId);
+
                 return Ok(deletedPayment);
             }
             catch (PaymentValidationException paymentValidationException)
-             when (paymentValidationException.InnerException is NotFoundPaymentException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
             {
                 return NotFound(paymentValidationException.InnerException);
             }
@@ -167,9 +168,9 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(paymentValidationException.InnerException);
             }
             catch (PaymentDependencyValidationException paymentDependencyValidationException)
-               when (paymentDependencyValidationException.InnerException is NotFoundPaymentException)
+                when (paymentDependencyValidationException.InnerException is LockedPaymentException)
             {
-                return NotFound(paymentDependencyValidationException.InnerException);
+                return Locked(paymentDependencyValidationException.InnerException);
             }
             catch (PaymentDependencyValidationException paymentDependencyValidationException)
             {

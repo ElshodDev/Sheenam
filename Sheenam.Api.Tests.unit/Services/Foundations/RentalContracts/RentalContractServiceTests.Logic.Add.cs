@@ -8,7 +8,7 @@ using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.RentalContracts;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 {
     public partial class RentalContractServiceTests
     {
@@ -17,41 +17,42 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            DateTimeOffset dateTime = randomDateTime;
             Guid randomGuid = Guid.NewGuid();
+            Guid inputRentalContractId = randomGuid;
+
             RentalContract randomRentalContract = CreateRandomRentalContract();
             RentalContract inputRentalContract = randomRentalContract;
-            RentalContract storageRentalContract = inputRentalContract;
 
-
-            RentalContract expectedRentalContract = storageRentalContract.DeepClone();
-            expectedRentalContract.Id = randomGuid;
-            expectedRentalContract.CreatedDate = randomDateTime;
-            expectedRentalContract.UpdatedDate = randomDateTime;
-            expectedRentalContract.SignedDate = randomDateTime;
+            RentalContract expectedRentalContract = inputRentalContract.DeepClone();
+            expectedRentalContract.Id = inputRentalContractId;
+            expectedRentalContract.CreatedDate = dateTime;
+            expectedRentalContract.UpdatedDate = dateTime;
+            expectedRentalContract.SignedDate = dateTime;
             expectedRentalContract.Status = ContractStatus.Active;
 
             this.guidBrokerMock.Setup(broker =>
-                broker.GetGuid()).Returns(randomGuid);
+                broker.GetGuid()).Returns(inputRentalContractId);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset()).Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffset()).Returns(dateTime);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertRentalContractAsync(inputRentalContract))
-                    .ReturnsAsync(storageRentalContract);
+                    .ReturnsAsync(inputRentalContract);
 
             // when
             RentalContract actualRentalContract =
-                await this.rentalContractService.AddRentalContactAsync(inputRentalContract);
+                await this.rentalContractService.AddRentalContractAsync(inputRentalContract);
 
             // then
             actualRentalContract.Should().BeEquivalentTo(expectedRentalContract);
 
             this.guidBrokerMock.Verify(broker =>
-            broker.GetGuid(), Times.Once);
+                broker.GetGuid(), Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-            broker.GetCurrentDateTimeOffset(), Times.Once);
+                broker.GetCurrentDateTimeOffset(), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertRentalContractAsync(inputRentalContract), Times.Once);

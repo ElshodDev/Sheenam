@@ -7,7 +7,7 @@ using Moq;
 using Sheenam.Api.Models.Foundations.RentalContracts;
 using Sheenam.Api.Models.Foundations.RentalContracts.Exceptions;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 {
     public partial class RentalContractServiceTests
     {
@@ -25,7 +25,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
 
             // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(
+                this.rentalContractService.AddRentalContractAsync(
                     nullRentalContract);
 
             // then
@@ -51,44 +51,29 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfRentalContractIsInvalidAndLogAsync(
-            string invalidText)
+      string invalidText)
         {
             // given
-            var invalidRentalContract = new RentalContract
-            {
-                Terms = invalidText
-            };
+            // 1. Avval barcha maydonlari to'g'ri bo'lgan tasodifiy obyekt yaratamiz
+            RentalContract randomRentalContract = CreateRandomRentalContract();
+
+            // 2. Faqat Terms maydonini invalid qilamiz
+            randomRentalContract.Terms = invalidText;
+            RentalContract invalidRentalContract = randomRentalContract;
 
             var invalidRentalContractException = new InvalidRentalContractException();
 
-            string[] rowRequired = new[] { "Id is required" };
-            string[] homeRequestRequired = new[] { "HomeRequestId is required" };
-            string[] guestRequired = new[] { "GuestId is required" };
-            string[] hostRequired = new[] { "HostId is required" };
-            string[] homeRequired = new[] { "HomeId is required" };
-            string[] startDateRequired = new[] { "StartDate is required" };
-            string[] endDateRequired = new[] { "EndDate is required" };
-            string[] rentRequired = new[] { "MonthlyRent is required" };
-            string[] depositRequired = new[] { "SecurityDeposit is required" };
-            string[] termsRequired = new[] { "Terms is required" };
-
-            invalidRentalContractException.AddData(nameof(RentalContract.Id), rowRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.HomeRequestId), homeRequestRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.GuestId), guestRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.HostId), hostRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.HomeId), homeRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.StartDate), startDateRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.EndDate), endDateRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.MonthlyRent), rentRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.SecurityDeposit), depositRequired);
-            invalidRentalContractException.AddData(nameof(RentalContract.Terms), termsRequired);
+            // 3. Faqat bitta xato kutamiz
+            invalidRentalContractException.UpsertDataList(
+                key: nameof(RentalContract.Terms),
+                value: "Text is required");
 
             var expectedRentalContractValidationException =
                 new RentalContractValidationException(invalidRentalContractException);
+
             // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(
-                    invalidRentalContract);
+                this.rentalContractService.AddRentalContractAsync(invalidRentalContract);
 
             // then
             await Assert.ThrowsAsync<RentalContractValidationException>(() =>
@@ -103,32 +88,32 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
                 broker.InsertRentalContractAsync(It.IsAny<RentalContract>()),
                     Times.Never);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.guidBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddifStatusIsinvalidAndLogItAsync()
         {
             // given
+            int invalidStatus = -1;
             RentalContract randomRentalContract = CreateRandomRentalContract();
-            RentalContract invalidRentalContract = randomRentalContract;
-            invalidRentalContract.Status=GetInvalidEnum<ContractStatus>();
-            var invalidRentalContractException =
-                new InvalidRentalContractException();
+            randomRentalContract.Status = (ContractStatus)invalidStatus;
 
-            invalidRentalContractException.AddData(
+            RentalContract invalidRentalContract = randomRentalContract;
+            var invalidRentalContractException = new InvalidRentalContractException();
+
+            invalidRentalContractException.UpsertDataList(
                 key: nameof(RentalContract.Status),
-                values: new[] { "Status is invalid." });
+                value: "Value is invalid");
 
             var expectedRentalContractValidationException =
-                new RentalContractValidationException(
-                    invalidRentalContractException);
+                new RentalContractValidationException(invalidRentalContractException);
 
             // when
             ValueTask<RentalContract> addRentalContractTask =
-                this.rentalContractService.AddRentalContactAsync(
-                    invalidRentalContract);
+                this.rentalContractService.AddRentalContractAsync(invalidRentalContract);
 
             // then
             await Assert.ThrowsAsync<RentalContractValidationException>(() =>
@@ -145,8 +130,8 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-
-
+            this.guidBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Sheenam.Api.Models.Foundations.SaleOffers
 {
     public class SaleOffer
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid PropertySaleId { get; set; }
         public Guid BuyerId { get; set; }
 

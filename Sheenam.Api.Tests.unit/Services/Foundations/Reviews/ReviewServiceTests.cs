@@ -2,6 +2,7 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
 using Microsoft.Data.SqlClient;
 using Moq;
 using Sheenam.Api.Brokers.DateTimes;
@@ -12,6 +13,7 @@ using Sheenam.Api.Services.Foundations.Reviews;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
 {
@@ -34,6 +36,14 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        private static Expression<Func<Exception, bool>> SameExceptionAs(Exception expectedException)
+        {
+            return actualException =>
+                actualException.Message == expectedException.Message
+                && actualException.InnerException.Message == expectedException.InnerException.Message
+                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
+        }
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
@@ -42,8 +52,6 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
 
         private static Review CreateRandomReview(DateTimeOffset date) =>
             CreateReviewFiller(date).Create();
-        private static int GetRandomNegativeNumber() =>
-    -1 * new IntRange(min: 2, max: 10).GetValue();
 
         private static IQueryable<Review> CreateRandomReviews()
         {
@@ -64,12 +72,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
         private static int GetNegativeRandomNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
 
-        private static Expression<Func<Exception, bool>> SameExceptionAs(Exception expectedException)
-        {
-            return actualException =>
-                actualException.Message == expectedException.Message
-                && actualException.InnerException.Message == expectedException.InnerException.Message;
-        }
+        private static bool GetRandomBoolean() =>
+            new Random().Next(2) == 1;
 
         private static Filler<Review> CreateReviewFiller(DateTimeOffset date)
         {
@@ -77,14 +81,17 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)
+                .OnType<DateTimeOffset?>().Use(date)
                 .OnProperty(review => review.Rating).Use(() => new IntRange(min: 1, max: 5).GetValue())
-                .OnProperty(review => review.IsPositive).Use(GetRandomBoolean());
+                .OnProperty(review => review.IsPositive).Use(GetRandomBoolean())
+                .OnProperty(review => review.User).IgnoreIt()
+                .OnProperty(review => review.Home).IgnoreIt()
+                .OnProperty(review => review.PropertySale).IgnoreIt()
+                .OnType<Guid?>().Use(Guid.NewGuid());
 
             return filler;
         }
 
-        private static bool GetRandomBoolean() =>
-           new Random().Next(2) == 1;
         public static TheoryData<int> InvalidMinuteCases()
         {
             int randomMoreThanMinuteFromNow = GetRandomNumber();

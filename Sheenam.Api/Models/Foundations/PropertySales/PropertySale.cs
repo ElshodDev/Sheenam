@@ -11,7 +11,7 @@ namespace Sheenam.Api.Models.Foundations.PropertySales
 {
     public class PropertySale
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid HostId { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }

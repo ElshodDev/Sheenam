@@ -4,7 +4,6 @@
 //===================================================
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sheenam.Api.Models.Foundations.Users;
 using System;
 using System.Linq;
@@ -16,56 +15,23 @@ namespace Sheenam.Api.Brokers.Storages
     {
         public DbSet<User> Users { get; set; }
 
-        public async ValueTask<User> InsertUserAsync(User user)
-        {
-            using var broker = new StorageBroker(this.configuration);
+        public async ValueTask<User> InsertUserAsync(User user) =>
+            await InsertAsync(user);
 
-            EntityEntry<User> userEntityEntry = await broker.Users.AddAsync(user);
-            await broker.SaveChangesAsync();
+        public IQueryable<User> SelectAllUsers() =>
+            SelectAll<User>();
 
-            return userEntityEntry.Entity;
-        }
+        public async ValueTask<User> SelectUserByIdAsync(Guid userId) =>
+            await SelectAsync<User>(userId);
 
-        public IQueryable<User> SelectAllUsers()
-        {
-            using var broker = new StorageBroker(this.configuration);
+        public async ValueTask<User> SelectUserByEmailAsync(string email) =>
+           await SelectAllUsers()
+               .Where(user => user.Email == email)
+               .FirstOrDefaultAsync();
+        public async ValueTask<User> UpdateUserAsync(User user) =>
+            await UpdateAsync(user);
 
-            return broker.Users.AsQueryable();
-        }
-
-        public async ValueTask<User> SelectUserByIdAsync(Guid userId)
-        {
-            using var broker = new StorageBroker(this.configuration);
-
-            return await broker.Users.FindAsync(userId);
-        }
-
-        public async ValueTask<User> SelectUserByEmailAsync(string email)
-        {
-            using var broker = new StorageBroker(this.configuration);
-
-            return await broker.Users
-                .FirstOrDefaultAsync(user => user.Email == email);
-        }
-
-        public async ValueTask<User> UpdateUserAsync(User user)
-        {
-            using var broker = new StorageBroker(this.configuration);
-
-            EntityEntry<User> userEntityEntry = broker.Users.Update(user);
-            await broker.SaveChangesAsync();
-
-            return userEntityEntry.Entity;
-        }
-
-        public async ValueTask<User> DeleteUserAsync(User user)
-        {
-            using var broker = new StorageBroker(this.configuration);
-
-            EntityEntry<User> userEntityEntry = broker.Users.Remove(user);
-            await broker.SaveChangesAsync();
-
-            return userEntityEntry.Entity;
-        }
+        public async ValueTask<User> DeleteUserAsync(User user) =>
+            await DeleteAsync(user);
     }
 }

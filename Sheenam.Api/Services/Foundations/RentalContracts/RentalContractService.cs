@@ -1,15 +1,18 @@
-﻿using Microsoft.Data.SqlClient;
+﻿//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
 using Sheenam.Api.Brokers.DateTimes;
 using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.RentalContracts;
-using Sheenam.Api.Models.Foundations.RentalContracts.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sheenam.Api.Services.Foundations.RentalContacts
+namespace Sheenam.Api.Services.Foundations.RentalContracts
 {
     public partial class RentalContractService : IRentalContractService
     {
@@ -17,6 +20,7 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IGuidBroker guidBroker;
+
         public RentalContractService(
             IStorageBroker storageBroker,
             ILoggingBroker loggingBroker,
@@ -29,113 +33,65 @@ namespace Sheenam.Api.Services.Foundations.RentalContacts
             this.guidBroker = guidBroker;
         }
 
-        public ValueTask<RentalContract> AddRentalContactAsync(RentalContract rentalContract) =>
-      TryCatch(async () =>
-      {
-          this.ValidateRentalContractOnAdd(rentalContract);
-
-          rentalContract.Id = this.guidBroker.GetGuid();
-
-          DateTimeOffset now =
-              this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-          rentalContract.CreatedDate = now;
-          rentalContract.SignedDate = now;
-          rentalContract.UpdatedDate = now;
-          rentalContract.Status = ContractStatus.Active;
-
-
-          return await this.storageBroker.InsertRentalContractAsync(rentalContract);
-      });
-
-        public IQueryable<RentalContract> RetrieveAllRentalContracts()
-        {
-            return this.storageBroker.SelectAllRentalContracts();
-        }
-
-        public async ValueTask<RentalContract> RetrieveRentalContractByIdAsync(Guid rentalContractId)
-        {
-            RentalContract mayRentalContract = await
-                 this.storageBroker.SelectRentalContractByIdAsync(rentalContractId);
-
-            if (mayRentalContract is null)
+        public ValueTask<RentalContract> AddRentalContractAsync(RentalContract rentalContract) =>
+            TryCatch(async () =>
             {
-                throw new NotFoundRentalContractException(rentalContractId);
-            }
-            return mayRentalContract;
-        }
-        public async ValueTask<RentalContract> ModifyRentalContractAsync(RentalContract rentalContract)
-        {
-            ValidateRentalContractOnModify(rentalContract);
+                ValidateRentalContractOnAdd(rentalContract);
 
-            RentalContract trackedRentalContract = await
-                this.storageBroker.SelectRentalContractByIdAsync(rentalContract.Id);
+                rentalContract.Id = this.guidBroker.GetGuid();
+                DateTimeOffset now = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            ValidateStorageRentalContract(trackedRentalContract, rentalContract.Id);
+                rentalContract.CreatedDate = now;
+                rentalContract.UpdatedDate = now;
+                rentalContract.SignedDate = now;
 
-            trackedRentalContract.HomeRequestId = rentalContract.HomeRequestId;
-            trackedRentalContract.GuestId = rentalContract.GuestId;
-            trackedRentalContract.HostId = rentalContract.HostId;
-            trackedRentalContract.HomeId = rentalContract.HomeId;
-            trackedRentalContract.StartDate = rentalContract.StartDate;
-            trackedRentalContract.EndDate = rentalContract.EndDate;
-            trackedRentalContract.MonthlyRent = rentalContract.MonthlyRent;
-            trackedRentalContract.SecurityDeposit = rentalContract.SecurityDeposit;
-            trackedRentalContract.Terms = rentalContract.Terms;
-            trackedRentalContract.Status = rentalContract.Status;
-            trackedRentalContract.SignedDate = rentalContract.SignedDate;
-            trackedRentalContract.CreatedDate = rentalContract.CreatedDate;
-            trackedRentalContract.UpdatedDate = rentalContract.UpdatedDate;
-            return await this.storageBroker.UpdateRentalContractAsync(trackedRentalContract);
+                rentalContract.Status = ContractStatus.Active;
 
-        }
+                return await this.storageBroker.InsertRentalContractAsync(rentalContract);
+            });
 
-        private void ValidateRentalContractOnModify(RentalContract rentalContract)
-        {
-            if (rentalContract is null)
+        public IQueryable<RentalContract> RetrieveAllRentalContracts() =>
+            TryCatch(() => this.storageBroker.SelectAllRentalContracts());
+
+        public ValueTask<RentalContract> RetrieveRentalContractByIdAsync(Guid rentalContractId) =>
+            TryCatch(async () =>
             {
-                throw new NullRentalContractException();
-            }
-        }
-        private void ValidateStorageRentalContract(
-            RentalContract storageRentalContract,
-            Guid rentalContractId)
-        {
-            if (storageRentalContract is null)
-            {
-                throw new NotFoundRentalContractException(rentalContractId);
-            }
-        }
+                ValidateRentalContractId(rentalContractId);
 
-        public async ValueTask<RentalContract> RemoveRentalContractByIdAsync(Guid rentalContractId)
-        {
-            try
-            {
                 RentalContract maybeRentalContract =
                     await this.storageBroker.SelectRentalContractByIdAsync(rentalContractId);
-                if (maybeRentalContract is null)
-                {
-                    throw new NotFoundRentalContractException(rentalContractId);
-                }
-                RentalContract deletedRentalContract =
-                    await this.storageBroker.DeleteRentalContractAsync(maybeRentalContract);
 
-                return deletedRentalContract;
-            }
-            catch (NotFoundRentalContractException notFoundRentalContractException)
+                ValidateStorageRentalContract(maybeRentalContract, rentalContractId);
+
+                return maybeRentalContract;
+            });
+
+        public ValueTask<RentalContract> ModifyRentalContractAsync(RentalContract rentalContract) =>
+            TryCatch(async () =>
             {
-                throw new RentalContractValidationException(notFoundRentalContractException);
-            }
-            catch (SqlException sqlException)
+                ValidateRentalContractOnModify(rentalContract);
+
+                RentalContract trackedRentalContract =
+                    await this.storageBroker.SelectRentalContractByIdAsync(rentalContract.Id);
+
+                ValidateStorageRentalContract(trackedRentalContract, rentalContract.Id);
+
+                rentalContract.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                return await this.storageBroker.UpdateRentalContractAsync(rentalContract);
+            });
+
+        public ValueTask<RentalContract> RemoveRentalContractByIdAsync(Guid rentalContractId) =>
+            TryCatch(async () =>
             {
-                throw new RentalContractDependencyException(
-                    new FailedRentalContractStorageException(sqlException));
-            }
-            catch (Exception exception)
-            {
-                throw new RentalContractServiceException(
-                    new FailedRentalContractServiceException(exception));
-            }
-        }
+                ValidateRentalContractId(rentalContractId);
+
+                RentalContract maybeRentalContract =
+                    await this.storageBroker.SelectRentalContractByIdAsync(rentalContractId);
+
+                ValidateStorageRentalContract(maybeRentalContract, rentalContractId);
+
+                return await this.storageBroker.DeleteRentalContractAsync(maybeRentalContract);
+            });
     }
 }
