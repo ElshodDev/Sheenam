@@ -1,20 +1,17 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
-using Sheenam.Api.Models.Foundations.Homes;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Sheenam.Blazor.Models.Foundations.Homes;
 
-namespace Sheenam.Api.Services.Foundations.Homes
+namespace Sheenam.Blazor.Services.Foundations.Homes
 {
     public interface IHomeService
     {
         ValueTask<Home> AddHomeAsync(Home home);
+        ValueTask<List<Home>> RetrieveAllHomesAsync();
         ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId);
-        IQueryable<Home> RetrieveAllHomes();
         ValueTask<Home> ModifyHomeAsync(Home home);
         ValueTask<Home> RemoveHomeByIdAsync(Guid homeId);
     }

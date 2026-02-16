@@ -1,13 +1,13 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Moq;
-using Sheenam.Api.Models.Foundations.Homes;
-using Sheenam.Api.Models.Foundations.Homes.Exceptions;
+using Sheenam.Blazor.Models.Foundations.Homes;
+using Sheenam.Blazor.Models.Foundations.Homes.Exceptions;
 
-namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
+namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Homes
 {
     public partial class HomeServiceTests
     {
@@ -22,31 +22,38 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
                 new HomeValidationException(nullHomeException);
 
             // when
-            ValueTask<Home> addHomeTask =
-                this.homeService.AddHomeAsync(nullHome);
+            ValueTask<Home> addHomeTask = this.homeService.AddHomeAsync(nullHome);
 
             // then
             await Assert.ThrowsAsync<HomeValidationException>(() =>
                 addHomeTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedHomeValidationException))),
-                        Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(expectedHomeValidationException))),
+                    Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertHomeAsync(It.IsAny<Home>()),
+            this.apiBrokerMock.Verify(broker =>
+                broker.PostHomeAsync(It.IsAny<Home>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.apiBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfHomeIsInvalidAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfHomeIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
-            var invalidHome = new Home();
+            var invalidHome = new Home
+            {
+                Id = Guid.Empty,
+                Address = invalidText
+            };
+
             var invalidHomeException = new InvalidHomeException();
 
             invalidHomeException.AddData(
@@ -73,24 +80,22 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
                 new HomeValidationException(invalidHomeException);
 
             // when
-            ValueTask<Home> addHomeTask =
-                this.homeService.AddHomeAsync(invalidHome);
+            ValueTask<Home> addHomeTask = this.homeService.AddHomeAsync(invalidHome);
 
             // then
             await Assert.ThrowsAsync<HomeValidationException>(() =>
                 addHomeTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedHomeValidationException))),
-                        Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(expectedHomeValidationException))),
+                    Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertHomeAsync(It.IsAny<Home>()),
+            this.apiBrokerMock.Verify(broker =>
+                broker.PostHomeAsync(It.IsAny<Home>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.apiBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

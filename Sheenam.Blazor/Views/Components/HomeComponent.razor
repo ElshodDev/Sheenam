@@ -1,0 +1,88 @@
+﻿@using Sheenam.Blazor.Models.Foundations.Homes
+@namespace Sheenam.Blazor.Views.Components
+
+@if (IsLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Uylar yuklanmoqda...</p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger mt-3">@ErrorMessage</div>
+}
+else if (Homes == null || !Homes.Any())
+{
+    <div class="alert alert-info mt-3">Hozircha uylar mavjud emas.</div>
+}
+else
+{
+    <div class="table-responsive shadow-sm rounded border mt-3">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rasm</th>
+                    <th>Manzil</th>
+                    <th>Xonalar</th>
+                    <th>Narxi</th>
+                    <th>Depozit</th>
+                    <th>Turi</th>
+                    <th>Holati</th>
+                    <th class="text-center">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var home in Homes)
+                {
+                    <tr>
+                        <td class="align-middle">
+                            <img src="@(string.IsNullOrEmpty(home.ImageUrls) ? "/images/no-image.png" : home.ImageUrls)"
+                                 class="rounded border" style="width: 60px; height: 45px; object-fit: cover;" />
+                        </td>
+                        <td class="align-middle fw-bold">@home.Address</td>
+                        <td class="align-middle">@home.NumberOfBedrooms xona</td>
+                        <td class="align-middle text-success fw-bold">
+                            @if (home.MonthlyRent > 0)
+                            {
+                                <span>@home.MonthlyRent.Value.ToString("N0") $ <small class="text-muted">/oy</small></span>
+                            }
+                            else
+                            {
+                                <span>@home.SalePrice?.ToString("N0") $</span>
+                            }
+                        </td>
+                        <td class="align-middle">
+                            @if (home.SecurityDeposit > 0)
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    @(home.SecurityDeposit?.ToString("N0") ?? "0") $
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">-</span>
+                            }
+                        </td>
+                        <td class="align-middle">
+                            <span class="text-muted">@GetHouseTypeDisplay(home.Type)</span>
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge @(home.IsVacant ? "bg-success" : "bg-danger")">
+                                @(home.IsVacant ? "Bo'sh" : "Band")
+                            </span>
+                        </td>
+                        <td class="text-center align-middle">
+                            <button class="btn btn-outline-primary btn-sm" @onclick="() => OnEditSelected.InvokeAsync(home)">
+                                <i class="oi oi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" @onclick="() => DeleteHome(home.Id)">
+                                <i class="oi oi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

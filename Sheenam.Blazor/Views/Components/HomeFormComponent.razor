@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Sheenam.Blazor.Models.Foundations.Homes
+@namespace Sheenam.Blazor.Views.Components
+
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="oi @(Home.CreatedDate == default ? "oi-plus" : "oi-pencil") me-2"></i>
+                        @(Home.CreatedDate == default ? "Yangi Uy Qo'shish" : "Uyni Tahrirlash")
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+                    <EditForm Model="Home" OnValidSubmit="OnSave">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Manzil</label>
+                                <InputText @bind-Value="Home.Address" class="form-control" placeholder="Chilonzor, 2-xona..." />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Uy turi</label>
+                                <InputSelect @bind-Value="Home.Type" class="form-select">
+                                    @foreach (var type in Enum.GetValues(typeof(HouseType)))
+                                    {
+                                        <option value="@type">@type</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">E'lon turi</label>
+                                <InputSelect @bind-Value="Home.ListingType" class="form-select">
+                                    @foreach (var listing in Enum.GetValues(typeof(ListingType)))
+                                    {
+                                        <option value="@listing">@listing</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Yotoqxonalar</label>
+                                <InputNumber @bind-Value="Home.NumberOfBedrooms" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Hammomlar</label>
+                                <InputNumber @bind-Value="Home.NumberOfBathrooms" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Maydoni (m²)</label>
+                                <InputNumber @bind-Value="Home.Area" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label text-success fw-bold">Oylik ijara</label>
+                                <InputNumber @bind-Value="Home.MonthlyRent" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-primary fw-bold">Sotuv narxi</label>
+                                <InputNumber @bind-Value="Home.SalePrice" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Depozit</label>
+                                <InputNumber @bind-Value="Home.SecurityDeposit" class="form-control" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Qo'shimcha ma'lumotlar</label>
+                                <InputTextArea @bind-Value="Home.AdditionalInfo" class="form-control" rows="2" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-info">Uy rasmi</label>
+                                <div class="input-group mb-2">
+                                    <InputFile OnChange="OnInputFileChange" class="form-control" id="homeImage" accept="image/*" />
+                                    <label class="input-group-text" for="homeImage"><i class="oi oi-image"></i></label>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(Home.ImageUrls))
+                                {
+                                    <div class="position-relative d-inline-block">
+                                        <img src="@Home.ImageUrls" class="rounded shadow-sm border"
+                                             style="max-height: 150px; width: auto; display: block;" />
+                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                                @onclick='() => Home.ImageUrls = null'>
+                                            <i class="oi oi-x"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="card bg-light p-3 border-0">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch">
+                                                <InputCheckbox @bind-Value="Home.IsVacant" class="form-check-input" id="isVacant" />
+                                                <label class="form-check-label" for="isVacant">Bo'sh</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch">
+                                                <InputCheckbox @bind-Value="Home.IsPetAllowed" class="form-check-input" id="isPet" />
+                                                <label class="form-check-label" for="isPet">Hayvonlar</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch">
+                                                <InputCheckbox @bind-Value="Home.IsFeatured" class="form-check-input" id="isFeatured" />
+                                                <label class="form-check-label" for="isFeatured">Tanlangan</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer px-0 pb-0 mt-4 border-0">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="Close">Bekor qilish</button>
+                            <button type="submit" class="btn btn-primary px-4 shadow">
+                                <i class="oi oi-check me-1"></i> Saqlash
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}

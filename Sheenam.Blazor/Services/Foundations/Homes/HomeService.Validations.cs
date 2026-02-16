@@ -1,17 +1,16 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
-using Sheenam.Api.Models.Foundations.Homes;
-using Sheenam.Api.Models.Foundations.Homes.Exceptions;
-using System;
+using Sheenam.Blazor.Models.Foundations.Homes;
+using Sheenam.Blazor.Models.Foundations.Homes.Exceptions;
 
-namespace Sheenam.Api.Services.Foundations.Homes
+namespace Sheenam.Blazor.Services.Foundations.Homes
 {
     public partial class HomeService
     {
-        private void ValidateHomeOnAdd(Home home)
+        private static void ValidateHomeOnAdd(Home home)
         {
             ValidateHomeNotNull(home);
 
@@ -20,30 +19,7 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 (Rule: IsInvalid(home.HostId), Parameter: nameof(Home.HostId)),
                 (Rule: IsInvalid(home.Address), Parameter: nameof(Home.Address)),
                 (Rule: IsInvalid(home.CreatedDate), Parameter: nameof(Home.CreatedDate)),
-                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate))
-            );
-        }
-
-        private void ValidateHomeOnModify(Home home)
-        {
-            ValidateHomeNotNull(home);
-
-            Validate(
-                (Rule: IsInvalid(home.Id), Parameter: nameof(Home.Id)),
-                (Rule: IsInvalid(home.Address), Parameter: nameof(Home.Address)),
-                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate))
-            );
-        }
-
-        private void ValidateHomeId(Guid homeId) =>
-            Validate((Rule: IsInvalid(homeId), Parameter: nameof(Home.Id)));
-
-        private static void ValidateStorageHome(Home maybeHome, Guid homeId)
-        {
-            if (maybeHome is null)
-            {
-                throw new NotFoundHomeException(homeId);
-            }
+                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate)));
         }
 
         private static void ValidateHomeNotNull(Home home)
@@ -76,7 +52,7 @@ namespace Sheenam.Api.Services.Foundations.Homes
         {
             var invalidHomeException = new InvalidHomeException();
 
-            foreach (var (rule, parameter) in validations)
+            foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
