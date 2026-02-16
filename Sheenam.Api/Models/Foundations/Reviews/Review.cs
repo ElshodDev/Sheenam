@@ -3,6 +3,9 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.PropertySales;
+using Sheenam.Api.Models.Foundations.Users;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.Reviews
@@ -18,5 +21,9 @@ namespace Sheenam.Api.Models.Foundations.Reviews
         public string Comment { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public User User { get; set; }
+        public Home Home { get; set; }
+        public PropertySale PropertySale { get; set; }
     }
 }

@@ -3,6 +3,10 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Models.Foundations.Guests;
+using Sheenam.Api.Models.Foundations.HomeRequests;
+using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.Hosts;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.RentalContracts
@@ -23,5 +27,10 @@ namespace Sheenam.Api.Models.Foundations.RentalContracts
         public DateTimeOffset SignedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public HomeRequest HomeRequest { get; set; }
+        public Guest Guest { get; set; }
+        public Host Host { get; set; }
+        public Home Home { get; set; }
     }
 }

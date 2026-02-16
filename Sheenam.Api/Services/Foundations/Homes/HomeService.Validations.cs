@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Homes;
@@ -20,7 +20,13 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 (Rule: IsInvalid(home.HostId), Parameter: nameof(Home.HostId)),
                 (Rule: IsInvalid(home.Address), Parameter: nameof(Home.Address)),
                 (Rule: IsInvalid(home.CreatedDate), Parameter: nameof(Home.CreatedDate)),
-                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate))
+                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstDate: home.UpdatedDate,
+                    secondDate: home.CreatedDate,
+                    secondDateName: nameof(Home.CreatedDate)),
+                Parameter: nameof(Home.UpdatedDate))
             );
         }
 
@@ -30,8 +36,16 @@ namespace Sheenam.Api.Services.Foundations.Homes
 
             Validate(
                 (Rule: IsInvalid(home.Id), Parameter: nameof(Home.Id)),
+                (Rule: IsInvalid(home.HostId), Parameter: nameof(Home.HostId)),
                 (Rule: IsInvalid(home.Address), Parameter: nameof(Home.Address)),
-                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate))
+                (Rule: IsInvalid(home.CreatedDate), Parameter: nameof(Home.CreatedDate)),
+                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate)),
+
+                (Rule: IsSame(
+                    firstDate: home.UpdatedDate,
+                    secondDate: home.CreatedDate,
+                    secondDateName: nameof(Home.CreatedDate)),
+                Parameter: nameof(Home.UpdatedDate))
             );
         }
 
@@ -71,6 +85,24 @@ namespace Sheenam.Api.Services.Foundations.Homes
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -17,10 +17,6 @@ namespace Sheenam.Api.Brokers.Storages
         ValueTask<Notification> SelectNotificationByIdAsync(Guid notificationId);
         ValueTask<Notification> UpdateNotificationAsync(Notification notification);
         ValueTask<Notification> DeleteNotificationAsync(Notification notification);
-        ValueTask<Notification> SelectMostRecentNotificationByUserIdAsync(Guid userId);
-        ValueTask<int> CountUnreadNotificationsByUserIdAsync(Guid userId);
-        ValueTask<Notification> MarkNotificationAsReadAsync(Guid notificationId);
-        ValueTask<Notification> MarkNotificationAsUnreadAsync(Guid userId);
 
     }
 }

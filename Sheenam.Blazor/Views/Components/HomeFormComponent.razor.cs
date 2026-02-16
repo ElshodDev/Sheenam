@@ -42,7 +42,7 @@ namespace Sheenam.Blazor.Views.Components
                 var format = "image/png";
                 var resizedImage = await imageFile.RequestImageFileAsync(format, 800, 600);
 
-                using var stream = resizedImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5); 
+                using var stream = resizedImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5);
                 using var ms = new MemoryStream();
                 await stream.CopyToAsync(ms);
 

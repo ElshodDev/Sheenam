@@ -47,14 +47,16 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfNotificationIsInvalidAndLogItAsync(
-            string invalidText)
+       string invalidText)
         {
             // given
-            Notification invalidNotification = new Notification
+            var invalidNotification = new Notification
             {
                 UserId = Guid.Empty,
                 Title = invalidText,
-                Message = invalidText
+                Message = invalidText,
+                Type = GetInvalidEnum<NotificationType>(),
+                CreatedDate = default
             };
 
             var invalidNotificationException = new InvalidNotificationException();
@@ -64,8 +66,20 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
                 value: "Id is required");
 
             invalidNotificationException.UpsertDataList(
+                key: nameof(Notification.Title),
+                value: "Text is required");
+
+            invalidNotificationException.UpsertDataList(
                 key: nameof(Notification.Message),
                 value: "Text is required");
+
+            invalidNotificationException.UpsertDataList(
+                key: nameof(Notification.Type),
+                value: "Value is invalid");
+
+            invalidNotificationException.UpsertDataList(
+                key: nameof(Notification.CreatedDate),
+                value: "Date is required");
 
             var expectedNotificationValidationException =
                 new NotificationValidationException(invalidNotificationException);

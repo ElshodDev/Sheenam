@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +20,8 @@ namespace Sheenam.Api.Controllers
     {
         private readonly INotificationService notificationService;
 
-        public NotificationsController(INotificationService notificationService)
-        {
+        public NotificationsController(INotificationService notificationService) =>
             this.notificationService = notificationService;
-        }
 
         [HttpPost]
         public async ValueTask<ActionResult<Notification>> PostNotificationAsync(Notification notification)
@@ -107,23 +105,11 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut("{notificationId}")]
-        public async ValueTask<ActionResult<Notification>> PutNotificationAsync(
-            Guid notificationId,
-            Notification notification)
+        [HttpPut]
+        public async ValueTask<ActionResult<Notification>> PutNotificationAsync(Notification notification)
         {
             try
             {
-                if (notificationId != notification.Id)
-                {
-                    return BadRequest(new
-                    {
-                        Message = "Notification ID in the URL does not match Notification ID in the body.",
-                        UrlId = notificationId,
-                        BodyId = notification.Id
-                    });
-                }
-
                 Notification modifiedNotification =
                     await this.notificationService.ModifyNotificationAsync(notification);
 

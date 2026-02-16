@@ -3,6 +3,9 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Models.Foundations.RentalContracts;
+using Sheenam.Api.Models.Foundations.SaleTransactions;
+using Sheenam.Api.Models.Foundations.Users;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.Payments
@@ -20,5 +23,9 @@ namespace Sheenam.Api.Models.Foundations.Payments
         public string TransactionReference { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public User User { get; set; }
+        public RentalContract RentalContract { get; set; }
+        public SaleTransaction SaleTransaction { get; set; }
     }
 }

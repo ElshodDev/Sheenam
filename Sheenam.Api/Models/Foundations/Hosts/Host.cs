@@ -4,7 +4,9 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Guests;
+using Sheenam.Api.Models.Foundations.Homes;
 using System;
+using System.Collections.Generic;
 
 namespace Sheenam.Api.Models.Foundations.Hosts
 {
@@ -17,5 +19,7 @@ namespace Sheenam.Api.Models.Foundations.Hosts
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public GenderType Gender { get; set; }
+
+        public IEnumerable<Home> Homes { get; set; }
     }
 }
