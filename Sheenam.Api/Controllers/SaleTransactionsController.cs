@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace Sheenam.Api.Controllers
         private readonly ISaleTransactionService saleTransactionService;
 
         public SaleTransactionsController(ISaleTransactionService saleTransactionService) =>
-              this.saleTransactionService = saleTransactionService;
+            this.saleTransactionService = saleTransactionService;
 
         [HttpPost]
         public async ValueTask<ActionResult<SaleTransaction>> PostSaleTransactionAsync(SaleTransaction saleTransaction)
@@ -30,10 +30,15 @@ namespace Sheenam.Api.Controllers
             {
                 SaleTransaction addedSaleTransaction =
                     await this.saleTransactionService.AddSaleTransactionAsync(saleTransaction);
+
                 return Created(addedSaleTransaction);
             }
+            catch (SaleTransactionValidationException validationException)
+            {
+                return BadRequest(validationException.InnerException);
+            }
             catch (SaleTransactionDependencyValidationException dependencyValidationException)
-            when (dependencyValidationException.InnerException is AlreadyExistsSaleTransactionException)
+                when (dependencyValidationException.InnerException is AlreadyExistsSaleTransactionException)
             {
                 return Conflict(dependencyValidationException.InnerException);
             }
@@ -44,10 +49,6 @@ namespace Sheenam.Api.Controllers
             catch (SaleTransactionDependencyException dependencyException)
             {
                 return InternalServerError(dependencyException.InnerException);
-            }
-            catch (SaleTransactionValidationException saleTransactionValidationException)
-            {
-                return BadRequest(saleTransactionValidationException.InnerException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
@@ -62,6 +63,7 @@ namespace Sheenam.Api.Controllers
             {
                 IQueryable<SaleTransaction> allSaleTransactions =
                     this.saleTransactionService.RetrieveAllSaleTransactions();
+
                 return Ok(allSaleTransactions);
             }
             catch (SaleTransactionDependencyException dependencyException)
@@ -81,10 +83,11 @@ namespace Sheenam.Api.Controllers
             {
                 SaleTransaction retrievedSaleTransaction =
                     await this.saleTransactionService.RetrieveSaleTransactionByIdAsync(saleTransactionId);
+
                 return Ok(retrievedSaleTransaction);
             }
             catch (SaleTransactionValidationException validationException)
-            when (validationException.InnerException is NotFoundSaleTransactionException)
+                when (validationException.InnerException is NotFoundSaleTransactionException)
             {
                 return NotFound(validationException.InnerException);
             }
@@ -102,18 +105,18 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut("{saleTransactionId}")]
-        public async ValueTask<ActionResult<SaleTransaction>> PutSaleTransactionAsync(Guid saleTransactionId, SaleTransaction saleTransaction)
+        [HttpPut]
+        public async ValueTask<ActionResult<SaleTransaction>> PutSaleTransactionAsync(SaleTransaction saleTransaction)
         {
             try
             {
-                saleTransaction.Id = saleTransactionId;
                 SaleTransaction modifiedSaleTransaction =
-                await this.saleTransactionService.ModifySaleTransactionAsync(saleTransaction);
+                    await this.saleTransactionService.ModifySaleTransactionAsync(saleTransaction);
+
                 return Ok(modifiedSaleTransaction);
             }
             catch (SaleTransactionValidationException validationException)
-            when (validationException.InnerException is NotFoundSaleTransactionException)
+                when (validationException.InnerException is NotFoundSaleTransactionException)
             {
                 return NotFound(validationException.InnerException);
             }
@@ -121,10 +124,10 @@ namespace Sheenam.Api.Controllers
             {
                 return BadRequest(validationException.InnerException);
             }
-            catch (SaleTransactionDependencyValidationException SaleTransactionDependencyValidationException)
-            when (SaleTransactionDependencyValidationException.InnerException is AlreadyExistsSaleTransactionException)
+            catch (SaleTransactionDependencyValidationException dependencyValidationException)
+                when (dependencyValidationException.InnerException is LockedSaleTransactionException)
             {
-                return Conflict(SaleTransactionDependencyValidationException.InnerException);
+                return Locked(dependencyValidationException.InnerException);
             }
             catch (SaleTransactionDependencyValidationException dependencyValidationException)
             {
@@ -147,21 +150,22 @@ namespace Sheenam.Api.Controllers
             {
                 SaleTransaction deletedSaleTransaction =
                     await this.saleTransactionService.RemoveSaleTransactionByIdAsync(saleTransactionId);
+
                 return Ok(deletedSaleTransaction);
             }
-            catch (SaleTransactionValidationException saleTransactionValidationException)
-            when (saleTransactionValidationException.InnerException is NotFoundSaleTransactionException)
+            catch (SaleTransactionValidationException validationException)
+                when (validationException.InnerException is NotFoundSaleTransactionException)
             {
-                return NotFound(saleTransactionValidationException.InnerException);
+                return NotFound(validationException.InnerException);
             }
             catch (SaleTransactionValidationException validationException)
             {
                 return BadRequest(validationException.InnerException);
             }
-            catch (SaleTransactionDependencyValidationException SaleTransactionDependencyValidationException)
-            when (SaleTransactionDependencyValidationException.InnerException is NotFoundSaleTransactionException)
+            catch (SaleTransactionDependencyValidationException dependencyValidationException)
+                when (dependencyValidationException.InnerException is LockedSaleTransactionException)
             {
-                return Conflict(SaleTransactionDependencyValidationException.InnerException);
+                return Locked(dependencyValidationException.InnerException);
             }
             catch (SaleTransactionDependencyValidationException dependencyValidationException)
             {

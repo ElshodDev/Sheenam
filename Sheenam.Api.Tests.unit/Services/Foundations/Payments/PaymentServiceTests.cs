@@ -3,12 +3,14 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Payments;
 using Sheenam.Api.Services.Foundations.Payments;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -42,14 +44,30 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dates)
+                .OnType<DateTimeOffset?>().Use(dates)
+
+                .OnType<string>().Use(new MnemonicString().GetValue())
+
                 .OnProperty(p => p.Amount).Use(GetRandomDecimal())
                 .OnProperty(p => p.Method).Use(PaymentMethod.Card)
                 .OnProperty(p => p.Status).Use(PaymentStatus.Pending)
                 .OnProperty(p => p.CreatedDate).Use(dates)
-                .OnProperty(p => p.UpdatedDate).Use(dates);
+                .OnProperty(p => p.UpdatedDate).Use(dates)
+
+                .OnType<Guid?>().Use(() => null)
+
+                .OnProperty(p => p.User).IgnoreIt()
+                .OnProperty(p => p.RentalContract).IgnoreIt()
+                .OnProperty(p => p.SaleTransaction).IgnoreIt();
 
             return filler.Create();
         }
+
+        private static SqlException GetSqlException() =>
+          (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

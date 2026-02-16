@@ -21,8 +21,11 @@ namespace Sheenam.Api.Services.Foundations.Payments
                 (Rule: IsInvalid(payment.Amount), Parameter: nameof(Payment.Amount)),
                 (Rule: IsInvalid(payment.Method), Parameter: nameof(Payment.Method)),
                 (Rule: IsInvalid(payment.Status), Parameter: nameof(Payment.Status)),
+                (Rule: IsInvalid(payment.PaymentDate), Parameter: nameof(Payment.PaymentDate)),
+                (Rule: IsInvalid(payment.TransactionReference), Parameter: nameof(Payment.TransactionReference)),
                 (Rule: IsInvalid(payment.CreatedDate), Parameter: nameof(Payment.CreatedDate)),
                 (Rule: IsInvalid(payment.UpdatedDate), Parameter: nameof(Payment.UpdatedDate)),
+
                 (Rule: IsNotSame(
                     firstDate: payment.CreatedDate,
                     secondDate: payment.UpdatedDate,
@@ -37,24 +40,31 @@ namespace Sheenam.Api.Services.Foundations.Payments
             Validate(
                 (Rule: IsInvalid(payment.Id), Parameter: nameof(Payment.Id)),
                 (Rule: IsInvalid(payment.UserId), Parameter: nameof(Payment.UserId)),
+                (Rule: IsInvalid(payment.Amount), Parameter: nameof(Payment.Amount)),
+                (Rule: IsInvalid(payment.Method), Parameter: nameof(Payment.Method)),
+                (Rule: IsInvalid(payment.Status), Parameter: nameof(Payment.Status)),
+                (Rule: IsInvalid(payment.PaymentDate), Parameter: nameof(Payment.PaymentDate)),
                 (Rule: IsInvalid(payment.CreatedDate), Parameter: nameof(Payment.CreatedDate)),
                 (Rule: IsInvalid(payment.UpdatedDate), Parameter: nameof(Payment.UpdatedDate)),
+
                 (Rule: IsSame(
                     firstDate: payment.UpdatedDate,
                     secondDate: payment.CreatedDate,
-                    secondDateName: nameof(payment.CreatedDate)),
-                    Parameter: nameof(payment.UpdatedDate)));
+                    secondDateName: nameof(Payment.CreatedDate)),
+                    Parameter: nameof(Payment.UpdatedDate)));
         }
 
         private static void ValidateAgainstStoragePaymentOnModify(Payment inputPayment, Payment storagePayment)
         {
             ValidateStoragePayment(storagePayment, inputPayment.Id);
+
             Validate(
                 (Rule: IsNotSame(
                     firstDate: inputPayment.CreatedDate,
                     secondDate: storagePayment.CreatedDate,
                     secondDateName: nameof(Payment.CreatedDate)),
                     Parameter: nameof(Payment.CreatedDate)),
+
                 (Rule: IsSame(
                     firstDate: inputPayment.UpdatedDate,
                     secondDate: storagePayment.UpdatedDate,
@@ -87,13 +97,19 @@ namespace Sheenam.Api.Services.Foundations.Payments
             Message = "Id is required"
         };
 
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
         private static dynamic IsInvalid(decimal amount) => new
         {
             Condition = amount <= 0,
             Message = "Amount is required"
         };
 
-        private dynamic IsInvalid(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is required"

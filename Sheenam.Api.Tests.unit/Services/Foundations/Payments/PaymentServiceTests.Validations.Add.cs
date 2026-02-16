@@ -50,7 +50,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
         [InlineData(0)]
         [InlineData(-100)]
         public async Task ShouldThrowValidationExceptionOnAddIfPaymentIsInvalidAndLogItAsync(
-     decimal invalidAmount)
+      decimal invalidAmount)
         {
             // given
             var invalidPayment = new Payment
@@ -60,6 +60,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
                 Amount = invalidAmount,
                 Method = (PaymentMethod)(-1),
                 Status = (PaymentStatus)(-1),
+                PaymentDate = default,
+                TransactionReference = null,
                 CreatedDate = default,
                 UpdatedDate = default
             };
@@ -87,6 +89,14 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
                 value: "Value is not recognized");
 
             invalidPaymentException.UpsertDataList(
+                key: nameof(Payment.PaymentDate),
+                value: "Date is required");
+
+            invalidPaymentException.UpsertDataList(
+                key: nameof(Payment.TransactionReference),
+                value: "Text is required");
+
+            invalidPaymentException.UpsertDataList(
                 key: nameof(Payment.CreatedDate),
                 value: "Date is required");
 
@@ -95,7 +105,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
                 value: "Date is required");
 
             var expectedPaymentValidationException =
-                new PaymentValidationException(invalidPaymentException);
+                    new PaymentValidationException(invalidPaymentException);
 
             // when
             ValueTask<Payment> addPaymentTask =

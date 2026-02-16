@@ -3,6 +3,8 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Models.Foundations.Guests;
+using Sheenam.Api.Models.Foundations.Homes;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.HomeRequests
@@ -17,9 +19,10 @@ namespace Sheenam.Api.Models.Foundations.HomeRequests
         public DateTimeOffset EndDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
-
         public HomeRequestStatus Status { get; set; } = HomeRequestStatus.Pending;
-
         public string RejectionReason { get; set; }
+
+        public Guest Guest { get; set; }
+        public Home Home { get; set; }
     }
 }

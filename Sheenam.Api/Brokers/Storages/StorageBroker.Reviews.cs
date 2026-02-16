@@ -14,37 +14,19 @@ namespace Sheenam.Api.Brokers.Storages
     {
         public DbSet<Review> Reviews { get; set; }
 
-        public async ValueTask<Review> InsertReviewAsync(Review review)
-        {
-            this.Entry(review).State = EntityState.Added;
-            await this.SaveChangesAsync();
-            return review;
-        }
+        public async ValueTask<Review> InsertReviewAsync(Review review) =>
+            await InsertAsync(review);
 
         public IQueryable<Review> SelectAllReviews() =>
-            this.Reviews;
+            SelectAll<Review>();
 
-        public async ValueTask<Review> SelectReviewByIdAsync(Guid reviewId)
-        {
-            using var broker = new StorageBroker(this.configuration);
+        public async ValueTask<Review> SelectReviewByIdAsync(Guid reviewId) =>
+                        await SelectAsync<Review>(reviewId);
 
-            return await broker.Reviews
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == reviewId);
-        }
+        public async ValueTask<Review> UpdateReviewAsync(Review review) =>
+            await UpdateAsync(review);
 
-        public async ValueTask<Review> UpdateReviewAsync(Review review)
-        {
-            this.Entry(review).State = EntityState.Modified;
-            await this.SaveChangesAsync();
-            return review;
-        }
-
-        public async ValueTask<Review> DeleteReviewAsync(Review review)
-        {
-            this.Entry(review).State = EntityState.Deleted;
-            await this.SaveChangesAsync();
-            return review;
-        }
+        public async ValueTask<Review> DeleteReviewAsync(Review review) =>
+            await DeleteAsync(review);
     }
 }

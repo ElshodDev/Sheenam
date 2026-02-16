@@ -1,4 +1,8 @@
-﻿using Sheenam.Api.Models.Foundations.Homes;
+﻿//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Models.Foundations.PropertySales.Exceptions;
 using System;
@@ -9,42 +13,53 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
     {
         private void ValidatePropertySaleOnAdd(PropertySale propertySale)
         {
-            ValidatePropertySaleNotNull(propertySale);
+            ValidatePropertySaleIsNotNull(propertySale);
 
             Validate(
                 (Rule: IsInvalid(propertySale.Id), Parameter: nameof(PropertySale.Id)),
                 (Rule: IsInvalid(propertySale.HostId), Parameter: nameof(PropertySale.HostId)),
-                (Rule: IsInvalid(propertySale.Type), Parameter: nameof(PropertySale.Type)),
                 (Rule: IsInvalid(propertySale.Address), Parameter: nameof(PropertySale.Address)),
                 (Rule: IsInvalid(propertySale.Description), Parameter: nameof(PropertySale.Description)),
-                (Rule: IsInvalid(propertySale.NumberOfBedrooms), Parameter: nameof(PropertySale.NumberOfBedrooms)),
-                (Rule: IsInvalid(propertySale.NumberOfBathrooms), Parameter: nameof(PropertySale.NumberOfBathrooms)),
-                (Rule: IsInvalid(propertySale.Area), Parameter: nameof(PropertySale.Area)),
+                (Rule: IsInvalid(propertySale.Type), Parameter: nameof(PropertySale.Type)),
+                (Rule: IsInvalid(propertySale.Status), Parameter: nameof(PropertySale.Status)),
                 (Rule: IsInvalid(propertySale.SalePrice), Parameter: nameof(PropertySale.SalePrice)),
-                (Rule: IsInvalid(propertySale.ListedDate), Parameter: nameof(PropertySale.ListedDate)),
+                (Rule: IsInvalid(propertySale.Area), Parameter: nameof(PropertySale.Area)),
                 (Rule: IsInvalid(propertySale.CreatedDate), Parameter: nameof(PropertySale.CreatedDate)),
-                (Rule: IsInvalid(propertySale.UpdatedDate), Parameter: nameof(PropertySale.UpdatedDate))
+                (Rule: IsInvalid(propertySale.UpdatedDate), Parameter: nameof(PropertySale.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstDate: propertySale.UpdatedDate,
+                    secondDate: propertySale.CreatedDate,
+                    secondDateName: nameof(PropertySale.CreatedDate)),
+                Parameter: nameof(PropertySale.UpdatedDate))
             );
         }
 
         private void ValidatePropertySaleOnModify(PropertySale propertySale)
         {
-            ValidatePropertySaleNotNull(propertySale);
+            ValidatePropertySaleIsNotNull(propertySale);
+
             Validate(
                 (Rule: IsInvalid(propertySale.Id), Parameter: nameof(PropertySale.Id)),
                 (Rule: IsInvalid(propertySale.HostId), Parameter: nameof(PropertySale.HostId)),
-                (Rule: IsInvalid(propertySale.Type), Parameter: nameof(PropertySale.Type)),
                 (Rule: IsInvalid(propertySale.Address), Parameter: nameof(PropertySale.Address)),
                 (Rule: IsInvalid(propertySale.Description), Parameter: nameof(PropertySale.Description)),
-                (Rule: IsInvalid(propertySale.NumberOfBedrooms), Parameter: nameof(PropertySale.NumberOfBedrooms)),
-                (Rule: IsInvalid(propertySale.NumberOfBathrooms), Parameter: nameof(PropertySale.NumberOfBathrooms)),
-                (Rule: IsInvalid(propertySale.Area), Parameter: nameof(PropertySale.Area)),
+                (Rule: IsInvalid(propertySale.Type), Parameter: nameof(PropertySale.Type)),
+                (Rule: IsInvalid(propertySale.Status), Parameter: nameof(PropertySale.Status)),
                 (Rule: IsInvalid(propertySale.SalePrice), Parameter: nameof(PropertySale.SalePrice)),
-                (Rule: IsInvalid(propertySale.ListedDate), Parameter: nameof(PropertySale.ListedDate)),
-                (Rule: IsInvalid(propertySale.CreatedDate), Parameter: nameof(PropertySale.CreatedDate)),
-                (Rule: IsInvalid(propertySale.UpdatedDate), Parameter: nameof(PropertySale.UpdatedDate))
+                (Rule: IsInvalid(propertySale.Area), Parameter: nameof(PropertySale.Area)),
+                (Rule: IsInvalid(propertySale.UpdatedDate), Parameter: nameof(PropertySale.UpdatedDate)),
+
+                (Rule: IsSame(
+                    firstDate: propertySale.UpdatedDate,
+                    secondDate: propertySale.CreatedDate,
+                    secondDateName: nameof(PropertySale.CreatedDate)),
+                Parameter: nameof(PropertySale.UpdatedDate))
             );
         }
+
+        public void ValidatePropertySaleId(Guid propertySaleId) =>
+            Validate((Rule: IsInvalid(propertySaleId), Parameter: nameof(PropertySale.Id)));
 
         private static void ValidateStoragePropertySale(PropertySale maybePropertySale, Guid propertySaleId)
         {
@@ -54,27 +69,13 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             }
         }
 
-        private void ValidatePropertySaleId(Guid propertySaleId)
-        {
-            if (propertySaleId == Guid.Empty)
-            {
-                throw new InvalidPropertySaleException();
-            }
-        }
-
-        private void ValidatePropertySaleNotNull(PropertySale propertySale)
+        private void ValidatePropertySaleIsNotNull(PropertySale propertySale)
         {
             if (propertySale is null)
             {
                 throw new NullPropertySaleException();
             }
         }
-
-        private static dynamic IsInvalid(HouseType type) => new
-        {
-            Condition = Enum.IsDefined(typeof(HouseType), type) is false,
-            Message = "Value is invalid"
-        };
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -88,22 +89,16 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(int number) => new
+        private static dynamic IsInvalid(decimal price) => new
         {
-            Condition = number < 0,
-            Message = "Number must be non-negative"
+            Condition = price <= 0,
+            Message = "Price is required"
         };
 
-        private static dynamic IsInvalid(double number) => new
+        private static dynamic IsInvalid(double area) => new
         {
-            Condition = number < 0,
-            Message = "Number must be non-negative"
-        };
-
-        private static dynamic IsInvalid(decimal number) => new
-        {
-            Condition = number < 0,
-            Message = "Number must be non-negative"
+            Condition = area <= 0,
+            Message = "Area is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -112,11 +107,35 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             Message = "Date is required"
         };
 
+        private static dynamic IsInvalid<T>(T value) where T : Enum => new
+        {
+            Condition = Enum.IsDefined(typeof(T), value) is false,
+            Message = "Value is invalid"
+        };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidPropertySaleException = new InvalidPropertySaleException();
 
-            foreach (var (rule, parameter) in validations)
+            foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
@@ -126,10 +145,7 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
                 }
             }
 
-            if (invalidPropertySaleException.Data.Count > 0)
-            {
-                throw invalidPropertySaleException;
-            }
+            invalidPropertySaleException.ThrowIfContainsErrors();
         }
     }
 }

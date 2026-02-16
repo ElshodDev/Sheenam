@@ -15,36 +15,19 @@ namespace Sheenam.Api.Brokers.Storages
     {
         public DbSet<RentalContract> RentalContracts { get; set; }
 
-        public async ValueTask<RentalContract> InsertRentalContractAsync(RentalContract rentalContract)
-        {
-            var rentalContractEntityEntry = await this.RentalContracts.AddAsync(rentalContract);
-            await this.SaveChangesAsync();
-            return rentalContractEntityEntry.Entity;
-        }
+        public async ValueTask<RentalContract> InsertRentalContractAsync(RentalContract rentalContract) =>
+           await InsertAsync(rentalContract);
 
         public IQueryable<RentalContract> SelectAllRentalContracts() =>
-           this.RentalContracts.AsQueryable();
+            SelectAll<RentalContract>();
 
         public async ValueTask<RentalContract> SelectRentalContractByIdAsync(Guid rentalContractId) =>
-            await this.RentalContracts.AsNoTracking().FirstOrDefaultAsync(rc => rc.Id == rentalContractId);
+            await SelectAsync<RentalContract>(rentalContractId);
 
-        public async ValueTask<RentalContract> UpdateRentalContractAsync(RentalContract rentalContract)
-        {
-            var rentalContractEntityEntry =
-                this.RentalContracts.Update(rentalContract);
-            await this.SaveChangesAsync();
-            return rentalContractEntityEntry.Entity;
-        }
+        public async ValueTask<RentalContract> UpdateRentalContractAsync(RentalContract rentalContract) =>
+                         await UpdateAsync(rentalContract);
 
-        public async ValueTask<RentalContract> DeleteRentalContractAsync(RentalContract rentalContract)
-        {
-            var rentalContractEntityEntry =
-                this.RentalContracts.Remove(rentalContract);
-            await this.SaveChangesAsync();
-            return rentalContractEntityEntry.Entity;
-        }
-
-        public async ValueTask<RentalContract> SelectRentalContractByHomeIdAsync(Guid homeId) =>
-            await this.RentalContracts.AsNoTracking().FirstOrDefaultAsync(rc => rc.HomeId == homeId);
+        public async ValueTask<RentalContract> DeleteRentalContractAsync(RentalContract rentalContract) =>
+                            await DeleteAsync(rentalContract);
     }
 }

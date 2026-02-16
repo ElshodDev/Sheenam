@@ -26,13 +26,11 @@ using Sheenam.Api.Services.Foundations.Hosts;
 using Sheenam.Api.Services.Foundations.Notifications;
 using Sheenam.Api.Services.Foundations.Payments;
 using Sheenam.Api.Services.Foundations.PropertySales;
-using Sheenam.Api.Services.Foundations.RentalContacts;
+using Sheenam.Api.Services.Foundations.RentalContracts;
 using Sheenam.Api.Services.Foundations.Reviews;
 using Sheenam.Api.Services.Foundations.SaleOffers;
 using Sheenam.Api.Services.Foundations.SaleTransactions;
 using Sheenam.Api.Services.Foundations.Users;
-using Sheenam.Api.Services.Orchestrations.HostDashboards;
-using Sheenam.Api.Services.Orchestrations.Reviews;
 using System.Text;
 
 namespace Sheenam.Api
@@ -157,8 +155,6 @@ namespace Sheenam.Api
             services.AddTransient<IReviewService, ReviewService>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IAiService, AiService>();
-            services.AddTransient<IReviewOrchestrationService, ReviewOrchestrationService>();
-            services.AddTransient<IHostDashboardOrchestrationService, HostDashboardOrchestrationService>();
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
@@ -190,11 +186,9 @@ namespace Sheenam.Api
 
             services.AddAuthorization(options =>
             {
-                // Faqat Mezbonlar (Host) kira oladigan politsiya
                 options.AddPolicy("HostOnly", policy =>
                     policy.RequireRole("Host"));
 
-                // Faqat Adminlar kira oladigan politsiya
                 options.AddPolicy("AdminOnly", policy =>
                     policy.RequireRole("Admin"));
             });

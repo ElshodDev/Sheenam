@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sheenam.Api.Models.Foundations.Hosts;
+using System;
 
 namespace Sheenam.Api.Models.Foundations.Homes
 {
@@ -21,6 +22,7 @@ namespace Sheenam.Api.Models.Foundations.Homes
         public decimal? SecurityDeposit { get; set; }
         public string ImageUrls { get; set; }
         public bool IsFeatured { get; set; }
+        public Host Host { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }

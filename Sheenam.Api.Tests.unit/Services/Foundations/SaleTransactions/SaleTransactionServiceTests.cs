@@ -66,7 +66,11 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleTransactions
             var filler = new Filler<SaleTransaction>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(date);
+                .OnType<DateTimeOffset>().Use(date)
+                .OnType<DateTimeOffset?>().Use(date)
+                .OnProperty(transaction => transaction.PropertySale).IgnoreIt()
+                .OnProperty(transaction => transaction.Seller).IgnoreIt()
+                .OnProperty(transaction => transaction.Buyer).IgnoreIt();
 
             return filler;
         }

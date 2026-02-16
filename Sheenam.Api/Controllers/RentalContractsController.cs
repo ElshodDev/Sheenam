@@ -1,13 +1,13 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.RentalContracts;
 using Sheenam.Api.Models.Foundations.RentalContracts.Exceptions;
-using Sheenam.Api.Services.Foundations.RentalContacts;
+using Sheenam.Api.Services.Foundations.RentalContracts;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,27 +19,26 @@ namespace Sheenam.Api.Controllers
     public class RentalContractsController : RESTFulController
     {
         private readonly IRentalContractService rentalContractService;
-        public RentalContractsController(
-            IRentalContractService rentalContractService)
-        {
+
+        public RentalContractsController(IRentalContractService rentalContractService) =>
             this.rentalContractService = rentalContractService;
-        }
+
         [HttpPost]
-        public async ValueTask<IActionResult> PostRentalContractAsync(RentalContract rentalContract)
+        public async ValueTask<ActionResult<RentalContract>> PostRentalContractAsync(RentalContract rentalContract)
         {
             try
             {
-                RentalContract PostedRentalContract =
-                    await this.rentalContractService.AddRentalContactAsync(rentalContract);
+                RentalContract postedRentalContract =
+                    await this.rentalContractService.AddRentalContractAsync(rentalContract);
 
-                return Created(PostedRentalContract);
+                return Created(postedRentalContract);
             }
             catch (RentalContractValidationException rentalContractValidationException)
             {
                 return BadRequest(rentalContractValidationException.InnerException);
             }
             catch (RentalContractDependencyValidationException rentalContractDependencyValidationException)
-             when (rentalContractDependencyValidationException.InnerException is AlreadyExistsRentalContractException)
+                when (rentalContractDependencyValidationException.InnerException is AlreadyExistsRentalContractException)
             {
                 return Conflict(rentalContractDependencyValidationException.InnerException);
             }
@@ -64,6 +63,7 @@ namespace Sheenam.Api.Controllers
             {
                 IQueryable<RentalContract> allRentalContracts =
                     this.rentalContractService.RetrieveAllRentalContracts();
+
                 return Ok(allRentalContracts);
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
@@ -75,17 +75,19 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(rentalContractServiceException.InnerException);
             }
         }
+
         [HttpGet("{rentalContractId}")]
-        public async ValueTask<IActionResult> GetRentalContractByIdAsync(Guid rentalContractId)
+        public async ValueTask<ActionResult<RentalContract>> GetRentalContractByIdAsync(Guid rentalContractId)
         {
             try
             {
                 RentalContract retrievedRentalContract =
                     await this.rentalContractService.RetrieveRentalContractByIdAsync(rentalContractId);
+
                 return Ok(retrievedRentalContract);
             }
             catch (RentalContractValidationException rentalContractValidationException)
-            when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
             {
                 return NotFound(rentalContractValidationException.InnerException);
             }
@@ -101,24 +103,20 @@ namespace Sheenam.Api.Controllers
             {
                 return InternalServerError(rentalContractServiceException.InnerException);
             }
-
         }
 
-        [HttpPut("{rentalContractId}")]
-        public async ValueTask<IActionResult> PutRentalContractAsync(
-            Guid rentalContractId,
-            RentalContract rentalContract)
+        [HttpPut]
+        public async ValueTask<ActionResult<RentalContract>> PutRentalContractAsync(RentalContract rentalContract)
         {
             try
             {
-                rentalContract.Id = rentalContractId;
-
-                RentalContract updatedRentalContract =
+                RentalContract modifiedRentalContract =
                     await this.rentalContractService.ModifyRentalContractAsync(rentalContract);
-                return Ok(updatedRentalContract);
+
+                return Ok(modifiedRentalContract);
             }
             catch (RentalContractValidationException rentalContractValidationException)
-            when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
             {
                 return NotFound(rentalContractValidationException.InnerException);
             }
@@ -135,17 +133,19 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(rentalContractServiceException.InnerException);
             }
         }
+
         [HttpDelete("{rentalContractId}")]
-        public async ValueTask<IActionResult> DeleteRentalContractByIdAsync(Guid rentalContractId)
+        public async ValueTask<ActionResult<RentalContract>> DeleteRentalContractByIdAsync(Guid rentalContractId)
         {
             try
             {
                 RentalContract deletedRentalContract =
                     await this.rentalContractService.RemoveRentalContractByIdAsync(rentalContractId);
+
                 return Ok(deletedRentalContract);
             }
             catch (RentalContractValidationException rentalContractValidationException)
-            when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
             {
                 return NotFound(rentalContractValidationException.InnerException);
             }

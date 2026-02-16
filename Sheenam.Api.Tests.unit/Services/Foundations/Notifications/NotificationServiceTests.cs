@@ -79,8 +79,10 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)
                 .OnProperty(notification => notification.Type)
-                    .Use(() => (NotificationType)new IntRange(min: 0, max: 5).GetValue())
-                .OnProperty(notification => notification.IsRead).Use(false);
+                    .Use(() => (NotificationType)new IntRange(min: 0, max: 2).GetValue())
+                .OnProperty(notification => notification.IsRead).Use(false)
+
+                .OnProperty(notification => notification.User).IgnoreIt();
 
             return filler;
         }

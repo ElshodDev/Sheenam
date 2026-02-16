@@ -12,8 +12,8 @@ using Sheenam.Api.Brokers.Storages;
 namespace Sheenam.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20260215193100_InitialCreateAll")]
-    partial class InitialCreateAll
+    [Migration("20260216200005_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,6 +92,10 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("HomeId");
+
                     b.ToTable("HomeRequests");
                 });
 
@@ -157,6 +161,8 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HostId");
+
                     b.ToTable("Homes");
                 });
 
@@ -215,6 +221,8 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Notifications");
                 });
 
@@ -255,6 +263,12 @@ namespace Sheenam.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RentalContractId");
+
+                    b.HasIndex("SaleTransactionId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Payments");
                 });
@@ -315,6 +329,8 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HostId");
+
                     b.ToTable("PropertySales");
                 });
 
@@ -365,6 +381,14 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("HomeId");
+
+                    b.HasIndex("HomeRequestId");
+
+                    b.HasIndex("HostId");
+
                     b.ToTable("RentalContracts");
                 });
 
@@ -400,6 +424,12 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HomeId");
+
+                    b.HasIndex("PropertySaleId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Reviews");
                 });
 
@@ -434,6 +464,10 @@ namespace Sheenam.Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("PropertySaleId");
 
                     b.ToTable("SaleOffers");
                 });
@@ -473,6 +507,12 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("PropertySaleId");
+
+                    b.HasIndex("SellerId");
+
                     b.ToTable("SaleTransactions");
                 });
 
@@ -486,25 +526,35 @@ namespace Sheenam.Api.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("EmailVerificationToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -514,7 +564,198 @@ namespace Sheenam.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.HomeRequests.HomeRequest", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Guests.Guest", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Homes.Home", "Home")
+                        .WithMany()
+                        .HasForeignKey("HomeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Home");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Homes.Home", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Hosts.Host", "Host")
+                        .WithMany("Homes")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Notifications.Notification", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Payments.Payment", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.RentalContracts.RentalContract", "RentalContract")
+                        .WithMany()
+                        .HasForeignKey("RentalContractId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.SaleTransactions.SaleTransaction", "SaleTransaction")
+                        .WithMany()
+                        .HasForeignKey("SaleTransactionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RentalContract");
+
+                    b.Navigation("SaleTransaction");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Hosts.Host", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.RentalContracts.RentalContract", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Guests.Guest", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Homes.Home", "Home")
+                        .WithMany()
+                        .HasForeignKey("HomeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.HomeRequests.HomeRequest", "HomeRequest")
+                        .WithMany()
+                        .HasForeignKey("HomeRequestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Hosts.Host", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Home");
+
+                    b.Navigation("HomeRequest");
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Reviews.Review", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Homes.Home", "Home")
+                        .WithMany()
+                        .HasForeignKey("HomeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", "PropertySale")
+                        .WithMany()
+                        .HasForeignKey("PropertySaleId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Home");
+
+                    b.Navigation("PropertySale");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.SaleOffers.SaleOffer", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Guests.Guest", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", "PropertySale")
+                        .WithMany()
+                        .HasForeignKey("PropertySaleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("PropertySale");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.SaleTransactions.SaleTransaction", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Guests.Guest", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", "PropertySale")
+                        .WithMany()
+                        .HasForeignKey("PropertySaleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Hosts.Host", "Seller")
+                        .WithMany()
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("PropertySale");
+
+                    b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Hosts.Host", b =>
+                {
+                    b.Navigation("Homes");
                 });
 #pragma warning restore 612, 618
         }

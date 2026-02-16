@@ -16,6 +16,6 @@ namespace Sheenam.Api.Brokers.Storages
         IQueryable<Payment> SelectAllPayments();
         ValueTask<Payment> SelectPaymentByIdAsync(Guid paymentId);
         ValueTask<Payment> UpdatePaymentAsync(Payment payment);
-        ValueTask<Payment> DeletePaymentAsync(Guid payment);
+        ValueTask<Payment> DeletePaymentAsync(Payment payment);
     }
 }

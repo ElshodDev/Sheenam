@@ -1,10 +1,11 @@
 ﻿//===================================================
-// Copyright (c) Coalition of Good-Hearted Engineers
-// Free To Use To Find Comfort and Peace
+// Copyright (c) Coalition  of Good-Hearted Engineers
+// Free To Use  To Find Comfort and Peace
 //===================================================
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Models.Foundations.PropertySales.Exceptions;
 using System;
@@ -16,36 +17,10 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
 {
     public partial class PropertySaleService
     {
-        private delegate IQueryable<PropertySale> ReturningPropertySalesFunction();
         private delegate ValueTask<PropertySale> ReturningPropertySaleFunction();
+        private delegate IQueryable<PropertySale> ReturningPropertySalesFunction();
 
-        // 1. IQueryable uchun maxsus TryCatch (YANGI QO'SHILDI)
-        private IQueryable<PropertySale> TryCatch(ReturningPropertySalesFunction returningPropertySalesFunction)
-        {
-            try
-            {
-                return returningPropertySalesFunction();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedPropertySaleStorageException =
-                    new FailedPropertySaleStorageException(sqlException);
-
-                throw CreateAndLogCriticalDependencyException(
-                    failedPropertySaleStorageException);
-            }
-            catch (Exception exception)
-            {
-                var failedPropertySaleServiceException =
-                    new FailedPropertySaleServiceException(exception);
-
-                throw CreateAndLogServiceException(failedPropertySaleServiceException);
-            }
-        }
-
-        // 2. ValueTask (Async) uchun mavjud TryCatch
-        private async ValueTask<PropertySale> TryCatch(
-           ReturningPropertySaleFunction returningPropertySaleFunction)
+        private async ValueTask<PropertySale> TryCatch(ReturningPropertySaleFunction returningPropertySaleFunction)
         {
             try
             {
@@ -59,68 +34,87 @@ namespace Sheenam.Api.Services.Foundations.PropertySales
             {
                 throw CreateAndLogValidationException(invalidPropertySaleException);
             }
+            catch (NotFoundPropertySaleException notFoundPropertySaleException)
+            {
+                throw CreateAndLogValidationException(notFoundPropertySaleException);
+            }
+            catch (DuplicateKeyException duplicateKeyException) // Xatolik tuzatildi
+            {
+                var alreadyExistPropertySaleException = new AlreadyExistPropertySaleException(duplicateKeyException);
+                throw CreateAndLogDependencyValidationException(alreadyExistPropertySaleException);
+            }
             catch (SqlException sqlException)
             {
-                var failedPropertySaleStorageException =
-                    new FailedPropertySaleStorageException(sqlException);
-
-                throw CreateAndLogCriticalDependencyException(
-                    failedPropertySaleStorageException);
+                var failedPropertySaleStorageException = new FailedPropertySaleStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedPropertySaleStorageException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var alreadyExistsPropertySaleException =
-                    new AlreadyExistPropertySaleException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsPropertySaleException);
+                var lockedPropertySaleException = new LockedPropertySaleException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedPropertySaleException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedPropertySaleStorageException = new FailedPropertySaleStorageException(dbUpdateException);
+                throw CreateAndLogDependencyException(failedPropertySaleStorageException);
             }
             catch (Exception exception)
             {
-                var failedPropertySaleServiceException =
-                    new FailedPropertySaleServiceException(exception);
-
+                var failedPropertySaleServiceException = new FailedPropertySaleServiceException(exception);
                 throw CreateAndLogServiceException(failedPropertySaleServiceException);
             }
         }
 
-        private PropertySaleValidationException CreateAndLogValidationException(
-            Xeption exception)
+        private IQueryable<PropertySale> TryCatch(ReturningPropertySalesFunction returningPropertySalesFunction)
         {
-            var propertySaleValidationException =
-                new PropertySaleValidationException(exception);
+            try
+            {
+                return returningPropertySalesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedPropertySaleStorageException = new FailedPropertySaleStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedPropertySaleStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedPropertySaleServiceException = new FailedPropertySaleServiceException(exception);
+                throw CreateAndLogServiceException(failedPropertySaleServiceException);
+            }
+        }
 
+        private PropertySaleValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var propertySaleValidationException = new PropertySaleValidationException(exception);
             this.loggingBroker.LogError(propertySaleValidationException);
-
             return propertySaleValidationException;
         }
 
         private PropertySaleDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var propertySaleDependencyException =
-                 new PropertySaleDependencyException(exception);
-
+            var propertySaleDependencyException = new PropertySaleDependencyException(exception);
             this.loggingBroker.LogCritical(propertySaleDependencyException);
-
             return propertySaleDependencyException;
         }
 
         private PropertySaleDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
-            var propertySaleDependencyValidationException =
-                new PropertySaleDependencyValidationException(exception);
-
+            var propertySaleDependencyValidationException = new PropertySaleDependencyValidationException(exception);
             this.loggingBroker.LogError(propertySaleDependencyValidationException);
-
             return propertySaleDependencyValidationException;
+        }
+
+        private PropertySaleDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var propertySaleDependencyException = new PropertySaleDependencyException(exception);
+            this.loggingBroker.LogError(propertySaleDependencyException);
+            return propertySaleDependencyException;
         }
 
         private PropertySaleServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var propertySaleServiceException =
-                new PropertySaleServiceException(exception);
-
+            var propertySaleServiceException = new PropertySaleServiceException(exception);
             this.loggingBroker.LogError(propertySaleServiceException);
-
             return propertySaleServiceException;
         }
     }

@@ -4,13 +4,14 @@
 //===================================================
 
 using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.Hosts;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.PropertySales
 {
     public class PropertySale
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid HostId { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }
@@ -27,5 +28,7 @@ namespace Sheenam.Api.Models.Foundations.PropertySales
         public bool IsFeatured { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public Host Host { get; set; }
     }
 }

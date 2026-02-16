@@ -15,32 +15,18 @@ namespace Sheenam.Api.Brokers.Storages
     {
         public DbSet<SaleTransaction> SaleTransactions { get; set; }
 
-        public async ValueTask<SaleTransaction> InsertSaleTransactionAsync(SaleTransaction saleTransaction)
-        {
-            var saleTransactionEntityEntry = await this.SaleTransactions.AddAsync(saleTransaction);
-            await this.SaveChangesAsync();
-            return saleTransactionEntityEntry.Entity;
-        }
+        public async ValueTask<SaleTransaction> InsertSaleTransactionAsync(SaleTransaction saleTransaction) =>
+                        await InsertSaleTransactionAsync(saleTransaction);
+
 
         public IQueryable<SaleTransaction> SelectAllSaleTransactions() =>
-           this.SaleTransactions.AsQueryable();
+            SelectAll<SaleTransaction>();
 
         public async ValueTask<SaleTransaction> SelectSaleTransactionByIdAsync(Guid saleTransactionId) =>
-            await this.SaleTransactions.AsNoTracking().FirstOrDefaultAsync(s => s.Id == saleTransactionId);
-        public async ValueTask<SaleTransaction> UpdateSaleTransactionAsync(SaleTransaction saleTransaction)
-        {
-            var saleTransactionEntityEntry =
-                this.SaleTransactions.Update(saleTransaction);
-            await this.SaveChangesAsync();
-            return saleTransactionEntityEntry.Entity;
-        }
-
-        public async ValueTask<SaleTransaction> DeleteSaleTransactionAsync(SaleTransaction saleTransaction)
-        {
-            var saleTransactionEntityEntry =
-                this.SaleTransactions.Remove(saleTransaction);
-            await this.SaveChangesAsync();
-            return saleTransactionEntityEntry.Entity;
-        }
+            await SelectAsync<SaleTransaction>(saleTransactionId);
+        public async ValueTask<SaleTransaction> UpdateSaleTransactionAsync(SaleTransaction saleTransaction) =>
+                        await UpdateSaleTransactionAsync(saleTransaction);
+        public async ValueTask<SaleTransaction> DeleteSaleTransactionAsync(SaleTransaction saleTransaction) =>
+                                    await DeleteSaleTransactionAsync(saleTransaction);
     }
 }

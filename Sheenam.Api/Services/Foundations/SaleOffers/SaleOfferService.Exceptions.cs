@@ -3,8 +3,8 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.SaleOffers;
 using Sheenam.Api.Models.Foundations.SaleOffers.Exceptions;
 using System;
@@ -16,6 +16,9 @@ namespace Sheenam.Api.Services.Foundations.SaleOffers
 {
     public partial class SaleOfferService
     {
+        private delegate ValueTask<SaleOffer> ReturningSaleOfferFunction();
+        private delegate IQueryable<SaleOffer> ReturningSaleOffersFunction();
+
         private async ValueTask<SaleOffer> TryCatch(ReturningSaleOfferFunction returningSaleOfferFunction)
         {
             try
@@ -36,23 +39,22 @@ namespace Sheenam.Api.Services.Foundations.SaleOffers
             }
             catch (SqlException sqlException)
             {
-                var failedSaleOfferStorageException =
-                    new FailedSaleOfferStorageException(sqlException);
-
+                var failedSaleOfferStorageException = new FailedSaleOfferStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedSaleOfferStorageException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var alreadyExistsSaleOfferException =
-                    new AlreadyExistsSaleOfferException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsSaleOfferException);
+                var lockedSaleOfferException = new LockedSaleOfferException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedSaleOfferException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedSaleOfferStorageException = new FailedSaleOfferStorageException(dbUpdateException);
+                throw CreateAndLogDependencyException(failedSaleOfferStorageException);
             }
             catch (Exception exception)
             {
-                var failedSaleOfferServiceException =
-                    new FailedSaleOfferServiceException(exception);
-
+                var failedSaleOfferServiceException = new FailedSaleOfferServiceException(exception);
                 throw CreateAndLogServiceException(failedSaleOfferServiceException);
             }
         }
@@ -65,16 +67,12 @@ namespace Sheenam.Api.Services.Foundations.SaleOffers
             }
             catch (SqlException sqlException)
             {
-                var failedSaleOfferStorageException =
-                    new FailedSaleOfferStorageException(sqlException);
-
+                var failedSaleOfferStorageException = new FailedSaleOfferStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedSaleOfferStorageException);
             }
             catch (Exception exception)
             {
-                var failedSaleOfferServiceException =
-                    new FailedSaleOfferServiceException(exception);
-
+                var failedSaleOfferServiceException = new FailedSaleOfferServiceException(exception);
                 throw CreateAndLogServiceException(failedSaleOfferServiceException);
             }
         }
@@ -87,21 +85,26 @@ namespace Sheenam.Api.Services.Foundations.SaleOffers
             return saleOfferValidationException;
         }
 
-        private SaleOfferDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private SaleOfferDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var saleOfferDependencyValidationException =
-                new SaleOfferDependencyValidationException(exception);
+            var saleOfferDependencyException = new SaleOfferDependencyException(exception);
+            this.loggingBroker.LogCritical(saleOfferDependencyException);
 
+            return saleOfferDependencyException;
+        }
+
+        private SaleOfferDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var saleOfferDependencyValidationException = new SaleOfferDependencyValidationException(exception);
             this.loggingBroker.LogError(saleOfferDependencyValidationException);
 
             return saleOfferDependencyValidationException;
         }
 
-        private SaleOfferDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private SaleOfferDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var saleOfferDependencyException = new SaleOfferDependencyException(exception);
-            this.loggingBroker.LogCritical(saleOfferDependencyException);
+            this.loggingBroker.LogError(saleOfferDependencyException);
 
             return saleOfferDependencyException;
         }
@@ -113,8 +116,5 @@ namespace Sheenam.Api.Services.Foundations.SaleOffers
 
             return saleOfferServiceException;
         }
-
-        private delegate ValueTask<SaleOffer> ReturningSaleOfferFunction();
-        private delegate IQueryable<SaleOffer> ReturningSaleOffersFunction();
     }
 }

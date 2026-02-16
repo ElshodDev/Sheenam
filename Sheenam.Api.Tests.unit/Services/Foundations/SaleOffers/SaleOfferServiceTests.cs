@@ -54,7 +54,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleOffers
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dates)
-
+                .OnType<DateTimeOffset?>().Use(dates)
                 .OnType<string>().Use(new MnemonicString())
                 .OnProperty(s => s.OfferPrice).Use(GetRandomDecimal())
                 .OnProperty(s => s.Status).Use(SaleOfferStatus.Pending)

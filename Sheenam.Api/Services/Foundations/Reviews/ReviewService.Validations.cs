@@ -2,6 +2,7 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
 using Sheenam.Api.Models.Foundations.Reviews;
 using Sheenam.Api.Models.Foundations.Reviews.Exceptions;
 using System;
@@ -21,8 +22,11 @@ namespace Sheenam.Api.Services.Foundations.Reviews
                 (Rule: IsInvalid(review.Comment), Parameter: nameof(Review.Comment)),
                 (Rule: IsInvalid(review.CreatedDate), Parameter: nameof(Review.CreatedDate)),
                 (Rule: IsInvalid(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate)),
-
-                (Rule: IsNotRecent(review.CreatedDate), Parameter: nameof(Review.CreatedDate))
+                (Rule: IsNotSame(
+                    firstDate: review.UpdatedDate,
+                    secondDate: review.CreatedDate,
+                    secondDateName: nameof(Review.CreatedDate)),
+                Parameter: nameof(Review.UpdatedDate))
             );
         }
 
@@ -37,29 +41,15 @@ namespace Sheenam.Api.Services.Foundations.Reviews
                 (Rule: IsInvalid(review.Comment), Parameter: nameof(Review.Comment)),
                 (Rule: IsInvalid(review.CreatedDate), Parameter: nameof(Review.CreatedDate)),
                 (Rule: IsInvalid(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate)),
-
-                (Rule: IsNotRecent(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate))
-            );
-        }
-
-        private void ValidateAgainstStorageReviewOnModify(Review inputReview, Review storageReview)
-        {
-            Validate(
-                (Rule: IsNotSame(
-                    firstDate: inputReview.CreatedDate,
-                    secondDate: storageReview.CreatedDate,
+                (Rule: IsSame(
+                    firstDate: review.UpdatedDate,
+                    secondDate: review.CreatedDate,
                     secondDateName: nameof(Review.CreatedDate)),
-                Parameter: nameof(Review.CreatedDate)),
-
-                (Rule: IsNotSame(
-                    firstDate: inputReview.UpdatedDate,
-                    secondDate: storageReview.UpdatedDate,
-                    secondDateName: nameof(Review.UpdatedDate)),
                 Parameter: nameof(Review.UpdatedDate))
             );
         }
 
-        private static void ValidateReviewId(Guid reviewId) =>
+        public void ValidateReviewId(Guid reviewId) =>
             Validate((Rule: IsInvalid(reviewId), Parameter: nameof(Review.Id)));
 
         private static void ValidateStorageReview(Review maybeReview, Guid reviewId)
@@ -70,12 +60,23 @@ namespace Sheenam.Api.Services.Foundations.Reviews
             }
         }
 
-        private static void ValidateReviewIsNotNull(Review review)
+        private void ValidateReviewIsNotNull(Review review)
         {
             if (review is null)
             {
                 throw new NullReviewException();
             }
+        }
+
+        private static void ValidateAgainstStorageReviewOnModify(Review inputReview, Review storageReview)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputReview.CreatedDate,
+                    secondDate: storageReview.CreatedDate,
+                    secondDateName: nameof(Review.CreatedDate)),
+                Parameter: nameof(Review.CreatedDate))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -86,14 +87,14 @@ namespace Sheenam.Api.Services.Foundations.Reviews
 
         private static dynamic IsInvalid(string text) => new
         {
-            Condition = String.IsNullOrWhiteSpace(text),
+            Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(int number) => new
+        private static dynamic IsInvalid(int rating) => new
         {
-            Condition = number < 1 || number > 5,
-            Message = "Rating must be between 1 and 5"
+            Condition = rating < 0 || rating > 5,
+            Message = "Rating must be between 0 and 5"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -102,28 +103,23 @@ namespace Sheenam.Api.Services.Foundations.Reviews
             Message = "Date is required"
         };
 
-        private dynamic IsNotSame(
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
             {
                 Condition = firstDate != secondDate,
-                Message = $"Date is not same as {secondDateName}"
+                Message = $"Date is not the same as {secondDateName}"
             };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
-        {
-            Condition = IsDateNotRecent(date),
-            Message = "Date is not recent"
-        };
-
-        private bool IsDateNotRecent(DateTimeOffset date)
-        {
-            DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            TimeSpan timeDifference = currentDateTime.Subtract(date);
-
-            return timeDifference.TotalSeconds is > 60 or < 0;
-        }
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

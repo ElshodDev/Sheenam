@@ -2,6 +2,7 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
+
 using Microsoft.Data.SqlClient;
 using Moq;
 using Sheenam.Api.Brokers.Loggings;
@@ -14,7 +15,7 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using ObjectFillerDoubleRange = Tynamix.ObjectFiller.DoubleRange;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
 {
     public partial class PropertySaleServiceTests
     {
@@ -26,6 +27,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
             this.propertySaleService = new PropertySaleService(
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
@@ -33,6 +35,16 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
 
         private static PropertySale CreateRandomPropertySale() =>
             CreatePropertySaleFiller(date: GetRandomDateTimeOffset()).Create();
+
+        private static PropertySale CreateRandomPropertySale(DateTimeOffset date) =>
+            CreatePropertySaleFiller(date).Create();
+
+        private static IQueryable<PropertySale> CreateRandomPropertySales()
+        {
+            return CreatePropertySaleFiller(date: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                .AsQueryable();
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -68,15 +80,15 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(date)
                 .OnType<DateTimeOffset?>().Use(date)
-
                 .OnType<int>().Use(GetRandomNumber())
                 .OnType<int?>().Use(GetRandomNumber())
-
                 .OnType<double>().Use(GetRandomPositiveDouble())
                 .OnType<double?>().Use(GetRandomPositiveDouble())
-
                 .OnType<decimal>().Use(GetRandomPositiveDecimal())
                 .OnType<decimal?>().Use(GetRandomPositiveDecimal())
+
+                // Navigatsiya propertylarini chetlab o'tish (Circular dependency oldini olish)
+                .OnProperty(ps => ps.Host).IgnoreIt()
 
                 // Specific properties
                 .OnProperty(ps => ps.SalePrice).Use(GetRandomPositiveDecimal())
@@ -84,8 +96,6 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.PropertySales
 
             return filler;
         }
-
-
 
         private static decimal GetRandomPositiveDecimal()
         {

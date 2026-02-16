@@ -10,13 +10,13 @@ using Sheenam.Api.Brokers.Guids;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.RentalContracts;
-using Sheenam.Api.Services.Foundations.RentalContacts;
+using Sheenam.Api.Services.Foundations.RentalContracts;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace Sheenam.Api.Tests.unit.Services.Foundations.RentalContracts
+namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 {
     public partial class RentalContractServiceTests
     {
