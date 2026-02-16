@@ -1,6 +1,8 @@
-﻿using System;
-
-namespace Sheenam.Api.Models.Foundations.Homes
+﻿//===================================================
+// Copyright (c) Coalition  of Good-Hearted Engineers
+// Free To Use  To Find Comfort and Peace
+//===================================================
+namespace Sheenam.Blazor.Models.Foundations.Homes
 {
     public class Home
     {

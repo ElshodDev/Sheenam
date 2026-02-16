@@ -1,0 +1,66 @@
+﻿@page "/homes"
+@using Sheenam.Blazor.Views.Components
+
+<div class="container-fluid">
+    <div class="row pt-4 px-4">
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary m-0">
+                <i class="oi oi-home me-2"></i>Uylar Boshqaruvi
+            </h2>
+            <button class="btn btn-success shadow-sm" @onclick="() => homeFormComponent.Open()">
+                <i class="oi oi-plus me-1"></i> Yangi Uy Qo'shish
+            </button>
+        </div>
+    </div>
+
+    <div class="row px-4">
+        <div class="col-12">
+            <HomeComponent @ref="homeComponent" OnEditSelected="HandleEditHome" />
+        </div>
+    </div>
+</div>
+
+<HomeFormComponent @ref="homeFormComponent" OnSaveCallback="RefreshData" />
+
+@code {
+    private HomeComponent homeComponent;
+    private HomeFormComponent homeFormComponent;
+    private string errorMessage;
+
+    private async Task RefreshData()
+    {
+        if (homeComponent != null)
+        {
+            await homeComponent.RefreshAsync();
+        }
+    }
+
+    private void HandleEditHome(Sheenam.Blazor.Models.Foundations.Homes.Home home)
+    {
+        homeFormComponent.Home = new Sheenam.Blazor.Models.Foundations.Homes.Home
+        {
+            Id = home.Id,
+            HostId = home.HostId,
+            Address = home.Address,
+            AdditionalInfo = home.AdditionalInfo,
+            IsVacant = home.IsVacant,
+            IsPetAllowed = home.IsPetAllowed,
+            IsShared = home.IsShared,
+            NumberOfBedrooms = home.NumberOfBedrooms,
+            NumberOfBathrooms = home.NumberOfBathrooms,
+            Area = home.Area,
+            Type = home.Type,
+            ListingType = home.ListingType,
+            MonthlyRent = home.MonthlyRent,
+            SalePrice = home.SalePrice,
+            SecurityDeposit = home.SecurityDeposit,
+            ImageUrls = home.ImageUrls,
+            IsFeatured = home.IsFeatured,
+            CreatedDate = home.CreatedDate, 
+            UpdatedDate = home.UpdatedDate
+        };
+
+        homeFormComponent.IsVisible = true;
+        StateHasChanged();
+    }
+}

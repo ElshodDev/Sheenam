@@ -1,9 +1,8 @@
 ﻿//===================================================
-// Copyright (c) Coalition of Good-Hearted Engineers
-// Free To Use To Find Comfort and Peace
+// Copyright (c) Coalition  of Good-Hearted Engineers
+// Free To Use  To Find Comfort and Peace
 //===================================================
 
-using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
@@ -40,14 +39,25 @@ namespace Sheenam.Api.Services.Foundations.Homes
             catch (SqlException sqlException)
             {
                 var failedHomeStorageException = new FailedHomeStorageException(sqlException);
-                throw CreateAndLogDependencyException(failedHomeStorageException);
+                throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
+            catch (Exception exception)
             {
-                var alreadyExistHomeException =
-                    new AlreadyExistHomeException(duplicateKeyException);
+                var failedHomeServiceException = new FailedHomeServiceException(exception);
+                throw CreateAndLogServiceException(failedHomeServiceException);
+            }
+        }
 
-                throw CreateAndLogDependencyValidationException(alreadyExistHomeException);
+        private IQueryable<Home> TryCatch(ReturningHomesFunction returningHomesFunction)
+        {
+            try
+            {
+                return returningHomesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHomeStorageException = new FailedHomeStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
             }
             catch (Exception exception)
             {
@@ -64,22 +74,12 @@ namespace Sheenam.Api.Services.Foundations.Homes
             return homeValidationException;
         }
 
-        private HomeDependencyException CreateAndLogDependencyException(Xeption exception)
+        private HomeDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var homeDependencyException = new HomeDependencyException(exception);
             this.loggingBroker.LogCritical(homeDependencyException);
 
             return homeDependencyException;
-        }
-
-        private HomeDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var homeDependencyValidationException =
-                new HomeDependencyValidationException(exception);
-
-            this.loggingBroker.LogError(homeDependencyValidationException);
-
-            return homeDependencyValidationException;
         }
 
         private HomeServiceException CreateAndLogServiceException(Xeption exception)

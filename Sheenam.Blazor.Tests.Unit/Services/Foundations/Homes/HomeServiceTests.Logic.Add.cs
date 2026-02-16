@@ -1,14 +1,13 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using FluentAssertions;
-using Force.DeepCloner;
 using Moq;
-using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Blazor.Models.Foundations.Homes;
 
-namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
+namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Homes
 {
     public partial class HomeServiceTests
     {
@@ -18,12 +17,12 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
             // given
             Home randomHome = CreateRandomHome();
             Home inputHome = randomHome;
-            Home storageHome = inputHome;
-            Home expectedHome = storageHome.DeepClone();
+            Home postedHome = inputHome;
+            Home expectedHome = postedHome;
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.InsertHomeAsync(inputHome))
-                    .ReturnsAsync(storageHome);
+            this.apiBrokerMock.Setup(broker =>
+                broker.PostHomeAsync(inputHome))
+                    .ReturnsAsync(postedHome);
 
             // when
             Home actualHome =
@@ -32,11 +31,11 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
             // then
             actualHome.Should().BeEquivalentTo(expectedHome);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertHomeAsync(inputHome),
+            this.apiBrokerMock.Verify(broker =>
+                broker.PostHomeAsync(inputHome),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.apiBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

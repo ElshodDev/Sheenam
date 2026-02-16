@@ -26,33 +26,14 @@ namespace Sheenam.Api.Services.Foundations.Homes
         }
 
         public ValueTask<Home> AddHomeAsync(Home home) =>
-            TryCatch(async () =>
-            {
-                ValidateHomeOnAdd(home);
-                return await this.storageBroker.InsertHomeAsync(home);
-            });
+             TryCatch(async () =>
+             {
+                 ValidateHomeOnAdd(home);
+                 return await this.storageBroker.InsertHomeAsync(home);
+             });
 
         public IQueryable<Home> RetrieveAllHomes() =>
-            this.storageBroker.SelectAllHomes();
-
-        public IQueryable<Home> RetrieveAllHomes(HomeFilter filter)
-        {
-            IQueryable<Home> homes = this.storageBroker.SelectAllHomes();
-
-            if (filter != null)
-            {
-                if (filter.MinPrice.HasValue)
-                    homes = homes.Where(home => home.MonthlyRent >= filter.MinPrice.Value);
-
-                if (filter.MaxPrice.HasValue)
-                    homes = homes.Where(home => home.MonthlyRent <= filter.MaxPrice.Value);
-
-                if (filter.NumberOfRooms.HasValue)
-                    homes = homes.Where(home => home.NumberOfBedrooms == filter.NumberOfRooms.Value);
-            }
-
-            return homes;
-        }
+            TryCatch(() => this.storageBroker.SelectAllHomes());
 
         public ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
             TryCatch(async () =>
@@ -78,7 +59,7 @@ namespace Sheenam.Api.Services.Foundations.Homes
                 ValidateHomeId(homeId);
                 Home maybeHome = await this.storageBroker.SelectHomeByIdAsync(homeId);
                 ValidateStorageHome(maybeHome, homeId);
-                return await this.storageBroker.DeleteHomeByIdAsync(homeId);
+                return await this.storageBroker.DeleteHomeAsync(maybeHome);
             });
     }
 }

@@ -24,12 +24,12 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
         }
 
         public async ValueTask<Guest> AddGuestAsync(Guest guest) =>
-    await TryCatch(async () =>
-    {
-        ValidateGuestOnAdd(guest);
+          await TryCatch(async () =>
+           {
+               ValidateGuestOnAdd(guest);
 
-        return await this.apiBroker.PostGuestAsync(guest);
-    });
+               return await this.apiBroker.PostGuestAsync(guest);
+           });
 
         public async ValueTask<IQueryable<Guest>> RetrieveAllGuestsAsync() =>
             await TryCatch(async () =>
