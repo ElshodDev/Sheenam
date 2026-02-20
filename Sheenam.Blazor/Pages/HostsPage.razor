@@ -1,0 +1,35 @@
+﻿@page "/hosts"
+@using Sheenam.Blazor.Views.Components
+@using HostModel = Sheenam.Blazor.Models.Foundations.Hosts.Host
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <HostFormComponent @ref="hostFormComponent" OnHostAdded="ReloadTable" />
+        </div>
+        <div class="col-md-8">
+            <HostComponent @ref="hostComponent" OnEditSelected="LoadHostToEdit" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private HostComponent hostComponent;
+    private HostFormComponent hostFormComponent;
+
+    private async Task ReloadTable()
+    {
+        if (hostComponent != null)
+        {
+            await hostComponent.RefreshAsync();
+        }
+    }
+
+    private void LoadHostToEdit(HostModel selectedHost)
+    {
+        if (hostFormComponent != null)
+        {
+            hostFormComponent.EditHost(selectedHost);
+        }
+    }
+}

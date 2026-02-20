@@ -1,0 +1,64 @@
+﻿@using Sheenam.Blazor.Models.Foundations.Hosts
+@namespace Sheenam.Blazor.Views.Components
+
+@if (Hosts == null)
+{
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yuklanmoqda...</span>
+        </div>
+        <span class="ms-2">Ma'lumotlar yuklanmoqda...</span>
+    </div>
+}
+else if (!Hosts.Any())
+{
+    <div class="alert alert-info mt-3" role="alert">
+        Hozircha mezbonlar ro'yxati bo'sh. Yangi mezbon qo'shishingiz mumkin.
+    </div>
+}
+else
+{
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-striped table-hover mt-3 mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Ism</th>
+                    <th>Familiya</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Jins</th>
+                    <th class="text-nowrap">Tug'ilgan sana</th>
+                    <th class="text-center">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var host in Hosts)
+                {
+                    <tr>
+                        <td class="align-middle">@host.FirstName</td>
+                        <td class="align-middle">@host.LastName</td>
+                        <td class="align-middle">@host.Email</td>
+                        <td class="align-middle">@host.PhoneNumber</td>
+                        <td class="align-middle">@host.Gender</td>
+                        <td class="align-middle text-nowrap">@host.DateOfBirth.ToString("dd.MM.yyyy")</td>
+                        <td class="text-center align-middle text-nowrap">
+                            <button class="btn btn-outline-info btn-sm me-1 shadow-sm"
+                                    @onclick="() => OnEditSelected.InvokeAsync(host)">
+                                <i class="oi oi-pencil"></i> Tahrirlash
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm shadow-sm"
+                                    @onclick="() => DeleteHost(host.Id)">
+                                <i class="oi oi-trash"></i> O'chirish
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger mt-3">@ErrorMessage</div>
+    }
+}
