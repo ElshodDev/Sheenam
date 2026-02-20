@@ -133,7 +133,7 @@ namespace Sheenam.Api
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IGuidBroker, GuidBroker>();

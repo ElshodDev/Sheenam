@@ -20,6 +20,14 @@ namespace Sheenam.Blazor.Brokers.Apis
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
+        // 2. Har xil tipli (IApiBroker.PostAsync<T, TResult> uchun)
+        public async ValueTask<TResult> PostAsync<T, TResult>(string relativeUrl, T content)
+        {
+            var response = await this.httpClient.PostAsJsonAsync(relativeUrl, content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<TResult>();
+        }
+
         public async ValueTask<T> GetAsync<T>(string relativeUrl)
         {
             return await this.httpClient.GetFromJsonAsync<T>(relativeUrl);

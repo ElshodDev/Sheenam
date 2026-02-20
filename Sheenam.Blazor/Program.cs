@@ -1,8 +1,11 @@
+using Blazored.LocalStorage;
 using Sheenam.Blazor.Brokers.Apis;
 using Sheenam.Blazor.Brokers.Loggings;
 using Sheenam.Blazor.Data;
 using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.Homes;
+using Sheenam.Blazor.Services.Foundations.Hosts;
+using Sheenam.Blazor.Services.Foundations.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddBlazoredLocalStorage();
 
 
 builder.Services.AddHttpClient<IApiBroker, ApiBroker>(client =>
@@ -21,6 +26,12 @@ builder.Services.AddTransient<ILoggingBroker, LoggingBroker>();
 
 builder.Services.AddTransient<IGuestService, GuestService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IHostService, HostService>();
+builder.Services.AddTransient<
+    Sheenam.Blazor.Services.Foundations.Auth.IAuthService,
+    Sheenam.Blazor.Services.Foundations.Auth.AuthService>();
+
 
 var app = builder.Build();
 
