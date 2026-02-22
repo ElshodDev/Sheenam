@@ -59,6 +59,6 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 ValidateGuestId(guestId);
 
                 return await this.apiBroker.DeleteGuestByIdAsync(guestId);
-      });
+            });
     }
 }
