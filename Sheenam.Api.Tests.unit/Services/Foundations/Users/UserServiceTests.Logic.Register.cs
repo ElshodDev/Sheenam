@@ -17,7 +17,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Users
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            string inputPassword = GetRandomPassword();  // ✅ UserServiceTests.cs dan keladi
+            string inputPassword = GetRandomPassword();
 
             User randomUser = CreateRandomUser();
             User inputUser = randomUser;

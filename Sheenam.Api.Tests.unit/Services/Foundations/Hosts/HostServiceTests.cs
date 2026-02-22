@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.Data.SqlClient;
@@ -33,11 +33,11 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         }
 
         private static Host CreateRandomHost() =>
-        CreateHostFiller(date: GetRandomDateTimeOffset()).Create();
+            CreateHostFiller(date: GetRandomDateTimeOffset()).Create();
 
         private static IQueryable<Host> CreateRandomHosts()
         {
-            int randomCount = new Random().Next(2, 10);
+            int randomCount = GetRandomNumber();
             var hosts = new List<Host>();
 
             for (int i = 0; i < randomCount; i++)
@@ -59,22 +59,22 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         }
 
         private static SqlException GetSqlError() =>
-         (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-             actualException => actualException.SameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static int GetRandomNumber() =>
-           new IntRange(min: 2, max: 9).GetValue();
+            new IntRange(min: 2, max: 9).GetValue();
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static T GetInvalidEnum<T>()
+        private static T GetInvalidEnum<T>() where T : struct, Enum
         {
             int randomNumber = GetRandomNumber();
 
-            while (Enum.IsDefined(typeof(T), randomNumber) is true)
+            while (Enum.IsDefined((T)(object)randomNumber))
             {
                 randomNumber = GetRandomNumber();
             }
@@ -83,6 +83,6 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-           new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
     }
 }

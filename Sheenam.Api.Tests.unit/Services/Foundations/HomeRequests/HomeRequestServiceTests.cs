@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.Data.SqlClient;
@@ -37,13 +37,14 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
         private static IQueryable<HomeRequest> CreateRandomHomeRequests()
         {
-            int randomCount = new Random().Next(2, 10);
+            int randomCount = GetRandomNumber();
             var homerequests = new List<HomeRequest>();
 
             for (int i = 0; i < randomCount; i++)
             {
                 homerequests.Add(CreateRandomHomeRequest());
             }
+
             return homerequests.AsQueryable();
         }
 
@@ -58,6 +59,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 
             return filler;
         }
+
         private static HomeRequest CreateRandomHomeRequestWithStatus(HomeRequestStatus status)
         {
             HomeRequest homeRequest = CreateRandomHomeRequest();
@@ -69,12 +71,15 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
            new MnemonicString().GetValue();
 
         private static SqlException GetSqlException() =>
-      (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-      actualException => actualException.SameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-          new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
     }
 }

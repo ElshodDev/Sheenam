@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.Data.SqlClient;
@@ -64,7 +64,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
         }
 
         private static SqlException GetSqlException() =>
-          (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();

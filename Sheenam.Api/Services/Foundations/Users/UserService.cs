@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Users;
 using System;
@@ -14,10 +15,14 @@ namespace Sheenam.Api.Services.Foundations.Users
     public partial class UserService : IUserService
     {
         private readonly IStorageBroker storageBroker;
+        private readonly ILoggingBroker loggingBroker;
 
-        public UserService(IStorageBroker storageBroker)
+        public UserService(
+            IStorageBroker storageBroker,
+            ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
+            this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<User> RegisterUserAsync(User user, string password) =>
@@ -34,10 +39,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         });
 
         public IQueryable<User> RetrieveAllUsers() =>
-        TryCatch(() =>
-        {
-            return this.storageBroker.SelectAllUsers();
-        });
+            TryCatch(() => this.storageBroker.SelectAllUsers());
 
         public ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
         TryCatch(async () =>

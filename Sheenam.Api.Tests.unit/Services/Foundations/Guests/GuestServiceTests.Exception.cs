@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using EFxceptions.Models.Exceptions;
@@ -31,24 +31,22 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
                 .ThrowsAsync(sqlException);
 
 
-            //when 
+            // when 
             ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(someGuest);
 
-
-            //then
+            // then
             await Assert.ThrowsAsync<GuestDependecyException>(() =>
-            addGuestTask.AsTask());
+                addGuestTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InsertGuestAsync(someGuest),
-            Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-            broker.LogCritical(It.Is(SameExceptionAs(
-                expectedGuestDependecyException))),
+                broker.InsertGuestAsync(someGuest),
                 Times.Once);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedGuestDependecyException))),
+                Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

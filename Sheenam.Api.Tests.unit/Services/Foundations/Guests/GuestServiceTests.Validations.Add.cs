@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Moq;
@@ -25,18 +25,19 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             //when
             ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(nullGuest);
+
             //then
             await Assert.ThrowsAsync<GuestValidationException>(() =>
-            addGuestTask.AsTask());
+                addGuestTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-            broker.LogError(It.Is(SameExceptionAs(
-            expectedGuestValidationException))),
-            Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestValidationException))),
+                Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InsertGuestAsync(It.IsAny<Guest>()),
-            Times.Never);
+                broker.InsertGuestAsync(It.IsAny<Guest>()),
+                Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

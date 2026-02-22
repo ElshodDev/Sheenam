@@ -47,7 +47,7 @@ namespace Sheenam.Api.Controllers
                     LastName = request.LastName,
                     Email = request.Email,
                     PhoneNumber = request.PhoneNumber,
-                    Role = UserRole.Guest  // Default role
+                    Role = UserRole.Guest
                 };
 
                 User registeredUser = await this.authService.RegisterAsync(user, request.Password);
