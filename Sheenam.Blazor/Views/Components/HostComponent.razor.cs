@@ -4,6 +4,7 @@
 //===================================================
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Sheenam.Blazor.Services.Foundations.Hosts;
 using HostModel = Sheenam.Blazor.Models.Foundations.Hosts.Host;
 
@@ -16,6 +17,9 @@ namespace Sheenam.Blazor.Views.Components
 
         [Inject]
         public IHostService HostService { get; set; }
+
+        [Inject]
+        public IJSRuntime JSRuntime { get; set; }
 
         public IEnumerable<HostModel> Hosts { get; set; }
         public string ErrorMessage { get; set; }
@@ -45,14 +49,19 @@ namespace Sheenam.Blazor.Views.Components
 
         private async Task DeleteHost(Guid hostId)
         {
-            try
+            bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Ushbu mezbonni o'chirmoqchimisiz?");
+
+            if (confirmed)
             {
-                await this.HostService.RemoveHostByIdAsync(hostId);
-                await RefreshAsync();
-            }
-            catch (Exception exception)
-            {
-                this.ErrorMessage = "O'chirishda xatolik yuz berdi.";
+                try
+                {
+                    await this.HostService.RemoveHostByIdAsync(hostId);
+                    await RefreshAsync();
+                }
+                catch (Exception exception)
+                {
+                    this.ErrorMessage = "O'chirishda xatolik yuz berdi.";
+                }
             }
         }
     }
