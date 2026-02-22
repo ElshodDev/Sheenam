@@ -38,6 +38,13 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 return guests.AsQueryable();
             });
 
+        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid guestId) =>
+            await TryCatch(async () =>
+            {
+                ValidateGuestId(guestId);
+                return await this.apiBroker.GetGuestByIdAsync(guestId);
+            });
+
         public async ValueTask<Guest> ModifyGuestAsync(Guest guest) =>
       await TryCatch(async () =>
       {

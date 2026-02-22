@@ -33,10 +33,18 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
             await TryCatch(async () => await this.apiBroker.GetAllHomesAsync());
 
         public async ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
-            await TryCatch(async () => await this.apiBroker.GetHomeByIdAsync(homeId));
+            await TryCatch(async () =>
+            {
+                ValidateHomeId(homeId);
+                return await this.apiBroker.GetHomeByIdAsync(homeId);
+            });
 
         public async ValueTask<Home> ModifyHomeAsync(Home home) =>
-            await TryCatch(async () => await this.apiBroker.PutHomeAsync(home));
+            await TryCatch(async () =>
+            {
+                ValidateHomeOnModify(home);
+                return await this.apiBroker.PutHomeAsync(home);
+            });
 
         public async ValueTask<Home> RemoveHomeByIdAsync(Guid homeId) =>
             await TryCatch(async () => await this.apiBroker.DeleteHomeByIdAsync(homeId));
