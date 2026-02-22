@@ -22,6 +22,21 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
                 (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate)));
         }
 
+        private static void ValidateHomeOnModify(Home home)
+        {
+            ValidateHomeNotNull(home);
+
+            Validate(
+                (Rule: IsInvalid(home.Id), Parameter: nameof(Home.Id)),
+                (Rule: IsInvalid(home.HostId), Parameter: nameof(Home.HostId)),
+                (Rule: IsInvalid(home.Address), Parameter: nameof(Home.Address)),
+                (Rule: IsInvalid(home.CreatedDate), Parameter: nameof(Home.CreatedDate)),
+                (Rule: IsInvalid(home.UpdatedDate), Parameter: nameof(Home.UpdatedDate)));
+        }
+
+        private static void ValidateHomeId(Guid homeId) =>
+            Validate((Rule: IsInvalid(homeId), Parameter: nameof(Home.Id)));
+
         private static void ValidateHomeNotNull(Home home)
         {
             if (home is null)

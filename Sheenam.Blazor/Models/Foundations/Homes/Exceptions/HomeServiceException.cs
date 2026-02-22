@@ -3,11 +3,13 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Xeptions;
+
 namespace Sheenam.Blazor.Models.Foundations.Homes.Exceptions
 {
-    public class HomeServiceException : Exception
+    public class HomeServiceException : Xeption
     {
-        public HomeServiceException(Exception innerException)
+        public HomeServiceException(Xeption innerException)
             : base(message: "Home service error occurred, contact support.", innerException)
         { }
     }

@@ -11,6 +11,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
     {
         ValueTask<Guest> AddGuestAsync(Guest guest);
         ValueTask<IQueryable<Guest>> RetrieveAllGuestsAsync();
+        ValueTask<Guest> RetrieveGuestByIdAsync(Guid guestId);
         ValueTask<Guest> ModifyGuestAsync(Guest guest);
         ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId);
     }

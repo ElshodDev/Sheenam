@@ -7,6 +7,7 @@ using RESTFulSense.WebAssembly.Exceptions;
 using Sheenam.Blazor.Models.Foundations.Homes;
 using Sheenam.Blazor.Models.Foundations.Homes.Exceptions;
 using Xeptions;
+using HomeDependencyExceptionModel = Sheenam.Blazor.Models.Foundations.Homes.Exceptions.HomeDependencyException;
 
 namespace Sheenam.Blazor.Services.Foundations.Homes
 {
@@ -43,16 +44,19 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
             }
+            catch (HttpResponseException httpResponseException)
+            {
+                var failedHomeDependencyException =
+                    new FailedHomeDependencyException(httpResponseException);
+
+                throw CreateAndLogDependencyException(failedHomeDependencyException);
+            }
             catch (Exception exception)
             {
                 var failedHomeServiceException =
                     new FailedHomeServiceException(exception);
 
-                var homeServiceException =
-                    new HomeServiceException(failedHomeServiceException);
-
-                this.loggingBroker.LogError(homeServiceException);
-                throw homeServiceException;
+                throw CreateAndLogServiceException(failedHomeServiceException);
             }
         }
 
@@ -62,16 +66,19 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
             {
                 return await returningHomesFunction();
             }
+            catch (HttpResponseException httpResponseException)
+            {
+                var failedHomeDependencyException =
+                    new FailedHomeDependencyException(httpResponseException);
+
+                throw CreateAndLogDependencyException(failedHomeDependencyException);
+            }
             catch (Exception exception)
             {
                 var failedHomeServiceException =
                     new FailedHomeServiceException(exception);
 
-                var homeServiceException =
-                    new HomeServiceException(failedHomeServiceException);
-
-                this.loggingBroker.LogError(homeServiceException);
-                throw homeServiceException;
+                throw CreateAndLogServiceException(failedHomeServiceException);
             }
         }
 
@@ -89,6 +96,22 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
             this.loggingBroker.LogError(homeDependencyValidationException);
 
             return homeDependencyValidationException;
+        }
+
+        private HomeDependencyExceptionModel CreateAndLogDependencyException(Xeption exception)
+        {
+            var homeDependencyException = new HomeDependencyExceptionModel(exception);
+            this.loggingBroker.LogError(homeDependencyException);
+
+            return homeDependencyException;
+        }
+
+        private HomeServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var homeServiceException = new HomeServiceException(exception);
+            this.loggingBroker.LogError(homeServiceException);
+
+            return homeServiceException;
         }
     }
 }

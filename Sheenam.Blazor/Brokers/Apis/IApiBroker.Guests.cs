@@ -11,6 +11,7 @@ namespace Sheenam.Blazor.Brokers.Apis
     {
         ValueTask<Guest> PostGuestAsync(Guest guest);
         ValueTask<List<Guest>> GetAllGuestsAsync();
+        ValueTask<Guest> GetGuestByIdAsync(Guid guestId);
         ValueTask<Guest> PutGuestAsync(Guest guest);
         ValueTask<Guest> DeleteGuestByIdAsync(Guid guestId);
     }

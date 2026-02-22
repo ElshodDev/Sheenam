@@ -1,4 +1,4 @@
-﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -13,27 +13,28 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
-        public async Task ShouldModifyGuestAsync()
+        public async Task ShouldRetrieveGuestByIdAsync()
         {
             // given
+            Guid randomGuestId = Guid.NewGuid();
+            Guid inputGuestId = randomGuestId;
             Guest randomGuest = CreateRandomGuest();
-            Guest inputGuest = randomGuest;
-            Guest updatedGuest = inputGuest;
-            Guest expectedGuest = updatedGuest.DeepClone();
+            Guest retrievedGuest = randomGuest;
+            Guest expectedGuest = retrievedGuest.DeepClone();
 
             this.apiBrokerMock.Setup(broker =>
-                broker.PutGuestAsync(inputGuest))
-                    .ReturnsAsync(updatedGuest);
+                broker.GetGuestByIdAsync(inputGuestId))
+                    .ReturnsAsync(retrievedGuest);
 
             // when
             Guest actualGuest =
-                await this.guestService.ModifyGuestAsync(inputGuest);
+                await this.guestService.RetrieveGuestByIdAsync(inputGuestId);
 
             // then
             actualGuest.Should().BeEquivalentTo(expectedGuest);
 
             this.apiBrokerMock.Verify(broker =>
-                broker.PutGuestAsync(inputGuest),
+                broker.GetGuestByIdAsync(inputGuestId),
                     Times.Once);
 
             this.apiBrokerMock.VerifyNoOtherCalls();

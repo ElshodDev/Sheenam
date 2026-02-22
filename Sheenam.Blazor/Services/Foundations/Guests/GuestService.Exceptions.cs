@@ -58,7 +58,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
-        private async Task<IQueryable<Guest>> TryCatch(ReturningGuestsFunction returningGuestsFunction)
+        private async ValueTask<IQueryable<Guest>> TryCatch(ReturningGuestsFunction returningGuestsFunction)
         {
             try
             {
