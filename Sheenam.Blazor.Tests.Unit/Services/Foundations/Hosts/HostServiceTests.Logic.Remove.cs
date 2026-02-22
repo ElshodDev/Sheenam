@@ -38,6 +38,7 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Hosts
                     Times.Once);
 
             this.apiBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

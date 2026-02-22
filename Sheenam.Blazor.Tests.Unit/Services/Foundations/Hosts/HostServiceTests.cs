@@ -5,9 +5,11 @@
 
 using Moq;
 using Sheenam.Blazor.Brokers.Apis;
+using Sheenam.Blazor.Brokers.Loggings;
 using Sheenam.Blazor.Services.Foundations.Hosts;
 using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
+using Xeptions;
 using HostModel = Sheenam.Blazor.Models.Foundations.Hosts.Host;
 
 namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Hosts
@@ -15,14 +17,17 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Hosts
     public partial class HostServiceTests
     {
         private readonly Mock<IApiBroker> apiBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHostService hostService;
 
         public HostServiceTests()
         {
             this.apiBrokerMock = new Mock<IApiBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.hostService = new HostService(
-                apiBroker: this.apiBrokerMock.Object);
+                apiBroker: this.apiBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static HostModel CreateRandomHost() =>
@@ -43,5 +48,12 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Hosts
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private Expression<Func<Exception, bool>> SameExceptionAs(Exception expectedException)
+        {
+            return actualException => actualException.Message == expectedException.Message
+                && actualException.InnerException.Message == expectedException.InnerException.Message
+                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
+        }
     }
 }
