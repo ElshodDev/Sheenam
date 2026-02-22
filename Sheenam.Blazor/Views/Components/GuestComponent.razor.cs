@@ -1,6 +1,7 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -40,7 +41,7 @@ namespace Sheenam.Blazor.Views.Components
             {
                 this.Guests = await this.GuestService.RetrieveAllGuestsAsync();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 this.ErrorMessage = "Ma'lumotlarni yuklashda xatolik yuz berdi.";
             }
@@ -56,7 +57,7 @@ namespace Sheenam.Blazor.Views.Components
                     "confirm",
                     "Ushbu mehmonni o'chirmoqchimisiz?");
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 this.ErrorMessage = "Tasdiqlash oynasini ko'rsatishda xatolik yuz berdi.";
                 return;
@@ -68,7 +69,7 @@ namespace Sheenam.Blazor.Views.Components
                     await this.GuestService.RemoveGuestByIdAsync(guestId);
                     await RefreshAsync();
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     this.ErrorMessage = "O'chirishda xatolik yuz berdi.";
                 }

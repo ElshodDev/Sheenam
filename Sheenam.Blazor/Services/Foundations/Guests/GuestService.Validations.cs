@@ -10,22 +10,13 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
 {
     public partial class GuestService
     {
-        private static void ValidateGuestOnAdd(Guest guest)
-        {
-            ValidateGuestNotNull(guest);
+        private static void ValidateGuestOnAdd(Guest guest) =>
+            ValidateGuestFields(guest);
 
-            Validate(
-                (Rule: IsInvalid(guest.Id), Parameter: nameof(Guest.Id)),
-                (Rule: IsInvalid(guest.FirstName), Parameter: nameof(Guest.FirstName)),
-                (Rule: IsInvalid(guest.LastName), Parameter: nameof(Guest.LastName)),
-                (Rule: IsInvalid(guest.DateOfBirth), Parameter: nameof(Guest.DateOfBirth)),
-                (Rule: IsInvalid(guest.Email), Parameter: nameof(Guest.Email)),
-                (Rule: IsInvalid(guest.Address), Parameter: nameof(Guest.Address)),
-                (Rule: IsInvalid(guest.PhoneNumber), Parameter: nameof(Guest.PhoneNumber)),
-                (Rule: IsInvalid(guest.Gender), Parameter: nameof(Guest.Gender)));
-        }
+        private static void ValidateGuestOnModify(Guest guest) =>
+            ValidateGuestFields(guest);
 
-        private static void ValidateGuestOnModify(Guest guest)
+        private static void ValidateGuestFields(Guest guest)
         {
             ValidateGuestNotNull(guest);
 
@@ -71,7 +62,7 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
 
         private static dynamic IsInvalid(GenderType gender) => new
         {
-            Condition = Enum.IsDefined(typeof(GenderType), gender) is false,
+            Condition = Enum.IsDefined(gender) is false,
             Message = "Value is invalid"
         };
 

@@ -1,4 +1,5 @@
 //===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -70,7 +71,7 @@ namespace Sheenam.Blazor.Services.Foundations.Hosts
 
         private static dynamic IsInvalid(GenderType gender) => new
         {
-            Condition = Enum.IsDefined(typeof(GenderType), gender) is false,
+            Condition = Enum.IsDefined(gender) is false,
             Message = "Value is invalid"
         };
 
