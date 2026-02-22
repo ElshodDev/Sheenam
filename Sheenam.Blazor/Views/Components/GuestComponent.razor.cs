@@ -48,8 +48,19 @@ namespace Sheenam.Blazor.Views.Components
 
         private async Task DeleteGuest(Guid guestId)
         {
-            bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Ushbu mehmonni o'chirmoqchimisiz?");
+            bool confirmed = false;
 
+            try
+            {
+                confirmed = await this.JSRuntime.InvokeAsync<bool>(
+                    "confirm",
+                    "Ushbu mehmonni o'chirmoqchimisiz?");
+            }
+            catch (Exception exception)
+            {
+                this.ErrorMessage = "Tasdiqlash oynasini ko'rsatishda xatolik yuz berdi.";
+                return;
+            }
             if (confirmed)
             {
                 try
