@@ -47,6 +47,10 @@ namespace Sheenam.Blazor.Services.Foundations.Homes
             });
 
         public async ValueTask<Home> RemoveHomeByIdAsync(Guid homeId) =>
-            await TryCatch(async () => await this.apiBroker.DeleteHomeByIdAsync(homeId));
+            await TryCatch(async () =>
+            {
+                ValidateHomeId(homeId);
+                return await this.apiBroker.DeleteHomeByIdAsync(homeId);
+            });
     }
 }
