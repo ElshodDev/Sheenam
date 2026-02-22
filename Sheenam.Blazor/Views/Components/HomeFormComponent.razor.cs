@@ -80,7 +80,7 @@ namespace Sheenam.Blazor.Views.Components
                     }
                     else
                     {
-                        this.Home.HostId = Guid.Parse("96f7d4d5-47e9-4202-bb7c-e6f9d9f68638");
+                        return;
                     }
 
                     await this.HomeService.AddHomeAsync(this.Home);

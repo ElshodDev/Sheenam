@@ -44,7 +44,7 @@ namespace Sheenam.Blazor.Views.Components
             this.host = new HostModel
             {
                 Id = Guid.Empty,
-                DateOfBirth = DateTimeOffset.Now.AddYears(-20)
+                DateOfBirth = DateTimeOffset.UtcNow.AddYears(-20)
             };
         }
 

@@ -1,4 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
+//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
+using Microsoft.AspNetCore.Components;
 using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.Guests;
 
@@ -40,7 +46,7 @@ namespace Sheenam.Blazor.Views.Components
             this.guest = new Guest
             {
                 Id = Guid.Empty,
-                DateOfBirth = DateTimeOffset.Now
+                DateOfBirth = DateTimeOffset.UtcNow
             };
         }
 

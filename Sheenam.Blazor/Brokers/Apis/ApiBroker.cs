@@ -1,7 +1,11 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
 //===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
+using System.Net.Http.Json;
+
 namespace Sheenam.Blazor.Brokers.Apis
 {
     public partial class ApiBroker : IApiBroker
@@ -20,7 +24,6 @@ namespace Sheenam.Blazor.Brokers.Apis
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
-        // 2. Har xil tipli (IApiBroker.PostAsync<T, TResult> uchun)
         public async ValueTask<TResult> PostAsync<T, TResult>(string relativeUrl, T content)
         {
             var response = await this.httpClient.PostAsJsonAsync(relativeUrl, content);
@@ -28,10 +31,8 @@ namespace Sheenam.Blazor.Brokers.Apis
             return await response.Content.ReadFromJsonAsync<TResult>();
         }
 
-        public async ValueTask<T> GetAsync<T>(string relativeUrl)
-        {
-            return await this.httpClient.GetFromJsonAsync<T>(relativeUrl);
-        }
+        public async ValueTask<T> GetAsync<T>(string relativeUrl) =>
+            await this.httpClient.GetFromJsonAsync<T>(relativeUrl);
 
         public async ValueTask<T> PutAsync<T>(string relativeUrl, T content)
         {

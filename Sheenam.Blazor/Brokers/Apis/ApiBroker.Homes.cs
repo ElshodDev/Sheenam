@@ -1,4 +1,5 @@
 ﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -21,7 +22,7 @@ namespace Sheenam.Blazor.Brokers.Apis
             await GetAsync<Home>($"{HomesRelativeUrl}/{homeId}");
 
         public async ValueTask<Home> PutHomeAsync(Home home) =>
-            await this.PutAsync<Home>($"{HomesRelativeUrl}/{home.Id}", home);
+            await PutAsync($"{HomesRelativeUrl}/{home.Id}", home);
 
         public async ValueTask<Home> DeleteHomeByIdAsync(Guid homeId) =>
             await DeleteAsync<Home>($"{HomesRelativeUrl}/{homeId}");

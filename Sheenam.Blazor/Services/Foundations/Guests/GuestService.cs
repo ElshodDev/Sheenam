@@ -24,12 +24,12 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
         }
 
         public async ValueTask<Guest> AddGuestAsync(Guest guest) =>
-          await TryCatch(async () =>
-           {
-               ValidateGuestOnAdd(guest);
+            await TryCatch(async () =>
+            {
+                ValidateGuestOnAdd(guest);
 
-               return await this.apiBroker.PostGuestAsync(guest);
-           });
+                return await this.apiBroker.PostGuestAsync(guest);
+            });
 
         public async ValueTask<IQueryable<Guest>> RetrieveAllGuestsAsync() =>
             await TryCatch(async () =>
@@ -46,19 +46,19 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
             });
 
         public async ValueTask<Guest> ModifyGuestAsync(Guest guest) =>
-      await TryCatch(async () =>
-      {
-          ValidateGuestOnModify(guest);
+            await TryCatch(async () =>
+            {
+                ValidateGuestOnModify(guest);
 
-          return await this.apiBroker.PutGuestAsync(guest);
-      });
+                return await this.apiBroker.PutGuestAsync(guest);
+            });
 
         public async ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId) =>
-      await TryCatch(async () =>
-      {
-          ValidateGuestId(guestId);
+            await TryCatch(async () =>
+            {
+                ValidateGuestId(guestId);
 
-          return await this.apiBroker.DeleteGuestByIdAsync(guestId);
+                return await this.apiBroker.DeleteGuestByIdAsync(guestId);
       });
     }
 }

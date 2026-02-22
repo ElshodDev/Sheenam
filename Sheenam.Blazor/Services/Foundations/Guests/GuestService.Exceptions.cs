@@ -58,19 +58,12 @@ namespace Sheenam.Blazor.Services.Foundations.Guests
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
+
         private async ValueTask<IQueryable<Guest>> TryCatch(ReturningGuestsFunction returningGuestsFunction)
         {
             try
             {
                 return await returningGuestsFunction();
-            }
-            catch (AggregateException aggregateException)
-                when (aggregateException.InnerException is HttpResponseException httpResponseException)
-            {
-                var failedGuestDependencyException =
-                    new FailedGuestDependencyException(httpResponseException);
-
-                throw CreateAndLogDependencyException(failedGuestDependencyException);
             }
             catch (HttpResponseException httpResponseException)
             {

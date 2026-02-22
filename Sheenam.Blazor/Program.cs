@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Sheenam.Blazor.Brokers.Apis;
 using Sheenam.Blazor.Brokers.Loggings;
 using Sheenam.Blazor.Data;
+using Sheenam.Blazor.Services.Foundations.Auth;
 using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.Homes;
 using Sheenam.Blazor.Services.Foundations.Hosts;
@@ -28,9 +29,7 @@ builder.Services.AddTransient<IGuestService, GuestService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHostService, HostService>();
-builder.Services.AddTransient<
-    Sheenam.Blazor.Services.Foundations.Auth.IAuthService,
-    Sheenam.Blazor.Services.Foundations.Auth.AuthService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 
 var app = builder.Build();
@@ -39,7 +38,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
