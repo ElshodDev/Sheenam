@@ -1,17 +1,141 @@
 ﻿@page "/"
-@inject NavigationManager NavigationManager
 
-<h1>Sheenam Loyihasiga Xush Kelibsiz!</h1>
+<PageTitle>Sheenam — Uy-joy Savdosi va Ijarasi</PageTitle>
 
-<button class="btn btn-primary" @onclick="GoToDashboard">
-    Dashboardni ko'rish
-</button>
+<div class="container-fluid px-0">
 
-@code {
-    private void GoToDashboard()
-    {
-        // Bu yerga bazangizdagi biror Hostning ID sini qo'ying
-        string hostId = "Sizning-Bazada-Bor-Guid-Id";
-        NavigationManager.NavigateTo($"/host-dashboard/{hostId}");
-    }
-}
+    @* Hero Section *@
+    <div class="bg-primary text-white py-5 px-4 text-center" style="background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%) !important;">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="oi oi-home me-3"></i>Sheenam
+            </h1>
+            <p class="lead mb-2">Ma'lumotlar bazasiga asoslangan uy-joy savdosi va ijarasi uchun web platforma</p>
+            <p class="text-white-50 mb-4">O'zingizga mos uyni toping yoki uyingizni ijaraga bering — tez, qulay va ishonchli!</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <NavLink href="homes" class="btn btn-light btn-lg shadow-sm px-4">
+                    <i class="oi oi-list me-2"></i>Uylarni Ko'rish
+                </NavLink>
+                <NavLink href="hosts" class="btn btn-outline-light btn-lg px-4">
+                    <i class="oi oi-people me-2"></i>Mezbonlar
+                </NavLink>
+            </div>
+        </div>
+    </div>
+
+    @* Stats Section *@
+    <div class="bg-light py-4 border-bottom">
+        <div class="container">
+            <div class="row text-center g-3">
+                <div class="col-md-3 col-6">
+                    <div class="p-3">
+                        <div class="display-6 fw-bold text-primary"><i class="oi oi-home"></i></div>
+                        <div class="fw-semibold mt-1">Uylar</div>
+                        <div class="text-muted small">Ijara va sotuvda</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3">
+                        <div class="display-6 fw-bold text-success"><i class="oi oi-people"></i></div>
+                        <div class="fw-semibold mt-1">Mezbonlar</div>
+                        <div class="text-muted small">Ro'yxatdan o'tgan</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3">
+                        <div class="display-6 fw-bold text-warning"><i class="oi oi-person"></i></div>
+                        <div class="fw-semibold mt-1">Mehmonlar</div>
+                        <div class="text-muted small">Faol foydalanuvchilar</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3">
+                        <div class="display-6 fw-bold text-danger"><i class="oi oi-shield"></i></div>
+                        <div class="fw-semibold mt-1">Xavfsiz</div>
+                        <div class="text-muted small">JWT autentifikatsiya</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Features Section *@
+    <div class="container py-5">
+        <h2 class="text-center fw-bold mb-5 text-dark">Platforma imkoniyatlari</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                            <i class="oi oi-home text-primary" style="font-size:1.6rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Uy e'lonlari</h5>
+                        <p class="text-muted">Ijara yoki sotuvga qo'yilgan uylarni qo'shish, tahrirlash va boshqarish. Rasm yuklash, narx va xonalar soni kiritish imkoniyati.</p>
+                        <a href="/homes" class="btn btn-outline-primary btn-sm">Ko'rish →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                            <i class="oi oi-people text-success" style="font-size:1.6rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Mezbonlar boshqaruvi</h5>
+                        <p class="text-muted">Uy egalarini ro'yxatdan o'tkazish, ma'lumotlarini yangilash va ularning uylarini kuzatish. To'liq CRUD operatsiyalar.</p>
+                        <a href="/hosts" class="btn btn-outline-success btn-sm">Ko'rish →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                            <i class="oi oi-person text-warning" style="font-size:1.6rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Mehmonlar boshqaruvi</h5>
+                        <p class="text-muted">Uy izlayotgan foydalanuvchilarni ro'yxatdan o'tkazish va boshqarish. Shaxsiy ma'lumotlar to'liq saqlash.</p>
+                        <a href="/guests" class="btn btn-outline-warning btn-sm">Ko'rish →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* How it works *@
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Qanday ishlaydi?</h2>
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold fs-4" style="width:56px;height:56px;">1</div>
+                    <h6 class="fw-bold">Ro'yxatdan o'ting</h6>
+                    <p class="text-muted small">Mezbon yoki mehmon sifatida tizimga kiring</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold fs-4" style="width:56px;height:56px;">2</div>
+                    <h6 class="fw-bold">Uy qo'shing yoki toping</h6>
+                    <p class="text-muted small">E'lon joylashtiring yoki mavjud uylar ichidan tanlang</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold fs-4" style="width:56px;height:56px;">3</div>
+                    <h6 class="fw-bold">Bog'laning</h6>
+                    <p class="text-muted small">Mezbon bilan to'g'ridan-to'g'ri muloqot qiling</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold fs-4" style="width:56px;height:56px;">4</div>
+                    <h6 class="fw-bold">Shartnoma tuzing</h6>
+                    <p class="text-muted small">Ijara yoki sotib olish shartnomasini rasmiylantiring</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Footer *@
+    <div class="bg-dark text-white-50 py-3 text-center small">
+        <div class="container">
+            © 2025 Sheenam — Ma'lumotlar bazasiga asoslangan uy-joy savdosi va ijarasi platformasi.
+            Bitiruvchi malakaviy ish loyihasi.
+        </div>
+    </div>
+</div>

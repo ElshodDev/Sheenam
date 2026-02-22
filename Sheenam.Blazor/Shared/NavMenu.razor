@@ -1,6 +1,8 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Sheenam.Blazor</a>
+        <a class="navbar-brand fw-bold" href="">
+            <i class="oi oi-home me-2"></i>Sheenam
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -9,46 +11,29 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        @* Bosh sahifa *@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> Bosh sahifa
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="guests">
-                <span class="oi oi-list" aria-hidden="true"></span> mehmonlar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="hosts">
-                <span class="oi oi-people" aria-hidden="true"></span> Hosts
-            </NavLink>
-        </div>
-        @* Uylar bo'limi *@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="homes">
                 <span class="oi oi-list" aria-hidden="true"></span> Uylar
             </NavLink>
         </div>
-
-        @* Login (Kirish) bo'limi - Yangi *@
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="hosts">
+                <span class="oi oi-people" aria-hidden="true"></span> Mezbonlar
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="guests">
+                <span class="oi oi-person" aria-hidden="true"></span> Mehmonlar
+            </NavLink>
+        </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="login">
                 <span class="oi oi-account-login" aria-hidden="true"></span> Kirish
-            </NavLink>
-        </div>
-
-        @* Counter va Fetch Data (Agar kerak bo'lsa) *@
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </div>
     </nav>
