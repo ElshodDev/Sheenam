@@ -56,13 +56,13 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
-        private static T GetInvalidEnum<T>()
+        private static T GetInvalidEnum<T>() where T : struct, Enum
         {
             int randomNumber = GetRandomNumber();
 
-            while (Enum.IsDefined(typeof(T), randomNumber))
+            while (Enum.IsDefined((T)(object)randomNumber))
             {
                 randomNumber = GetRandomNumber();
             }
@@ -87,10 +87,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
                 .OnType<decimal>().Use(GetRandomPositiveDecimal())
                 .OnType<decimal?>().Use(GetRandomPositiveDecimal())
 
-                // Navigatsiya propertylarini chetlab o'tish (Circular dependency oldini olish)
                 .OnProperty(ps => ps.Host).IgnoreIt()
 
-                // Specific properties
                 .OnProperty(ps => ps.SalePrice).Use(GetRandomPositiveDecimal())
                 .OnProperty(ps => ps.Area).Use(GetRandomPositiveDouble());
 

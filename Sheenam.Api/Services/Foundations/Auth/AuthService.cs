@@ -54,7 +54,7 @@ namespace Sheenam.Api.Services.Foundations.Auth
             return GenerateJwtToken(user);
         });
 
-        public string GenerateJwtToken(User user)
+        private string GenerateJwtToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(this.configuration["JwtSettings:SecretKey"]));
@@ -66,7 +66,7 @@ namespace Sheenam.Api.Services.Foundations.Auth
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Surname, user. LastName),
+                new Claim(ClaimTypes.Surname, user.LastName),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

@@ -86,6 +86,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         private UserValidationException CreateAndLogValidationException(Xeption exception)
         {
             var userValidationException = new UserValidationException(exception);
+            this.loggingBroker.LogError(userValidationException);
 
             return userValidationException;
         }
@@ -93,6 +94,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         private UserDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var userDependencyException = new UserDependencyException(exception);
+            this.loggingBroker.LogCritical(userDependencyException);
 
             return userDependencyException;
         }
@@ -100,6 +102,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         private UserDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var userDependencyValidationException = new UserDependencyValidationException(exception);
+            this.loggingBroker.LogError(userDependencyValidationException);
 
             return userDependencyValidationException;
         }
@@ -107,6 +110,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         private UserDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var userDependencyException = new UserDependencyException(exception);
+            this.loggingBroker.LogError(userDependencyException);
 
             return userDependencyException;
         }
@@ -114,6 +118,7 @@ namespace Sheenam.Api.Services.Foundations.Users
         private UserServiceException CreateAndLogServiceException(Xeption exception)
         {
             var userServiceException = new UserServiceException(exception);
+            this.loggingBroker.LogError(userServiceException);
 
             return userServiceException;
         }

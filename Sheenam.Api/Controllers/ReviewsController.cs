@@ -29,14 +29,10 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                review.Id = Guid.NewGuid();
-                review.CreatedDate = DateTimeOffset.UtcNow;
-                review.UpdatedDate = DateTimeOffset.UtcNow;
-
                 Review addedReview =
                     await this.reviewService.AddReviewAsync(review);
-                return Created(addedReview);
 
+                return Created(addedReview);
             }
             catch (ReviewValidationException reviewValidationException)
             {

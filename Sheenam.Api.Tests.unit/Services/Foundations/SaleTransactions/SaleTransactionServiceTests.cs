@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.Data.SqlClient;
@@ -31,26 +31,26 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleTransactions
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        public static SaleTransaction CreateRandomSaleTransaction() =>
-           CreateSaleTransactionFiller(date: GetRandomDateTimeOffset()).Create();
+        private static SaleTransaction CreateRandomSaleTransaction() =>
+            CreateSaleTransactionFiller(date: GetRandomDateTimeOffset()).Create();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static int GetRandomNumber() =>
-           new IntRange(min: 2, max: 9).GetValue();
+            new IntRange(min: 2, max: 9).GetValue();
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-          (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
-        private static T GetInvalidEnum<T>()
+        private static T GetInvalidEnum<T>() where T : struct, Enum
         {
             int randomNumber = GetRandomNumber();
 
-            while (Enum.IsDefined(typeof(T), randomNumber) is true)
+            while (Enum.IsDefined((T)(object)randomNumber))
             {
                 randomNumber = GetRandomNumber();
             }

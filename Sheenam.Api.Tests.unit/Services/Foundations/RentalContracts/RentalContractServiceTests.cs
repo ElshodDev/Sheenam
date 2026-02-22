@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.Data.SqlClient;
@@ -54,14 +54,13 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-          (SqlException)FormatterServices.GetSafeUninitializedObject(typeof(SqlException));
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
-
-        private static T GetInvalidEnum<T>()
+        private static T GetInvalidEnum<T>() where T : struct, Enum
         {
             int randomNumber = GetRandomNumber();
 
-            while (Enum.IsDefined(typeof(T), randomNumber) is true)
+            while (Enum.IsDefined((T)(object)randomNumber))
             {
                 randomNumber = GetRandomNumber();
             }

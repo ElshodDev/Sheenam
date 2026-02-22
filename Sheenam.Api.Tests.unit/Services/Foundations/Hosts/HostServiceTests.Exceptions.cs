@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using EFxceptions.Models.Exceptions;
@@ -27,7 +27,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
                 new HostDependencyException(failedHostStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-            broker.InsertHostAsync(someHost))
+                broker.InsertHostAsync(someHost))
                 .ThrowsAsync(sqlException);
 
             // when
@@ -36,15 +36,15 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             // then 
             await Assert.ThrowsAsync<HostDependencyException>(() =>
-            addHostTask.AsTask());
+                addHostTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InsertHostAsync(someHost),
-            Times.Once);
+                broker.InsertHostAsync(someHost),
+                Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-            broker.LogCritical(It.Is(SameExceptionAs(
-                expectedHostDependecyException))),
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedHostDependecyException))),
                 Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

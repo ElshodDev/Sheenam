@@ -29,15 +29,16 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleOffers
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
         private static SaleOffer CreateRandomSaleOffer() =>
             CreateSaleOfferFiller(GetRandomDateTimeOffset()).Create();
 
-        private IQueryable<SaleOffer> CreateRandomSaleOffers()
+        private static IQueryable<SaleOffer> CreateRandomSaleOffers()
         {
-            int randomCount = new Random().Next(2, 10);
+            int randomCount = GetRandomNumber();
             var saleOffersList = new List<SaleOffer>();
 
             for (int i = 0; i < randomCount; i++)
@@ -69,6 +70,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleOffers
 
         private static decimal GetRandomDecimal() =>
             new Random().Next(1000, 100000);
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 

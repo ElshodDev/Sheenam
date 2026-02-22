@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using FluentAssertions;
 using Moq;
 using Sheenam.Api.Models.Foundations.Users;
 using Sheenam.Api.Models.Foundations.Users.Exceptions;
@@ -31,21 +32,20 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Users
                     registerUserTask.AsTask);
 
             // then
-            Assert.Equal(
-                expectedUserValidationException.Message,
-                actualUserValidationException.Message);
+            actualUserValidationException.Should()
+                .BeEquivalentTo(expectedUserValidationException);
 
-            Assert.Equal(
-              expectedUserValidationException.InnerException.Message,
-              actualUserValidationException.InnerException.Message);
-
-
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertUserAsync(It.IsAny<User>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

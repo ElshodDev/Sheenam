@@ -5,7 +5,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 using Sheenam.Api.Services.Foundations.HomeRequests;
@@ -20,12 +19,10 @@ namespace Sheenam.Api.Controllers
     public class HomeRequestsController : RESTFulController
     {
         private readonly IHomeRequestService homeRequestService;
-        private readonly ILoggingBroker loggingBroker;
 
-        public HomeRequestsController(IHomeRequestService homeRequestService, ILoggingBroker logging)
+        public HomeRequestsController(IHomeRequestService homeRequestService)
         {
             this.homeRequestService = homeRequestService;
-            this.loggingBroker = loggingBroker;
         }
 
         [HttpPost]
@@ -53,28 +50,27 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
         }
 
         [HttpGet]
-        public ValueTask<ActionResult<IQueryable<HomeRequest>>> GetAllHomeRequests()
+        public ActionResult<IQueryable<HomeRequest>> GetAllHomeRequests()
         {
             try
             {
                 IQueryable<HomeRequest> retrievedHomeRequests =
                     this.homeRequestService.RetrieveAllHomeRequests();
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(Ok(retrievedHomeRequests));
+
+                return Ok(retrievedHomeRequests);
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
-                    InternalServerError(homeRequestDependencyException.InnerException));
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
-                    InternalServerError(homeRequestServiceException.InnerException));
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
@@ -94,36 +90,32 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
-        // 🆕 GET by Status
         [HttpGet("status/{status}")]
-        public ValueTask<ActionResult<IQueryable<HomeRequest>>> GetHomeRequestsByStatusAsync(
-            HomeRequestStatus status)
+        [HttpGet("status/{status}")]
+        public ActionResult<IQueryable<HomeRequest>> GetHomeRequestsByStatus(HomeRequestStatus status)
         {
             try
             {
                 IQueryable<HomeRequest> retrievedHomeRequests =
                     this.homeRequestService.RetrieveHomeRequestsByStatusAsync(status);
 
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
-                    Ok(retrievedHomeRequests));
+                return Ok(retrievedHomeRequests);
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
-                    InternalServerError(homeRequestDependencyException.InnerException));
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return ValueTask.FromResult<ActionResult<IQueryable<HomeRequest>>>(
-                    InternalServerError(homeRequestServiceException.InnerException));
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
@@ -155,20 +147,15 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
-            }
-            catch (Exception exception)
-            {
-                this.loggingBroker.LogError(exception);
-                return InternalServerError(exception);
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
-        // 🆕 POST Approve
+        [HttpPost("{homeRequestId}/approve")]
         [HttpPost("{homeRequestId}/approve")]
         public async ValueTask<ActionResult<HomeRequest>> ApproveHomeRequestAsync(
             Guid homeRequestId)
@@ -194,20 +181,14 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
-            }
-            catch (Exception exception)
-            {
-                this.loggingBroker.LogError(exception);
-                return InternalServerError(exception);
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
-        // 🆕 POST Reject
         [HttpPost("{homeRequestId}/reject")]
         public async ValueTask<ActionResult<HomeRequest>> RejectHomeRequestAsync(
             Guid homeRequestId,
@@ -236,20 +217,14 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
-            }
-            catch (Exception exception)
-            {
-                this.loggingBroker.LogError(exception);
-                return InternalServerError(exception);
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
-        // 🆕 POST Cancel
         [HttpPost("{homeRequestId}/cancel")]
         public async ValueTask<ActionResult<HomeRequest>> CancelHomeRequestAsync(
             Guid homeRequestId)
@@ -275,16 +250,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
-            }
-            catch (Exception exception)
-            {
-                this.loggingBroker.LogError(exception);
-                return InternalServerError(exception);
+                return InternalServerError(homeRequestServiceException);
             }
         }
 
@@ -313,15 +283,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (HomeRequestDependencyException homeRequestDependencyException)
             {
-                return InternalServerError(homeRequestDependencyException.InnerException);
+                return InternalServerError(homeRequestDependencyException);
             }
             catch (HomeRequestServiceException homeRequestServiceException)
             {
-                return InternalServerError(homeRequestServiceException.InnerException);
-            }
-            catch (Exception exception)
-            {
-                return InternalServerError(exception);
+                return InternalServerError(homeRequestServiceException);
             }
         }
     }

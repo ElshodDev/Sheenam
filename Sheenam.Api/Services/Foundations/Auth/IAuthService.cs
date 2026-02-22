@@ -10,19 +10,7 @@ namespace Sheenam.Api.Services.Foundations.Auth
 {
     public interface IAuthService
     {
-        /// <summary>
-        /// Registers a new user
-        /// </summary>
         ValueTask<User> RegisterAsync(User user, string password);
-
-        /// <summary>
-        /// Authenticates user and returns JWT token
-        /// </summary>
         ValueTask<string> LoginAsync(string email, string password);
-
-        /// <summary>
-        /// Generates JWT token for authenticated user
-        /// </summary>
-        string GenerateJwtToken(User user);
     }
 }
