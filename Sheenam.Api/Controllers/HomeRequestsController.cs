@@ -99,7 +99,6 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet("status/{status}")]
-        [HttpGet("status/{status}")]
         public ActionResult<IQueryable<HomeRequest>> GetHomeRequestsByStatus(HomeRequestStatus status)
         {
             try
@@ -155,7 +154,6 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPost("{homeRequestId}/approve")]
         [HttpPost("{homeRequestId}/approve")]
         public async ValueTask<ActionResult<HomeRequest>> ApproveHomeRequestAsync(
             Guid homeRequestId)

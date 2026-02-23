@@ -33,7 +33,7 @@ namespace Sheenam.Blazor.Services.Foundations.Reviews
         public async ValueTask<IQueryable<Review>> RetrieveAllReviewsAsync() =>
             await TryCatch(async () =>
             {
-                var reviews = await this.apiBroker.GetAllReviewsAsync();
+                List<Review> reviews = await this.apiBroker.GetAllReviewsAsync();
                 return reviews.AsQueryable();
             });
 

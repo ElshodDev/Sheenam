@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 using Microsoft.AspNetCore.Components;
+using Blazored.LocalStorage;
 using Sheenam.Blazor.Models.Foundations.Reviews;
 using Sheenam.Blazor.Services.Foundations.Reviews;
 
@@ -17,6 +18,9 @@ namespace Sheenam.Blazor.Views.Components
 
         [Inject]
         public IReviewService ReviewService { get; set; }
+
+        [Inject]
+        public ILocalStorageService LocalStorage { get; set; }
 
         [Parameter]
         public EventCallback OnReviewAdded { get; set; }
@@ -47,16 +51,43 @@ namespace Sheenam.Blazor.Views.Components
             {
                 this.ErrorMessage = null;
 
-                this.review.UserId = this.review.UserId == Guid.Empty
-                    ? Guid.NewGuid()
-                    : this.review.UserId;
+                bool isAdd = this.review.Id == Guid.Empty;
+
+                DateTimeOffset now = DateTimeOffset.UtcNow;
+
+                if (isAdd)
+                {
+                    this.review.Id = Guid.NewGuid();
+                    this.review.CreatedDate = now;
+                    this.review.UpdatedDate = now;
+                }
+                else
+                {
+                    this.review.UpdatedDate = now;
+                }
+
+                if (this.review.UserId == Guid.Empty)
+                {
+                    string userIdText = await this.LocalStorage.GetItemAsync<string>("currentUserId");
+
+                    if (!Guid.TryParse(userIdText, out Guid userId) || userId == Guid.Empty)
+                    {
+                        this.ErrorMessage = "Sharh yozish uchun avval tizimga kiring.";
+                        return;
+                    }
+
+                    this.review.UserId = userId;
+                }
+
+                // UserId should come from authenticated user context.
+                // Do not generate random ids (will violate FK constraint).
 
                 this.review.IsPositive =
                     bool.TryParse(this.isPositiveText, out bool parsed)
                         ? parsed
                         : CalculateIsPositiveFromRating(this.review.Rating);
 
-                if (this.review.Id == Guid.Empty)
+                if (isAdd)
                 {
                     await this.ReviewService.AddReviewAsync(this.review);
                 }

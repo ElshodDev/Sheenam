@@ -21,7 +21,7 @@ namespace Sheenam.Blazor.Tests.Unit.Services.Foundations.Reviews
 
             this.apiBrokerMock.Setup(broker =>
                 broker.GetAllReviewsAsync())
-                    .Returns(new ValueTask<IQueryable<Review>>(storageReviews));
+                    .Returns(new ValueTask<List<Review>>(storageReviews.ToList()));
 
             // when
             IQueryable<Review> actualReviews =

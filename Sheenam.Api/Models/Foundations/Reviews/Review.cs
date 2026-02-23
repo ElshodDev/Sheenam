@@ -6,6 +6,7 @@
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Models.Foundations.Users;
+using System.Text.Json.Serialization;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.Reviews
@@ -22,8 +23,13 @@ namespace Sheenam.Api.Models.Foundations.Reviews
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
 
+        [JsonIgnore]
         public User User { get; set; }
+
+        [JsonIgnore]
         public Home Home { get; set; }
+
+        [JsonIgnore]
         public PropertySale PropertySale { get; set; }
     }
 }

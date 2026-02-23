@@ -10,13 +10,17 @@ namespace Sheenam.Blazor.Services.Foundations.Reviews
 {
     public partial class ReviewService
     {
-        private static void ValidateReviewOnAdd(Review review) =>
-            ValidateReviewFields(review);
+        private static void ValidateReviewOnAdd(Review review)
+        {
+            ValidateReviewNotNull(review);
 
-        private static void ValidateReviewOnModify(Review review) =>
-            ValidateReviewFields(review);
+            Validate(
+                (Rule: IsInvalid(review.UserId), Parameter: nameof(Review.UserId)),
+                (Rule: IsInvalid(review.Rating), Parameter: nameof(Review.Rating)),
+                (Rule: IsInvalid(review.Comment), Parameter: nameof(Review.Comment)));
+        }
 
-        private static void ValidateReviewFields(Review review)
+        private static void ValidateReviewOnModify(Review review)
         {
             ValidateReviewNotNull(review);
 
@@ -41,7 +45,7 @@ namespace Sheenam.Blazor.Services.Foundations.Reviews
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
-            Message = "Id is required"
+            Message = "Value is required"
         };
 
         private static dynamic IsInvalid(string text) => new
@@ -52,8 +56,8 @@ namespace Sheenam.Blazor.Services.Foundations.Reviews
 
         private static dynamic IsInvalid(int rating) => new
         {
-            Condition = rating < 0 || rating > 5,
-            Message = "Rating must be between 0 and 5"
+            Condition = rating < 1 || rating > 5,
+            Message = "Rating must be between 1 and 5"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

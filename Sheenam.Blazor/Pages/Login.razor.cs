@@ -45,7 +45,7 @@ namespace Sheenam.Blazor.Pages
 
                     if (!string.IsNullOrEmpty(userId))
                     {
-                        await this.LocalStorage.SetItemAsync("currentHostId", userId);
+                        await this.LocalStorage.SetItemAsync("currentUserId", userId);
                     }
 
                     this.NavigationManager.NavigateTo("/");

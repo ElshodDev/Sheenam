@@ -9,8 +9,8 @@ namespace Sheenam.Blazor.Brokers.Apis
         public async ValueTask<Review> PostReviewAsync(Review review) =>
             await this.PostAsync(ReviewsRelativeUrl, review);
 
-        public async ValueTask<IQueryable<Review>> GetAllReviewsAsync() =>
-            await this.GetAsync<IQueryable<Review>>(ReviewsRelativeUrl);
+        public async ValueTask<List<Review>> GetAllReviewsAsync() =>
+            await this.GetAsync<List<Review>>(ReviewsRelativeUrl);
 
         public async ValueTask<Review> GetReviewByIdAsync(Guid reviewId) =>
             await this.GetAsync<Review>($"{ReviewsRelativeUrl}/{reviewId}");

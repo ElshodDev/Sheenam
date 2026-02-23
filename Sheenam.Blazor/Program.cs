@@ -6,6 +6,7 @@ using Sheenam.Blazor.Services.Foundations.Auth;
 using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.Homes;
 using Sheenam.Blazor.Services.Foundations.Hosts;
+using Sheenam.Blazor.Services.Foundations.Reviews;
 using Sheenam.Blazor.Services.Foundations.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,7 @@ builder.Services.AddTransient<IGuestService, GuestService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHostService, HostService>();
+builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 
 
