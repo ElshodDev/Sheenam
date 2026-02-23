@@ -1,0 +1,56 @@
+@using Sheenam.Blazor.Models.Foundations.Reviews
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(review.Id == Guid.Empty ? "Yangi Sharh Qo'shish" : "Sharhni Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+        }
+
+        <EditForm Model="@review" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Rating (1-5):</label>
+                    <InputSelect @bind-Value="review.Rating" class="form-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Qisqa holat:</label>
+                    <InputSelect @bind-Value="isPositiveText" class="form-control">
+                        <option value="">Avtomatik</option>
+                        <option value="true">Ijobiy</option>
+                        <option value="false">Salbiy</option>
+                    </InputSelect>
+                    <div class="form-text">Avtomatik tanlansa rating bo'yicha hisoblanadi.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sharh (izoh):</label>
+                <InputTextArea @bind-Value="review.Comment" class="form-control" rows="4" placeholder="Sharhingizni yozing..." />
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (review.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">Bekor qilish</button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(review.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

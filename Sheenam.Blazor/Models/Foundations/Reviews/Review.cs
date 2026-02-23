@@ -1,15 +1,9 @@
-﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
 
-using Sheenam.Api.Models.Foundations.Homes;
-using Sheenam.Api.Models.Foundations.PropertySales;
-using Sheenam.Api.Models.Foundations.Users;
-using System.Text.Json.Serialization;
-using System;
-
-namespace Sheenam.Api.Models.Foundations.Reviews
+namespace Sheenam.Blazor.Models.Foundations.Reviews
 {
     public class Review
     {
@@ -22,14 +16,5 @@ namespace Sheenam.Api.Models.Foundations.Reviews
         public string Comment { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
-
-        [JsonIgnore]
-        public User User { get; set; }
-
-        [JsonIgnore]
-        public Home Home { get; set; }
-
-        [JsonIgnore]
-        public PropertySale PropertySale { get; set; }
     }
 }

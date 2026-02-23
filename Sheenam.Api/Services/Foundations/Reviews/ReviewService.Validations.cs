@@ -21,12 +21,7 @@ namespace Sheenam.Api.Services.Foundations.Reviews
                 (Rule: IsInvalid(review.Rating), Parameter: nameof(Review.Rating)),
                 (Rule: IsInvalid(review.Comment), Parameter: nameof(Review.Comment)),
                 (Rule: IsInvalid(review.CreatedDate), Parameter: nameof(Review.CreatedDate)),
-                (Rule: IsInvalid(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate)),
-                (Rule: IsNotSame(
-                    firstDate: review.UpdatedDate,
-                    secondDate: review.CreatedDate,
-                    secondDateName: nameof(Review.CreatedDate)),
-                Parameter: nameof(Review.UpdatedDate))
+                (Rule: IsInvalid(review.UpdatedDate), Parameter: nameof(Review.UpdatedDate))
             );
         }
 

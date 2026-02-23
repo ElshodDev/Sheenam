@@ -16,11 +16,30 @@
                 </div>
 
                 <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+                    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">@ErrorMessage</div>
+                    }
                     <EditForm Model="Home" OnValidSubmit="OnSave">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger mb-3" />
 
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Mezbon (Host)</label>
+                                <InputSelect @bind-Value="SelectedHostId" class="form-select">
+                                    <option value="@Guid.Empty">-- Tanlang --</option>
+                                    @if (Hosts != null)
+                                    {
+                                        @foreach (var host in Hosts)
+                                        {
+                                            <option value="@host.Id">@host.FirstName @host.LastName (@host.Email)</option>
+                                        }
+                                    }
+                                </InputSelect>
+                                <div class="form-text">Uy qo'shish uchun mezbon tanlanishi shart.</div>
+                            </div>
+
                             <div class="col-12">
                                 <label class="form-label fw-bold">Manzil</label>
                                 <InputText @bind-Value="Home.Address" class="form-control" placeholder="Chilonzor, 2-xona..." />
