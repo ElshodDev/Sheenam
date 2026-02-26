@@ -22,7 +22,7 @@ namespace Sheenam.Blazor.Brokers.Apis
             await GetAsync<Guest>($"{GuestsRelativeUrl}/{guestId}");
 
         public async ValueTask<Guest> PutGuestAsync(Guest guest) =>
-            await PutAsync(GuestsRelativeUrl, guest);
+             await PutAsync($"{GuestsRelativeUrl}/{guest.Id}", guest);
 
         public async ValueTask<Guest> DeleteGuestByIdAsync(Guid guestId) =>
             await DeleteAsync<Guest>($"{GuestsRelativeUrl}/{guestId}");

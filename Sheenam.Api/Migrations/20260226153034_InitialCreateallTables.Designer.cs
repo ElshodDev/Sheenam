@@ -12,8 +12,8 @@ using Sheenam.Api.Brokers.Storages;
 namespace Sheenam.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20260222144412_CreateAllTables")]
-    partial class CreateAllTables
+    [Migration("20260226153034_InitialCreateallTables")]
+    partial class InitialCreateallTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
