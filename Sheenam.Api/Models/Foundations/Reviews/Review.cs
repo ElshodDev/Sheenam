@@ -6,8 +6,8 @@
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Models.Foundations.Users;
-using System.Text.Json.Serialization;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Sheenam.Api.Models.Foundations.Reviews
 {

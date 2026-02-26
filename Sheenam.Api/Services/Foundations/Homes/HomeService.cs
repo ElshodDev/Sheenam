@@ -54,12 +54,16 @@ namespace Sheenam.Api.Services.Foundations.Homes
             });
 
         public ValueTask<Home> RemoveHomeByIdAsync(Guid homeId) =>
-            TryCatch(async () =>
-            {
-                ValidateHomeId(homeId);
-                Home maybeHome = await this.storageBroker.SelectHomeByIdAsync(homeId);
-                ValidateStorageHome(maybeHome, homeId);
-                return await this.storageBroker.DeleteHomeAsync(maybeHome);
-            });
+      TryCatch(async () =>
+      {
+          ValidateHomeId(homeId);
+          Home maybeHome = await this.storageBroker.SelectHomeByIdAsync(homeId);
+          ValidateStorageHome(maybeHome, homeId);
+
+          // Sinov uchun navigatsiyani uzib qo'yamiz
+          maybeHome.Host = null;
+
+          return await this.storageBroker.DeleteHomeAsync(maybeHome);
+      });
     }
 }

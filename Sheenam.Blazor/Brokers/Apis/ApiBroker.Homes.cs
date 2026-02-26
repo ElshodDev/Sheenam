@@ -15,6 +15,13 @@ namespace Sheenam.Blazor.Brokers.Apis
         public async ValueTask<Home> PostHomeAsync(Home home) =>
             await PostAsync(HomesRelativeUrl, home);
 
+        public async ValueTask<Home> PostHomeWithImagesAsync(MultipartFormDataContent content)
+        {
+            var response = await this.httpClient.PostAsync(HomesRelativeUrl + "/with-images", content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<Home>();
+        }
+
         public async ValueTask<List<Home>> GetAllHomesAsync() =>
             await GetAsync<List<Home>>(HomesRelativeUrl);
 

@@ -9,6 +9,7 @@ namespace Sheenam.Blazor.Brokers.Apis
     public partial interface IApiBroker
     {
         ValueTask<Home> PostHomeAsync(Home home);
+        ValueTask<Home> PostHomeWithImagesAsync(MultipartFormDataContent content);
         ValueTask<List<Home>> GetAllHomesAsync();
         ValueTask<Home> GetHomeByIdAsync(Guid homeId);
         ValueTask<Home> PutHomeAsync(Home home);
