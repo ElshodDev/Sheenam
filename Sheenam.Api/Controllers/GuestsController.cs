@@ -98,18 +98,22 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
-        public async ValueTask<ActionResult<Guest>> PutGuestAsync(Guest guest)
+        [HttpPut("{guestId}")]
+        public async ValueTask<ActionResult<Guest>> PutGuestAsync(System.Guid guestId, Guest guest)
         {
             try
             {
+                if (guestId != guest.Id)
+                {
+                    return BadRequest("Guest ID mismatch");
+                }
 
                 Guest updatedGuest = await this.guestService.ModifyGuestAsync(guest);
 
                 return Ok(updatedGuest);
             }
             catch (GuestValidationException guestValidationException)
-                when (guestValidationException.InnerException is NotFoundGuestException)
+             when (guestValidationException.InnerException is NotFoundGuestException)
             {
                 return NotFound(guestValidationException.InnerException);
             }
