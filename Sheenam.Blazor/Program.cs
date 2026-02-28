@@ -4,6 +4,7 @@ using Sheenam.Blazor.Brokers.Loggings;
 using Sheenam.Blazor.Data;
 using Sheenam.Blazor.Services.Foundations.Auth;
 using Sheenam.Blazor.Services.Foundations.Guests;
+using Sheenam.Blazor.Services.Foundations.HomeRequests;
 using Sheenam.Blazor.Services.Foundations.Homes;
 using Sheenam.Blazor.Services.Foundations.Hosts;
 using Sheenam.Blazor.Services.Foundations.Reviews;
@@ -30,6 +31,7 @@ builder.Services.AddTransient<IGuestService, GuestService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHostService, HostService>();
+builder.Services.AddTransient<IHomeRequestService, HomeRequestService>();
 builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 

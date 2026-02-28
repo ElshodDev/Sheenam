@@ -1,0 +1,65 @@
+﻿@using Sheenam.Blazor.Models.Foundations.HomeRequests
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(homeRequest.Id == Guid.Empty ? "Yangi Uy So'rovi Qo'shish" : "Uy So'rovini Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+        <EditForm Model="@homeRequest" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mehmon ID:</label>
+                    <InputText @bind-Value="guestIdString" class="form-control" placeholder="Mehmon ID kiriting" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Uy ID:</label>
+                    <InputText @bind-Value="homeIdString" class="form-control" placeholder="Uy ID kiriting" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Xabar:</label>
+                <InputTextArea @bind-Value="homeRequest.Message" class="form-control" placeholder="Xabar kiriting" rows="3" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Boshlanish sanasi:</label>
+                    <InputDate @bind-Value="startDate" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tugash sanasi:</label>
+                    <InputDate @bind-Value="endDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Holat:</label>
+                <InputSelect @bind-Value="homeRequest.Status" class="form-control">
+                    @foreach (var status in Enum.GetValues(typeof(HomeRequestStatus)))
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Rad etish sababi:</label>
+                <InputText @bind-Value="homeRequest.RejectionReason" class="form-control" placeholder="Rad etish sababini kiriting" />
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (homeRequest.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">Bekor qilish</button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(homeRequest.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
