@@ -1,0 +1,119 @@
+﻿@using Sheenam.Blazor.Models.Foundations.RentalContracts
+@using Sheenam.Blazor.Models.Foundations.Guests
+@using Sheenam.Blazor.Models.Foundations.Homes
+@using Sheenam.Blazor.Models.Foundations.Hosts
+@using Sheenam.Blazor.Models.Foundations.HomeRequests
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(rentalContract.Id == Guid.Empty ? "Yangi Ijara Shartnomasi" : "Shartnomani Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+        <EditForm Model="@rentalContract" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Uy So'rovi:</label>
+                    <InputSelect @bind-Value="rentalContract.HomeRequestId" class="form-control">
+                        <option value="@Guid.Empty">-- So'rov tanlang --</option>
+                        @foreach (var homeRequest in HomeRequests)
+                        {
+                            <option value="@homeRequest.Id">@homeRequest.Id</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mehmon:</label>
+                    <InputSelect @bind-Value="rentalContract.GuestId" class="form-control">
+                        <option value="@Guid.Empty">-- Mehmon tanlang --</option>
+                        @foreach (var guest in Guests)
+                        {
+                            <option value="@guest.Id">@guest.FirstName @guest.LastName</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mezbон:</label>
+                    <InputSelect @bind-Value="rentalContract.HostId" class="form-control">
+                        <option value="@Guid.Empty">-- Mezbon tanlang --</option>
+                        @foreach (var host in Hosts)
+                        {
+                            <option value="@host.Id">@host.FirstName @host.LastName</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Uy:</label>
+                    <InputSelect @bind-Value="rentalContract.HomeId" class="form-control">
+                        <option value="@Guid.Empty">-- Uy tanlang --</option>
+                        @foreach (var home in Homes)
+                        {
+                            <option value="@home.Id">@home.Address</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Boshlanish sanasi:</label>
+                    <InputDate @bind-Value="startDate" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tugash sanasi:</label>
+                    <InputDate @bind-Value="endDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Oylik ijara (so'm):</label>
+                    <InputNumber @bind-Value="rentalContract.MonthlyRent" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Kafolat puli (so'm):</label>
+                    <InputNumber @bind-Value="rentalContract.SecurityDeposit" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Shartnoma shartlari:</label>
+                <InputTextArea @bind-Value="rentalContract.Terms" class="form-control"
+                               placeholder="Shartnoma shartlarini kiriting" rows="3" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Holat:</label>
+                    <InputSelect @bind-Value="rentalContract.Status" class="form-control">
+                        @foreach (ContractStatus status in Enum.GetValues(typeof(ContractStatus)))
+                        {
+                            <option value="@status">@status.ToUzbek()</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Imzolangan sana:</label>
+                    <InputDate @bind-Value="signedDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (rentalContract.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">
+                        Bekor qilish
+                    </button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(rentalContract.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

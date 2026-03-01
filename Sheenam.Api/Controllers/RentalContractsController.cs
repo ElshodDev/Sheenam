@@ -105,7 +105,7 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{rentalContractId}")]
         public async ValueTask<ActionResult<RentalContract>> PutRentalContractAsync(RentalContract rentalContract)
         {
             try
