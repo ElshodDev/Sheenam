@@ -8,9 +8,14 @@
         <h4 class="mb-0">@(homeRequest.Id == Guid.Empty ? "Yangi Uy So'rovi Qo'shish" : "Uy So'rovini Tahrirlash")</h4>
     </div>
     <div class="card-body">
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-2">@errorMessage</div>
+        }
+
         <EditForm Model="@homeRequest" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Mehmon:</label>
@@ -33,13 +38,11 @@
                     </InputSelect>
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Xabar:</label>
                 <InputTextArea @bind-Value="homeRequest.Message" class="form-control"
                                placeholder="Xabar kiriting" rows="3" />
             </div>
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Boshlanish sanasi:</label>
@@ -50,7 +53,6 @@
                     <InputDate @bind-Value="endDate" class="form-control" />
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Holat:</label>
                 <InputSelect @bind-Value="homeRequest.Status" class="form-control">
@@ -60,13 +62,11 @@
                     }
                 </InputSelect>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Rad etish sababi:</label>
                 <InputText @bind-Value="homeRequest.RejectionReason" class="form-control"
                            placeholder="Rad etish sababini kiriting" />
             </div>
-
             <div class="d-flex justify-content-end mt-3">
                 @if (homeRequest.Id != Guid.Empty)
                 {

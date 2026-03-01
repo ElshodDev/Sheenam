@@ -27,6 +27,7 @@ namespace Sheenam.Blazor.Views.Components
         public IHomeService HomeService { get; set; }
 
         public HomeRequest homeRequest = new HomeRequest();
+        public string errorMessage { get; set; } = string.Empty;
         public IEnumerable<Guest> Guests { get; set; } = new List<Guest>();
         public IEnumerable<Home> Homes { get; set; } = new List<Home>();
         public DateTime startDate { get; set; } = DateTime.Today;
@@ -79,8 +80,21 @@ namespace Sheenam.Blazor.Views.Components
 
         private async Task HandleSubmit()
         {
+            if (homeRequest.GuestId == Guid.Empty)
+            {
+                errorMessage = "Iltimos, mehmonni tanlang!";
+                return;
+            }
+
+            if (homeRequest.HomeId == Guid.Empty)
+            {
+                errorMessage = "Iltimos, uyni tanlang!";
+                return;
+            }
+
             try
             {
+                errorMessage = string.Empty;
                 homeRequest.StartDate = new DateTimeOffset(startDate);
                 homeRequest.EndDate = new DateTimeOffset(endDate);
 
@@ -93,6 +107,7 @@ namespace Sheenam.Blazor.Views.Components
                 }
                 else
                 {
+                    this.homeRequest.CreatedDate = DateTimeOffset.UtcNow;
                     this.homeRequest.UpdatedDate = DateTimeOffset.UtcNow;
                     await this.HomeRequestService.ModifyHomeRequestAsync(this.homeRequest);
                 }
@@ -102,7 +117,7 @@ namespace Sheenam.Blazor.Views.Components
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                errorMessage = "Xatolik yuz berdi: " + ex.Message;
             }
         }
     }
