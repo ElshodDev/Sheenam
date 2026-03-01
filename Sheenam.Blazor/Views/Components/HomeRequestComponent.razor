@@ -42,7 +42,7 @@ else
                         <td class="align-middle text-nowrap">@homeRequest.EndDate.ToString("dd.MM.yyyy")</td>
                         <td class="align-middle">
                             <span class="badge @GetStatusBadge(homeRequest.Status)">
-                                @homeRequest.Status
+                                @homeRequest.Status.ToUzbek()
                             </span>
                         </td>
                         <td class="text-center align-middle text-nowrap">
