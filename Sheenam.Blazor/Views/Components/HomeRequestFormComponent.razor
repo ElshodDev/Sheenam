@@ -1,4 +1,6 @@
 ﻿@using Sheenam.Blazor.Models.Foundations.HomeRequests
+@using Sheenam.Blazor.Models.Foundations.Guests
+@using Sheenam.Blazor.Models.Foundations.Homes
 @namespace Sheenam.Blazor.Views.Components
 
 <div class="card shadow-sm">
@@ -11,18 +13,31 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Mehmon ID:</label>
-                    <InputText @bind-Value="guestIdString" class="form-control" placeholder="Mehmon ID kiriting" />
+                    <label class="form-label">Mehmon:</label>
+                    <InputSelect @bind-Value="homeRequest.GuestId" class="form-control">
+                        <option value="@Guid.Empty">-- Mehmon tanlang --</option>
+                        @foreach (var guest in Guests)
+                        {
+                            <option value="@guest.Id">@guest.FirstName @guest.LastName</option>
+                        }
+                    </InputSelect>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Uy ID:</label>
-                    <InputText @bind-Value="homeIdString" class="form-control" placeholder="Uy ID kiriting" />
+                    <label class="form-label">Uy:</label>
+                    <InputSelect @bind-Value="homeRequest.HomeId" class="form-control">
+                        <option value="@Guid.Empty">-- Uy tanlang --</option>
+                        @foreach (var home in Homes)
+                        {
+                            <option value="@home.Id">@home.Address</option>
+                        }
+                    </InputSelect>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Xabar:</label>
-                <InputTextArea @bind-Value="homeRequest.Message" class="form-control" placeholder="Xabar kiriting" rows="3" />
+                <InputTextArea @bind-Value="homeRequest.Message" class="form-control"
+                               placeholder="Xabar kiriting" rows="3" />
             </div>
 
             <div class="row">
@@ -39,22 +54,25 @@
             <div class="mb-3">
                 <label class="form-label">Holat:</label>
                 <InputSelect @bind-Value="homeRequest.Status" class="form-control">
-                    @foreach (var status in Enum.GetValues(typeof(HomeRequestStatus)))
+                    @foreach (HomeRequestStatus status in Enum.GetValues(typeof(HomeRequestStatus)))
                     {
-                        <option value="@status">@status</option>
+                        <option value="@status">@status.ToUzbek()</option>
                     }
                 </InputSelect>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Rad etish sababi:</label>
-                <InputText @bind-Value="homeRequest.RejectionReason" class="form-control" placeholder="Rad etish sababini kiriting" />
+                <InputText @bind-Value="homeRequest.RejectionReason" class="form-control"
+                           placeholder="Rad etish sababini kiriting" />
             </div>
 
             <div class="d-flex justify-content-end mt-3">
                 @if (homeRequest.Id != Guid.Empty)
                 {
-                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">Bekor qilish</button>
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">
+                        Bekor qilish
+                    </button>
                 }
                 <button type="submit" class="btn btn-success shadow-sm">
                     @(homeRequest.Id == Guid.Empty ? "Saqlash" : "Yangilash")

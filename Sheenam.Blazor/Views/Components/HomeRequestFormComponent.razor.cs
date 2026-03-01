@@ -3,8 +3,12 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 using Microsoft.AspNetCore.Components;
+using Sheenam.Blazor.Models.Foundations.Guests;
 using Sheenam.Blazor.Models.Foundations.HomeRequests;
+using Sheenam.Blazor.Models.Foundations.Homes;
+using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.HomeRequests;
+using Sheenam.Blazor.Services.Foundations.Homes;
 
 namespace Sheenam.Blazor.Views.Components
 {
@@ -16,15 +20,35 @@ namespace Sheenam.Blazor.Views.Components
         [Inject]
         public IHomeRequestService HomeRequestService { get; set; }
 
+        [Inject]
+        public IGuestService GuestService { get; set; }
+
+        [Inject]
+        public IHomeService HomeService { get; set; }
+
         public HomeRequest homeRequest = new HomeRequest();
-        public string guestIdString { get; set; } = string.Empty;
-        public string homeIdString { get; set; } = string.Empty;
+        public IEnumerable<Guest> Guests { get; set; } = new List<Guest>();
+        public IEnumerable<Home> Homes { get; set; } = new List<Home>();
         public DateTime startDate { get; set; } = DateTime.Today;
         public DateTime endDate { get; set; } = DateTime.Today.AddDays(1);
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
+            await LoadDropdownsAsync();
             ResetForm();
+        }
+
+        private async Task LoadDropdownsAsync()
+        {
+            try
+            {
+                this.Guests = await this.GuestService.RetrieveAllGuestsAsync();
+                this.Homes = await this.HomeService.RetrieveAllHomesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading dropdowns: {ex.Message}");
+            }
         }
 
         public void EditHomeRequest(HomeRequest homeRequestToEdit)
@@ -41,8 +65,6 @@ namespace Sheenam.Blazor.Views.Components
                 RejectionReason = homeRequestToEdit.RejectionReason
             };
 
-            this.guestIdString = homeRequestToEdit.GuestId.ToString();
-            this.homeIdString = homeRequestToEdit.HomeId.ToString();
             this.startDate = homeRequestToEdit.StartDate.DateTime;
             this.endDate = homeRequestToEdit.EndDate.DateTime;
             StateHasChanged();
@@ -51,8 +73,6 @@ namespace Sheenam.Blazor.Views.Components
         private void ResetForm()
         {
             this.homeRequest = new HomeRequest { Id = Guid.Empty };
-            this.guestIdString = string.Empty;
-            this.homeIdString = string.Empty;
             this.startDate = DateTime.Today;
             this.endDate = DateTime.Today.AddDays(1);
         }
@@ -61,22 +81,19 @@ namespace Sheenam.Blazor.Views.Components
         {
             try
             {
-                if (Guid.TryParse(guestIdString, out Guid guestId))
-                    homeRequest.GuestId = guestId;
-
-                if (Guid.TryParse(homeIdString, out Guid homeId))
-                    homeRequest.HomeId = homeId;
-
                 homeRequest.StartDate = new DateTimeOffset(startDate);
                 homeRequest.EndDate = new DateTimeOffset(endDate);
 
                 if (this.homeRequest.Id == Guid.Empty)
                 {
                     this.homeRequest.Id = Guid.NewGuid();
+                    this.homeRequest.CreatedDate = DateTimeOffset.UtcNow;
+                    this.homeRequest.UpdatedDate = DateTimeOffset.UtcNow;
                     await this.HomeRequestService.AddHomeRequestAsync(this.homeRequest);
                 }
                 else
                 {
+                    this.homeRequest.UpdatedDate = DateTimeOffset.UtcNow;
                     await this.HomeRequestService.ModifyHomeRequestAsync(this.homeRequest);
                 }
 
