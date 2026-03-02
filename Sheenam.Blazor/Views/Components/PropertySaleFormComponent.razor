@@ -1,0 +1,122 @@
+﻿@using Sheenam.Blazor.Models.Foundations.PropertySales
+@using Sheenam.Blazor.Models.Foundations.Homes
+@using Sheenam.Blazor.Models.Foundations.Hosts
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(propertySale.Id == Guid.Empty ? "Yangi Mulk Qo'shish" : "Mulkni Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-2">@errorMessage</div>
+        }
+
+        <EditForm Model="@propertySale" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Mezbon:</label>
+                    <InputSelect @bind-Value="propertySale.HostId" class="form-control">
+                        <option value="@Guid.Empty">-- Mezbon tanlang --</option>
+                        @foreach (var host in Hosts)
+                        {
+                            <option value="@host.Id">@host.FirstName @host.LastName</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Manzil:</label>
+                    <InputText @bind-Value="propertySale.Address" class="form-control"
+                               placeholder="Manzilni kiriting" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tavsif:</label>
+                <InputTextArea @bind-Value="propertySale.Description" class="form-control"
+                               placeholder="Tavsifni kiriting" rows="3" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Uy turi:</label>
+                    <InputSelect @bind-Value="propertySale.Type" class="form-control">
+                        @foreach (HouseType type in Enum.GetValues(typeof(HouseType)))
+                        {
+                            <option value="@type">@type.ToUzbek()</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Narx (so'm):</label>
+                    <InputNumber @bind-Value="propertySale.SalePrice" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Yotoqxonalar:</label>
+                    <InputNumber @bind-Value="propertySale.NumberOfBedrooms" class="form-control" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Hammomlar:</label>
+                    <InputNumber @bind-Value="propertySale.NumberOfBathrooms" class="form-control" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Maydon (m²):</label>
+                    <InputNumber @bind-Value="propertySale.Area" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Holat:</label>
+                    <InputSelect @bind-Value="propertySale.Status" class="form-control">
+                        @foreach (PropertySaleStatus status in Enum.GetValues(typeof(PropertySaleStatus)))
+                        {
+                            <option value="@status">@status.ToUzbek()</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">E'lon sanasi:</label>
+                    <InputDate @bind-Value="listedDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Rasm URL:</label>
+                    <InputText @bind-Value="propertySale.ImageUrls" class="form-control"
+                               placeholder="Rasm URL kiriting" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hujjatlar:</label>
+                    <InputText @bind-Value="propertySale.LegalDocuments" class="form-control"
+                               placeholder="Hujjat URL kiriting" />
+                </div>
+            </div>
+
+            <div class="mb-3 form-check">
+                <InputCheckbox @bind-Value="propertySale.IsFeatured" class="form-check-input" />
+                <label class="form-check-label">Tavsiya etilgan mulk</label>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (propertySale.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">
+                        Bekor qilish
+                    </button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(propertySale.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
