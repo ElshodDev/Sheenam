@@ -105,7 +105,7 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{paymentId}")]
         public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Payment payment)
         {
             try

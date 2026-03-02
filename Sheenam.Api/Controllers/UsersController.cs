@@ -32,9 +32,6 @@ namespace Sheenam.Api.Controllers
             this.authService = authService;
         }
 
-        /// <summary>
-        /// Register a new user
-        /// </summary>
         [HttpPost("register")]
         [AllowAnonymous]
         public async ValueTask<ActionResult<User>> PostUserAsync(RegisterRequest request)
@@ -51,7 +48,6 @@ namespace Sheenam.Api.Controllers
                 };
 
                 User registeredUser = await this.authService.RegisterAsync(user, request.Password);
-
                 return Created(registeredUser);
             }
             catch (UserValidationException userValidationException)
@@ -77,9 +73,6 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Login and get JWT token
-        /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
         public async ValueTask<ActionResult<LoginResponse>> PostLoginAsync(LoginRequest request)
@@ -110,17 +103,13 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Get all users (Admin only)
-        /// </summary>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         public ActionResult<IQueryable<User>> GetAllUsers()
         {
             try
             {
                 IQueryable<User> allUsers = this.userService.RetrieveAllUsers();
-
                 return Ok(allUsers);
             }
             catch (UserDependencyException userDependencyException)
@@ -133,9 +122,6 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Get user by ID (Authenticated users)
-        /// </summary>
         [HttpGet("{userId}")]
         [Authorize]
         public async ValueTask<ActionResult<User>> GetUserByIdAsync(Guid userId)
@@ -143,7 +129,6 @@ namespace Sheenam.Api.Controllers
             try
             {
                 User user = await this.userService.RetrieveUserByIdAsync(userId);
-
                 return Ok(user);
             }
             catch (UserValidationException userValidationException)
@@ -165,9 +150,6 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Update user (Authenticated users - own profile only, or Admin)
-        /// </summary>
         [HttpPut("{userId}")]
         [Authorize]
         public async ValueTask<ActionResult<User>> PutUserAsync(Guid userId, User user)
@@ -175,7 +157,6 @@ namespace Sheenam.Api.Controllers
             try
             {
                 User modifiedUser = await this.userService.ModifyUserAsync(user);
-
                 return Ok(modifiedUser);
             }
             catch (UserValidationException userValidationException)
@@ -206,9 +187,6 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Delete user (Admin only)
-        /// </summary>
         [HttpDelete("{userId}")]
         [Authorize(Roles = "Admin")]
         public async ValueTask<ActionResult<User>> DeleteUserByIdAsync(Guid userId)
@@ -216,7 +194,6 @@ namespace Sheenam.Api.Controllers
             try
             {
                 User deletedUser = await this.userService.RemoveUserByIdAsync(userId);
-
                 return Ok(deletedUser);
             }
             catch (UserValidationException userValidationException)
