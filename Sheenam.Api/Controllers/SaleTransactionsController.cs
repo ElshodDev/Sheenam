@@ -105,7 +105,7 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{saleTransactionId}")]
         public async ValueTask<ActionResult<SaleTransaction>> PutSaleTransactionAsync(SaleTransaction saleTransaction)
         {
             try

@@ -2,8 +2,6 @@
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
-using Sheenam.Api.Models.Foundations.SaleOffers;
-
 namespace Sheenam.Blazor.Models.Foundations.SaleOffers
 {
     public class SaleOffer
