@@ -11,6 +11,7 @@ using Sheenam.Blazor.Services.Foundations.Payments;
 using Sheenam.Blazor.Services.Foundations.PropertySales;
 using Sheenam.Blazor.Services.Foundations.RentalContracts;
 using Sheenam.Blazor.Services.Foundations.Reviews;
+using Sheenam.Blazor.Services.Foundations.SaleOffers;
 using Sheenam.Blazor.Services.Foundations.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,7 @@ builder.Services.AddTransient<IHomeRequestService, HomeRequestService>();
 builder.Services.AddTransient<IRentalContractService, RentalContractService>();
 builder.Services.AddTransient<IPaymentService, PaymentService>();
 builder.Services.AddTransient<IPropertySaleService, PropertySaleService>();
+builder.Services.AddTransient<ISaleOfferService, SaleOfferService>();
 builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 

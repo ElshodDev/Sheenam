@@ -1,0 +1,13 @@
+﻿//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+using Xeptions;
+namespace Sheenam.Blazor.Models.Foundations.SaleOffers.Exceptions
+{
+    public class SaleOfferValidationException : Xeption
+    {
+        public SaleOfferValidationException(Xeption innerException)
+            : base(message: "Sale offer validation error occurred.", innerException) { }
+    }
+}
