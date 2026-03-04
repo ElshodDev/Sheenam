@@ -1,14 +1,8 @@
-﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
-//===================================================
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.SaleTransactions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace Sheenam.Api.Brokers.Storages
 {
     public partial class StorageBroker
@@ -16,17 +10,18 @@ namespace Sheenam.Api.Brokers.Storages
         public DbSet<SaleTransaction> SaleTransactions { get; set; }
 
         public async ValueTask<SaleTransaction> InsertSaleTransactionAsync(SaleTransaction saleTransaction) =>
-                        await InsertSaleTransactionAsync(saleTransaction);
-
+            await this.InsertAsync(saleTransaction);
 
         public IQueryable<SaleTransaction> SelectAllSaleTransactions() =>
-            SelectAll<SaleTransaction>();
+            this.SelectAll<SaleTransaction>();
 
         public async ValueTask<SaleTransaction> SelectSaleTransactionByIdAsync(Guid saleTransactionId) =>
-            await SelectAsync<SaleTransaction>(saleTransactionId);
+            await this.SelectAsync<SaleTransaction>(saleTransactionId);
+
         public async ValueTask<SaleTransaction> UpdateSaleTransactionAsync(SaleTransaction saleTransaction) =>
-                        await UpdateSaleTransactionAsync(saleTransaction);
+            await this.UpdateAsync(saleTransaction);
+
         public async ValueTask<SaleTransaction> DeleteSaleTransactionAsync(SaleTransaction saleTransaction) =>
-                                    await DeleteSaleTransactionAsync(saleTransaction);
+            await this.DeleteAsync(saleTransaction);
     }
 }
