@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -28,8 +28,8 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.homeRequestService = new HomeRequestService(
-                 storageBroker: this.storageBrokerMock.Object,
-                 loggingBroker: this.loggingBrokerMock.Object);
+                storageBroker: this.storageBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static HomeRequest CreateRandomHomeRequest() =>
@@ -38,14 +38,14 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
         private static IQueryable<HomeRequest> CreateRandomHomeRequests()
         {
             int randomCount = GetRandomNumber();
-            var homerequests = new List<HomeRequest>();
+            var homeRequests = new List<HomeRequest>();
 
             for (int i = 0; i < randomCount; i++)
             {
-                homerequests.Add(CreateRandomHomeRequest());
+                homeRequests.Add(CreateRandomHomeRequest());
             }
 
-            return homerequests.AsQueryable();
+            return homeRequests.AsQueryable();
         }
 
         private static Filler<HomeRequest> CreateHomeRequestFiller(DateTimeOffset date)
@@ -68,10 +68,10 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
         }
 
         private static string GetRandomString() =>
-           new MnemonicString().GetValue();
+            new MnemonicString().GetValue();
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

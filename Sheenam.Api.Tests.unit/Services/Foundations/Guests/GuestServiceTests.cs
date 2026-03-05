@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.Guests;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -45,8 +45,7 @@ namespace Sheenam.Api.Tests.unit.Services.Foundations.Guests
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
-
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static T GetInvalidEnum<T>() where T : struct, Enum
         {

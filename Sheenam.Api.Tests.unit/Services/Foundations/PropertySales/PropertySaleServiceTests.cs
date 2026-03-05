@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.PropertySales;
 using Sheenam.Api.Services.Foundations.PropertySales;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using ObjectFillerDoubleRange = Tynamix.ObjectFiller.DoubleRange;
@@ -56,7 +56,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static T GetInvalidEnum<T>() where T : struct, Enum
         {
@@ -84,24 +84,13 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
                 .OnType<int?>().Use(GetRandomNumber())
                 .OnType<double>().Use(GetRandomPositiveDouble())
                 .OnType<double?>().Use(GetRandomPositiveDouble())
-                .OnType<decimal>().Use(GetRandomPositiveDecimal())
-                .OnType<decimal?>().Use(GetRandomPositiveDecimal())
-
-                .OnProperty(ps => ps.Host).IgnoreIt()
-
-                .OnProperty(ps => ps.SalePrice).Use(GetRandomPositiveDecimal())
-                .OnProperty(ps => ps.Area).Use(GetRandomPositiveDouble());
+                .OnProperty(ps => ps.Status).Use(PropertySaleStatus.Available)
+                .OnProperty(ps => ps.Host).IgnoreIt();
 
             return filler;
         }
 
-        private static decimal GetRandomPositiveDecimal()
-        {
-            var random = new Random();
-            return (decimal)random.NextDouble() * (1_000_000m - 1_000m) + 1_000m;
-        }
-
         private static double GetRandomPositiveDouble() =>
-          new ObjectFillerDoubleRange(minValue: 50, maxValue: 500).GetValue();
+            new ObjectFillerDoubleRange(minValue: 1000, maxValue: 999999).GetValue();
     }
 }
