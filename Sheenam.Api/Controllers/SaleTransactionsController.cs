@@ -48,11 +48,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleTransactionDependencyException dependencyException)
             {
-                return InternalServerError(dependencyException.InnerException);
+                return InternalServerError(dependencyException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
-                return InternalServerError(serviceException.InnerException);
+                return InternalServerError(serviceException);
             }
         }
 
@@ -68,11 +68,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleTransactionDependencyException dependencyException)
             {
-                return InternalServerError(dependencyException.InnerException);
+                return InternalServerError(dependencyException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
-                return InternalServerError(serviceException.InnerException);
+                return InternalServerError(serviceException);
             }
         }
 
@@ -97,11 +97,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleTransactionDependencyException dependencyException)
             {
-                return InternalServerError(dependencyException.InnerException);
+                return InternalServerError(dependencyException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
-                return InternalServerError(serviceException.InnerException);
+                return InternalServerError(serviceException);
             }
         }
 
@@ -135,11 +135,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleTransactionDependencyException dependencyException)
             {
-                return InternalServerError(dependencyException.InnerException);
+                return InternalServerError(dependencyException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
-                return InternalServerError(serviceException.InnerException);
+                return InternalServerError(serviceException);
             }
         }
 
@@ -173,11 +173,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleTransactionDependencyException dependencyException)
             {
-                return InternalServerError(dependencyException.InnerException);
+                return InternalServerError(dependencyException);
             }
             catch (SaleTransactionServiceException serviceException)
             {
-                return InternalServerError(serviceException.InnerException);
+                return InternalServerError(serviceException);
             }
         }
     }

@@ -48,11 +48,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {
-                return InternalServerError(rentalContractDependencyException.InnerException);
+                return InternalServerError(rentalContractDependencyException);
             }
             catch (RentalContractServiceException rentalContractServiceException)
             {
-                return InternalServerError(rentalContractServiceException.InnerException);
+                return InternalServerError(rentalContractServiceException);
             }
         }
 
@@ -68,11 +68,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {
-                return InternalServerError(rentalContractDependencyException.InnerException);
+                return InternalServerError(rentalContractDependencyException);
             }
             catch (RentalContractServiceException rentalContractServiceException)
             {
-                return InternalServerError(rentalContractServiceException.InnerException);
+                return InternalServerError(rentalContractServiceException);
             }
         }
 
@@ -97,11 +97,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {
-                return InternalServerError(rentalContractDependencyException.InnerException);
+                return InternalServerError(rentalContractDependencyException);
             }
             catch (RentalContractServiceException rentalContractServiceException)
             {
-                return InternalServerError(rentalContractServiceException.InnerException);
+                return InternalServerError(rentalContractServiceException);
             }
         }
 
@@ -126,11 +126,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {
-                return InternalServerError(rentalContractDependencyException.InnerException);
+                return InternalServerError(rentalContractDependencyException);
             }
             catch (RentalContractServiceException rentalContractServiceException)
             {
-                return InternalServerError(rentalContractServiceException.InnerException);
+                return InternalServerError(rentalContractServiceException);
             }
         }
 
@@ -155,11 +155,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {
-                return InternalServerError(rentalContractDependencyException.InnerException);
+                return InternalServerError(rentalContractDependencyException);
             }
             catch (RentalContractServiceException rentalContractServiceException)
             {
-                return InternalServerError(rentalContractServiceException.InnerException);
+                return InternalServerError(rentalContractServiceException);
             }
         }
     }

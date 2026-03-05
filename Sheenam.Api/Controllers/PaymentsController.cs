@@ -48,11 +48,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
-                return InternalServerError(paymentDependencyException.InnerException);
+                return InternalServerError(paymentDependencyException);
             }
             catch (PaymentServiceException paymentServiceException)
             {
-                return InternalServerError(paymentServiceException.InnerException);
+                return InternalServerError(paymentServiceException);
             }
         }
 
@@ -68,11 +68,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
-                return InternalServerError(paymentDependencyException.InnerException);
+                return InternalServerError(paymentDependencyException);
             }
             catch (PaymentServiceException paymentServiceException)
             {
-                return InternalServerError(paymentServiceException.InnerException);
+                return InternalServerError(paymentServiceException);
             }
         }
 
@@ -97,11 +97,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
-                return InternalServerError(paymentDependencyException.InnerException);
+                return InternalServerError(paymentDependencyException);
             }
             catch (PaymentServiceException paymentServiceException)
             {
-                return InternalServerError(paymentServiceException.InnerException);
+                return InternalServerError(paymentServiceException);
             }
         }
 
@@ -140,11 +140,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
-                return InternalServerError(paymentDependencyException.InnerException);
+                return InternalServerError(paymentDependencyException);
             }
             catch (PaymentServiceException paymentServiceException)
             {
-                return InternalServerError(paymentServiceException.InnerException);
+                return InternalServerError(paymentServiceException);
             }
         }
 
@@ -178,11 +178,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
-                return InternalServerError(paymentDependencyException.InnerException);
+                return InternalServerError(paymentDependencyException);
             }
             catch (PaymentServiceException paymentServiceException)
             {
-                return InternalServerError(paymentServiceException.InnerException);
+                return InternalServerError(paymentServiceException);
             }
         }
     }
