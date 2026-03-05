@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.SaleTransactions;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SaleTransactionsController : RESTFulController
     {
         private readonly ISaleTransactionService saleTransactionService;
@@ -61,10 +63,10 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<SaleTransaction> allSaleTransactions =
+                IQueryable<SaleTransaction> retrievedSaleTransactions =
                     this.saleTransactionService.RetrieveAllSaleTransactions();
 
-                return Ok(allSaleTransactions);
+                return Ok(retrievedSaleTransactions);
             }
             catch (SaleTransactionDependencyException dependencyException)
             {

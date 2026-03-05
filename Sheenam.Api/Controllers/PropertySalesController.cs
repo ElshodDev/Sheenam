@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.PropertySales;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PropertySalesController : RESTFulController
     {
         private readonly IPropertySaleService propertySaleService;
@@ -61,114 +63,10 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<PropertySale> allPropertySales =
+                IQueryable<PropertySale> retrievedPropertySales =
                     this.propertySaleService.RetrieveAllPropertySales();
 
-                return Ok(allPropertySales);
-            }
-            catch (PropertySaleDependencyException propertySaleDependencyException)
-            {
-                return InternalServerError(propertySaleDependencyException);
-            }
-            catch (PropertySaleServiceException propertySaleServiceException)
-            {
-                return InternalServerError(propertySaleServiceException);
-            }
-        }
-
-        [HttpGet("{propertySaleId}")]
-        public async ValueTask<ActionResult<PropertySale>> GetPropertySaleByIdAsync(Guid propertySaleId)
-        {
-            try
-            {
-                PropertySale propertySale =
-                    await this.propertySaleService.RetrievePropertySaleByIdAsync(propertySaleId);
-
-                return Ok(propertySale);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-                when (propertySaleValidationException.InnerException is NotFoundPropertySaleException)
-            {
-                return NotFound(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-            {
-                return BadRequest(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleDependencyException propertySaleDependencyException)
-            {
-                return InternalServerError(propertySaleDependencyException);
-            }
-            catch (PropertySaleServiceException propertySaleServiceException)
-            {
-                return InternalServerError(propertySaleServiceException);
-            }
-        }
-
-        [HttpPut("{propertySaleId}")]
-        public async ValueTask<ActionResult<PropertySale>> PutPropertySaleAsync(
-            Guid propertySaleId,
-            PropertySale propertySale)
-        {
-            try
-            {
-                propertySale.Id = propertySaleId;
-
-                PropertySale updatedPropertySale =
-                    await this.propertySaleService.ModifyPropertySaleAsync(propertySale);
-
-                return Ok(updatedPropertySale);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-                when (propertySaleValidationException.InnerException is NotFoundPropertySaleException)
-            {
-                return NotFound(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-            {
-                return BadRequest(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
-                when (propertySaleDependencyValidationException.InnerException is LockedPropertySaleException)
-            {
-                return Locked(propertySaleDependencyValidationException.InnerException);
-            }
-            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
-            {
-                return BadRequest(propertySaleDependencyValidationException.InnerException);
-            }
-            catch (PropertySaleDependencyException propertySaleDependencyException)
-            {
-                return InternalServerError(propertySaleDependencyException);
-            }
-            catch (PropertySaleServiceException propertySaleServiceException)
-            {
-                return InternalServerError(propertySaleServiceException);
-            }
-        }
-
-        [HttpDelete("{propertySaleId}")]
-        public async ValueTask<ActionResult<PropertySale>> DeletePropertySaleByIdAsync(Guid propertySaleId)
-        {
-            try
-            {
-                PropertySale deletedPropertySale =
-                    await this.propertySaleService.RemovePropertySaleByIdAsync(propertySaleId);
-
-                return Ok(deletedPropertySale);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-                when (propertySaleValidationException.InnerException is NotFoundPropertySaleException)
-            {
-                return NotFound(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleValidationException propertySaleValidationException)
-            {
-                return BadRequest(propertySaleValidationException.InnerException);
-            }
-            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
-            {
-                return BadRequest(propertySaleDependencyValidationException.InnerException);
+                return Ok(retrievedPropertySales);
             }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {

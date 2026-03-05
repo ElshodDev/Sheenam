@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Notifications;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class NotificationsController : RESTFulController
     {
         private readonly INotificationService notificationService;
@@ -61,105 +63,10 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<Notification> allNotifications =
+                IQueryable<Notification> retrievedNotifications =
                     this.notificationService.RetrieveAllNotifications();
 
-                return Ok(allNotifications);
-            }
-            catch (NotificationDependencyException notificationDependencyException)
-            {
-                return InternalServerError(notificationDependencyException);
-            }
-            catch (NotificationServiceException notificationServiceException)
-            {
-                return InternalServerError(notificationServiceException);
-            }
-        }
-
-        [HttpGet("{notificationId}")]
-        public async ValueTask<ActionResult<Notification>> GetNotificationByIdAsync(Guid notificationId)
-        {
-            try
-            {
-                Notification notification =
-                    await this.notificationService.RetrieveNotificationByIdAsync(notificationId);
-
-                return Ok(notification);
-            }
-            catch (NotificationValidationException notificationValidationException)
-                when (notificationValidationException.InnerException is NotFoundNotificationException)
-            {
-                return NotFound(notificationValidationException.InnerException);
-            }
-            catch (NotificationValidationException notificationValidationException)
-            {
-                return BadRequest(notificationValidationException.InnerException);
-            }
-            catch (NotificationDependencyException notificationDependencyException)
-            {
-                return InternalServerError(notificationDependencyException);
-            }
-            catch (NotificationServiceException notificationServiceException)
-            {
-                return InternalServerError(notificationServiceException);
-            }
-        }
-
-        [HttpPut("{notificationId}")]
-        public async ValueTask<ActionResult<Notification>> PutNotificationAsync(Notification notification)
-        {
-            try
-            {
-                Notification modifiedNotification =
-                    await this.notificationService.ModifyNotificationAsync(notification);
-
-                return Ok(modifiedNotification);
-            }
-            catch (NotificationValidationException notificationValidationException)
-                when (notificationValidationException.InnerException is NotFoundNotificationException)
-            {
-                return NotFound(notificationValidationException.InnerException);
-            }
-            catch (NotificationValidationException notificationValidationException)
-            {
-                return BadRequest(notificationValidationException.InnerException);
-            }
-            catch (NotificationDependencyValidationException notificationDependencyValidationException)
-            {
-                return BadRequest(notificationDependencyValidationException.InnerException);
-            }
-            catch (NotificationDependencyException notificationDependencyException)
-            {
-                return InternalServerError(notificationDependencyException);
-            }
-            catch (NotificationServiceException notificationServiceException)
-            {
-                return InternalServerError(notificationServiceException);
-            }
-        }
-
-        [HttpDelete("{notificationId}")]
-        public async ValueTask<ActionResult<Notification>> DeleteNotificationByIdAsync(Guid notificationId)
-        {
-            try
-            {
-                Notification deletedNotification =
-                    await this.notificationService.RemoveNotificationByIdAsync(notificationId);
-
-                return Ok(deletedNotification);
-            }
-            catch (NotificationValidationException notificationValidationException)
-                when (notificationValidationException.InnerException is NotFoundNotificationException)
-            {
-                return NotFound(notificationValidationException.InnerException);
-            }
-            catch (NotificationValidationException notificationValidationException)
-            {
-                return BadRequest(notificationValidationException.InnerException);
-            }
-            catch (NotificationDependencyValidationException notificationDependencyValidationException)
-            {
-                return BadRequest(notificationDependencyValidationException.InnerException);
+                return Ok(retrievedNotifications);
             }
             catch (NotificationDependencyException notificationDependencyException)
             {

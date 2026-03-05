@@ -21,6 +21,12 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
             Review storageReview = inputReview;
             Review expectedReview = storageReview.DeepClone();
 
+            bool expectedSentiment = expectedReview.IsPositive ?? true;
+
+            this.aiServiceMock.Setup(service =>
+                service.AnalyzeSentimentAsync(inputReview.Comment))
+                    .Returns(ValueTask.FromResult(expectedSentiment));
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertReviewAsync(inputReview))
                     .ReturnsAsync(storageReview);
@@ -32,6 +38,10 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
             // then
             actualReview.Should().BeEquivalentTo(expectedReview);
 
+            this.aiServiceMock.Verify(service =>
+                service.AnalyzeSentimentAsync(inputReview.Comment),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertReviewAsync(inputReview),
                     Times.Once);
@@ -39,6 +49,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.aiServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -104,7 +104,7 @@ namespace Sheenam.Api.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public ActionResult<IQueryable<User>> GetAllUsers()
         {
             try
@@ -139,75 +139,6 @@ namespace Sheenam.Api.Controllers
             catch (UserValidationException userValidationException)
             {
                 return BadRequest(userValidationException.InnerException);
-            }
-            catch (UserDependencyException userDependencyException)
-            {
-                return InternalServerError(userDependencyException);
-            }
-            catch (UserServiceException userServiceException)
-            {
-                return InternalServerError(userServiceException);
-            }
-        }
-
-        [HttpPut("{userId}")]
-        [Authorize]
-        public async ValueTask<ActionResult<User>> PutUserAsync(Guid userId, User user)
-        {
-            try
-            {
-                User modifiedUser = await this.userService.ModifyUserAsync(user);
-                return Ok(modifiedUser);
-            }
-            catch (UserValidationException userValidationException)
-                when (userValidationException.InnerException is NotFoundUserException)
-            {
-                return NotFound(userValidationException.InnerException);
-            }
-            catch (UserValidationException userValidationException)
-            {
-                return BadRequest(userValidationException.InnerException);
-            }
-            catch (UserDependencyValidationException userDependencyValidationException)
-                when (userDependencyValidationException.InnerException is AlreadyExistsUserException)
-            {
-                return Conflict(userDependencyValidationException.InnerException);
-            }
-            catch (UserDependencyValidationException userDependencyValidationException)
-            {
-                return BadRequest(userDependencyValidationException.InnerException);
-            }
-            catch (UserDependencyException userDependencyException)
-            {
-                return InternalServerError(userDependencyException);
-            }
-            catch (UserServiceException userServiceException)
-            {
-                return InternalServerError(userServiceException);
-            }
-        }
-
-        [HttpDelete("{userId}")]
-        [Authorize(Roles = "Admin")]
-        public async ValueTask<ActionResult<User>> DeleteUserByIdAsync(Guid userId)
-        {
-            try
-            {
-                User deletedUser = await this.userService.RemoveUserByIdAsync(userId);
-                return Ok(deletedUser);
-            }
-            catch (UserValidationException userValidationException)
-                when (userValidationException.InnerException is NotFoundUserException)
-            {
-                return NotFound(userValidationException.InnerException);
-            }
-            catch (UserValidationException userValidationException)
-            {
-                return BadRequest(userValidationException.InnerException);
-            }
-            catch (UserDependencyValidationException userDependencyValidationException)
-            {
-                return BadRequest(userDependencyValidationException.InnerException);
             }
             catch (UserDependencyException userDependencyException)
             {

@@ -4,6 +4,7 @@
 //===================================================
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Sheenam.Api.Models.Foundations.Users
 {
@@ -13,11 +14,17 @@ namespace Sheenam.Api.Models.Foundations.Users
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+
+        [JsonIgnore]
         public string PasswordHash { get; set; }
+
         public string PhoneNumber { get; set; }
         public UserRole Role { get; set; } = UserRole.Guest;
         public bool IsEmailVerified { get; set; } = false;
+
+        [JsonIgnore]
         public string EmailVerificationToken { get; set; }
+
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }

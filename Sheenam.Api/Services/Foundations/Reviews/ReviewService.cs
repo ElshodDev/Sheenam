@@ -6,6 +6,7 @@ using Sheenam.Api.Brokers.DateTimes;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Reviews;
+using Sheenam.Api.Services.Foundations.AIs;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,21 +18,30 @@ namespace Sheenam.Api.Services.Foundations.Reviews
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAiService aiService;
 
         public ReviewService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IAiService aiService)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
+            this.aiService = aiService;
         }
 
         public ValueTask<Review> AddReviewAsync(Review review) =>
         TryCatch(async () =>
         {
             ValidateReviewOnAdd(review);
+
+            if (!string.IsNullOrWhiteSpace(review.Comment))
+            {
+                review.IsPositive =
+                    await this.aiService.AnalyzeSentimentAsync(review.Comment);
+            }
 
             return await this.storageBroker.InsertReviewAsync(review);
         });
