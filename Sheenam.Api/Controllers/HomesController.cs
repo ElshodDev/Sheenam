@@ -3,6 +3,7 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Homes;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class HomesController : RESTFulController
     {
         private readonly IHomeService homeService;
@@ -60,95 +62,9 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<Home> allHomes = this.homeService.RetrieveAllHomes();
+                IQueryable<Home> retrievedHomes = this.homeService.RetrieveAllHomes();
 
-                return Ok(allHomes);
-            }
-            catch (HomeDependencyException homeDependencyException)
-            {
-                return InternalServerError(homeDependencyException);
-            }
-            catch (HomeServiceException homeServiceException)
-            {
-                return InternalServerError(homeServiceException);
-            }
-        }
-
-        [HttpGet("{homeId}")]
-        public async ValueTask<ActionResult<Home>> GetHomeByIdAsync(Guid homeId)
-        {
-            try
-            {
-                Home retrievedHome = await this.homeService.RetrieveHomeByIdAsync(homeId);
-
-                return Ok(retrievedHome);
-            }
-            catch (HomeValidationException homeValidationException)
-                when (homeValidationException.InnerException is NotFoundHomeException)
-            {
-                return NotFound(homeValidationException.InnerException);
-            }
-            catch (HomeValidationException homeValidationException)
-            {
-                return BadRequest(homeValidationException.InnerException);
-            }
-            catch (HomeDependencyException homeDependencyException)
-            {
-                return InternalServerError(homeDependencyException);
-            }
-            catch (HomeServiceException homeServiceException)
-            {
-                return InternalServerError(homeServiceException);
-            }
-        }
-
-        [HttpPut("{homeId}")]
-        public async ValueTask<ActionResult<Home>> PutHomeAsync(Guid homeId, Home home)
-        {
-            try
-            {
-                home.Id = homeId;
-
-                Home updatedHome = await this.homeService.ModifyHomeAsync(home);
-
-                return Ok(updatedHome);
-            }
-            catch (HomeValidationException homeValidationException)
-                when (homeValidationException.InnerException is NotFoundHomeException)
-            {
-                return NotFound(homeValidationException.InnerException);
-            }
-            catch (HomeValidationException homeValidationException)
-            {
-                return BadRequest(homeValidationException.InnerException);
-            }
-            catch (HomeDependencyException homeDependencyException)
-            {
-                return InternalServerError(homeDependencyException);
-            }
-            catch (HomeServiceException homeServiceException)
-            {
-                return InternalServerError(homeServiceException);
-            }
-        }
-
-        [HttpDelete("{homeId}")]
-        public async ValueTask<ActionResult<Home>> DeleteHomeByIdAsync(Guid homeId)
-        {
-            try
-            {
-                Home deletedHome = await this.homeService.RemoveHomeByIdAsync(homeId);
-
-                return Ok(deletedHome);
-            }
-            catch (HomeValidationException homeValidationException)
-                when (homeValidationException.InnerException is NotFoundHomeException)
-            {
-                return NotFound(homeValidationException.InnerException);
-            }
-            catch (HomeValidationException homeValidationException)
-            {
-                return BadRequest(homeValidationException.InnerException);
+                return Ok(retrievedHomes);
             }
             catch (HomeDependencyException homeDependencyException)
             {

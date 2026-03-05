@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Guests;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class GuestsController : RESTFulController
     {
         private readonly IGuestService guestService;
@@ -60,9 +62,9 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<Guest> allGuests = this.guestService.RetrieveAllGuests();
+                IQueryable<Guest> retrievedGuests = this.guestService.RetrieveAllGuests();
 
-                return Ok(allGuests);
+                return Ok(retrievedGuests);
             }
             catch (GuestDependecyException guestDependecyException)
             {

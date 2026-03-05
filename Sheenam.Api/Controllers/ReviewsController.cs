@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Reviews;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ReviewsController : RESTFulController
     {
         private readonly IReviewService reviewService;
@@ -96,87 +98,6 @@ namespace Sheenam.Api.Controllers
             catch (ReviewValidationException reviewValidationException)
             {
                 return BadRequest(reviewValidationException.InnerException);
-            }
-            catch (ReviewDependencyException reviewDependencyException)
-            {
-                return InternalServerError(reviewDependencyException);
-            }
-            catch (ReviewServiceException reviewServiceException)
-            {
-                return InternalServerError(reviewServiceException);
-            }
-        }
-
-        [HttpPut]
-        public async ValueTask<ActionResult<Review>> PutReviewAsync(Review review)
-        {
-            try
-            {
-                Review modifiedReview =
-                    await this.reviewService.ModifyReviewAsync(review);
-
-                return Ok(modifiedReview);
-            }
-            catch (ReviewValidationException reviewValidationException)
-                when (reviewValidationException.InnerException is NotFoundReviewException)
-            {
-                return NotFound(reviewValidationException.InnerException);
-            }
-            catch (ReviewValidationException reviewValidationException)
-            {
-                return BadRequest(reviewValidationException.InnerException);
-            }
-            catch (ReviewDependencyValidationException reviewDependencyValidationException)
-                when (reviewDependencyValidationException.InnerException is AlreadyExistsReviewException)
-            {
-                return Conflict(reviewDependencyValidationException.InnerException);
-            }
-            catch (ReviewDependencyValidationException reviewDependencyValidationException)
-                when (reviewDependencyValidationException.InnerException is LockedReviewException)
-            {
-                return Locked(reviewDependencyValidationException.InnerException);
-            }
-            catch (ReviewDependencyValidationException reviewDependencyValidationException)
-            {
-                return BadRequest(reviewDependencyValidationException.InnerException);
-            }
-            catch (ReviewDependencyException reviewDependencyException)
-            {
-                return InternalServerError(reviewDependencyException);
-            }
-            catch (ReviewServiceException reviewServiceException)
-            {
-                return InternalServerError(reviewServiceException);
-            }
-        }
-
-        [HttpDelete("{reviewId}")]
-        public async ValueTask<ActionResult<Review>> DeleteReviewByIdAsync(Guid reviewId)
-        {
-            try
-            {
-                Review deletedReview =
-                    await this.reviewService.RemoveReviewAsync(reviewId);
-
-                return Ok(deletedReview);
-            }
-            catch (ReviewValidationException reviewValidationException)
-                when (reviewValidationException.InnerException is NotFoundReviewException)
-            {
-                return NotFound(reviewValidationException.InnerException);
-            }
-            catch (ReviewValidationException reviewValidationException)
-            {
-                return BadRequest(reviewValidationException.InnerException);
-            }
-            catch (ReviewDependencyValidationException reviewDependencyValidationException)
-                when (reviewDependencyValidationException.InnerException is LockedReviewException)
-            {
-                return Locked(reviewDependencyValidationException.InnerException);
-            }
-            catch (ReviewDependencyValidationException reviewDependencyValidationException)
-            {
-                return BadRequest(reviewDependencyValidationException.InnerException);
             }
             catch (ReviewDependencyException reviewDependencyException)
             {

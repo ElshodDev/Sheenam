@@ -3,6 +3,7 @@
 // Free To Use To Find Comfort and Peace
 //===================================================
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.RentalContracts;
@@ -16,6 +17,7 @@ namespace Sheenam.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RentalContractsController : RESTFulController
     {
         private readonly IRentalContractService rentalContractService;
@@ -61,97 +63,10 @@ namespace Sheenam.Api.Controllers
         {
             try
             {
-                IQueryable<RentalContract> allRentalContracts =
+                IQueryable<RentalContract> retrievedRentalContracts =
                     this.rentalContractService.RetrieveAllRentalContracts();
 
-                return Ok(allRentalContracts);
-            }
-            catch (RentalContractDependencyException rentalContractDependencyException)
-            {
-                return InternalServerError(rentalContractDependencyException);
-            }
-            catch (RentalContractServiceException rentalContractServiceException)
-            {
-                return InternalServerError(rentalContractServiceException);
-            }
-        }
-
-        [HttpGet("{rentalContractId}")]
-        public async ValueTask<ActionResult<RentalContract>> GetRentalContractByIdAsync(Guid rentalContractId)
-        {
-            try
-            {
-                RentalContract retrievedRentalContract =
-                    await this.rentalContractService.RetrieveRentalContractByIdAsync(rentalContractId);
-
-                return Ok(retrievedRentalContract);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
-            {
-                return NotFound(rentalContractValidationException.InnerException);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-            {
-                return BadRequest(rentalContractValidationException.InnerException);
-            }
-            catch (RentalContractDependencyException rentalContractDependencyException)
-            {
-                return InternalServerError(rentalContractDependencyException);
-            }
-            catch (RentalContractServiceException rentalContractServiceException)
-            {
-                return InternalServerError(rentalContractServiceException);
-            }
-        }
-
-        [HttpPut("{rentalContractId}")]
-        public async ValueTask<ActionResult<RentalContract>> PutRentalContractAsync(RentalContract rentalContract)
-        {
-            try
-            {
-                RentalContract modifiedRentalContract =
-                    await this.rentalContractService.ModifyRentalContractAsync(rentalContract);
-
-                return Ok(modifiedRentalContract);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
-            {
-                return NotFound(rentalContractValidationException.InnerException);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-            {
-                return BadRequest(rentalContractValidationException.InnerException);
-            }
-            catch (RentalContractDependencyException rentalContractDependencyException)
-            {
-                return InternalServerError(rentalContractDependencyException);
-            }
-            catch (RentalContractServiceException rentalContractServiceException)
-            {
-                return InternalServerError(rentalContractServiceException);
-            }
-        }
-
-        [HttpDelete("{rentalContractId}")]
-        public async ValueTask<ActionResult<RentalContract>> DeleteRentalContractByIdAsync(Guid rentalContractId)
-        {
-            try
-            {
-                RentalContract deletedRentalContract =
-                    await this.rentalContractService.RemoveRentalContractByIdAsync(rentalContractId);
-
-                return Ok(deletedRentalContract);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
-            {
-                return NotFound(rentalContractValidationException.InnerException);
-            }
-            catch (RentalContractValidationException rentalContractValidationException)
-            {
-                return BadRequest(rentalContractValidationException.InnerException);
+                return Ok(retrievedRentalContracts);
             }
             catch (RentalContractDependencyException rentalContractDependencyException)
             {

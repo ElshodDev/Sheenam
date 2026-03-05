@@ -9,6 +9,7 @@ using Sheenam.Api.Brokers.DateTimes;
 using Sheenam.Api.Brokers.Loggings;
 using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Reviews;
+using Sheenam.Api.Services.Foundations.AIs;
 using Sheenam.Api.Services.Foundations.Reviews;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -22,6 +23,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IAiService> aiServiceMock;
         private readonly IReviewService reviewService;
 
         public ReviewServiceTests()
@@ -29,11 +31,13 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.aiServiceMock = new Mock<IAiService>();
 
             this.reviewService = new ReviewService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                aiService: this.aiServiceMock.Object);
         }
 
         private static Expression<Func<Exception, bool>> SameExceptionAs(Exception expectedException)
