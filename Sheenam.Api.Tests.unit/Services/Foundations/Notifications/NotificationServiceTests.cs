@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Notifications;
 using Sheenam.Api.Services.Foundations.Notifications;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -55,7 +55,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static T GetInvalidEnum<T>() where T : struct, Enum
         {
@@ -77,12 +77,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
             var filler = new Filler<Notification>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(date)
-                .OnProperty(notification => notification.Type)
-                    .Use(() => (NotificationType)new IntRange(min: 0, max: 2).GetValue())
-                .OnProperty(notification => notification.IsRead).Use(false)
-
-                .OnProperty(notification => notification.User).IgnoreIt();
+                .OnType<DateTimeOffset>().Use(date);
 
             return filler;
         }

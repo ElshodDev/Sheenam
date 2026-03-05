@@ -12,7 +12,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.RentalContracts;
 using Sheenam.Api.Services.Foundations.RentalContracts;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -37,12 +37,18 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                guidBroker: this.guidBrokerMock.Object
-                );
+                guidBroker: this.guidBrokerMock.Object);
         }
 
         private static RentalContract CreateRandomRentalContract() =>
-          CreateRentalContractFiller(date: GetRandomDateTimeOffset()).Create();
+            CreateRentalContractFiller(date: GetRandomDateTimeOffset()).Create();
+
+        private static IQueryable<RentalContract> CreateRandomRentalContracts()
+        {
+            return CreateRentalContractFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                .AsQueryable();
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -54,7 +60,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
             new MnemonicString().GetValue();
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static T GetInvalidEnum<T>() where T : struct, Enum
         {
@@ -76,7 +82,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
             var filler = new Filler<RentalContract>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(date);
+                .OnType<DateTimeOffset>().Use(date)
+                .OnType<DateTimeOffset?>().Use(date);
 
             return filler;
         }
