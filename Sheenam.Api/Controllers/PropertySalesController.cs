@@ -24,7 +24,7 @@ namespace Sheenam.Api.Controllers
             this.propertySaleService = propertySaleService;
 
         [HttpPost]
-        public async ValueTask<IActionResult> PostPropertySaleAsync(PropertySale propertySale)
+        public async ValueTask<ActionResult<PropertySale>> PostPropertySaleAsync(PropertySale propertySale)
         {
             try
             {
@@ -48,11 +48,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {
-                return InternalServerError(propertySaleDependencyException.InnerException);
+                return InternalServerError(propertySaleDependencyException);
             }
             catch (PropertySaleServiceException propertySaleServiceException)
             {
-                return InternalServerError(propertySaleServiceException.InnerException);
+                return InternalServerError(propertySaleServiceException);
             }
         }
 
@@ -68,11 +68,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {
-                return InternalServerError(propertySaleDependencyException.InnerException);
+                return InternalServerError(propertySaleDependencyException);
             }
             catch (PropertySaleServiceException propertySaleServiceException)
             {
-                return InternalServerError(propertySaleServiceException.InnerException);
+                return InternalServerError(propertySaleServiceException);
             }
         }
 
@@ -97,11 +97,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {
-                return InternalServerError(propertySaleDependencyException.InnerException);
+                return InternalServerError(propertySaleDependencyException);
             }
             catch (PropertySaleServiceException propertySaleServiceException)
             {
-                return InternalServerError(propertySaleServiceException.InnerException);
+                return InternalServerError(propertySaleServiceException);
             }
         }
 
@@ -133,13 +133,17 @@ namespace Sheenam.Api.Controllers
             {
                 return Locked(propertySaleDependencyValidationException.InnerException);
             }
+            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
+            {
+                return BadRequest(propertySaleDependencyValidationException.InnerException);
+            }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {
-                return InternalServerError(propertySaleDependencyException.InnerException);
+                return InternalServerError(propertySaleDependencyException);
             }
             catch (PropertySaleServiceException propertySaleServiceException)
             {
-                return InternalServerError(propertySaleServiceException.InnerException);
+                return InternalServerError(propertySaleServiceException);
             }
         }
 
@@ -162,13 +166,17 @@ namespace Sheenam.Api.Controllers
             {
                 return BadRequest(propertySaleValidationException.InnerException);
             }
+            catch (PropertySaleDependencyValidationException propertySaleDependencyValidationException)
+            {
+                return BadRequest(propertySaleDependencyValidationException.InnerException);
+            }
             catch (PropertySaleDependencyException propertySaleDependencyException)
             {
-                return InternalServerError(propertySaleDependencyException.InnerException);
+                return InternalServerError(propertySaleDependencyException);
             }
             catch (PropertySaleServiceException propertySaleServiceException)
             {
-                return InternalServerError(propertySaleServiceException.InnerException);
+                return InternalServerError(propertySaleServiceException);
             }
         }
     }

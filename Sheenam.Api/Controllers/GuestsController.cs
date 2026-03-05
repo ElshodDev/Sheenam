@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,7 @@ using RESTFulSense.Controllers;
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
 using Sheenam.Api.Services.Foundations.Guests;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,12 +20,11 @@ namespace Sheenam.Api.Controllers
     {
         private readonly IGuestService guestService;
 
-        public GuestsController(IGuestService guestService)
-        {
+        public GuestsController(IGuestService guestService) =>
             this.guestService = guestService;
-        }
+
         [HttpPost]
-        public async ValueTask<IActionResult> PostGuestAsync(Guest guest)
+        public async ValueTask<ActionResult<Guest>> PostGuestAsync(Guest guest)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(guestValidationException.InnerException);
             }
             catch (GuestDependecyValidationException guestDependecyValidationException)
-             when (guestDependecyValidationException.InnerException is AlreadyExistGuestException)
+                when (guestDependecyValidationException.InnerException is AlreadyExistGuestException)
             {
                 return Conflict(guestDependecyValidationException.InnerException);
             }
@@ -47,40 +47,44 @@ namespace Sheenam.Api.Controllers
             }
             catch (GuestDependecyException guestDependecyException)
             {
-                return InternalServerError(guestDependecyException.InnerException);
+                return InternalServerError(guestDependecyException);
             }
             catch (GuestServiceException guestServiceException)
             {
-                return InternalServerError(guestServiceException.InnerException);
+                return InternalServerError(guestServiceException);
             }
         }
+
         [HttpGet]
         public ActionResult<IQueryable<Guest>> GetAllGuests()
         {
             try
             {
                 IQueryable<Guest> allGuests = this.guestService.RetrieveAllGuests();
+
                 return Ok(allGuests);
             }
             catch (GuestDependecyException guestDependecyException)
             {
-                return InternalServerError(guestDependecyException.InnerException);
+                return InternalServerError(guestDependecyException);
             }
             catch (GuestServiceException guestServiceException)
             {
-                return InternalServerError(guestServiceException.InnerException);
+                return InternalServerError(guestServiceException);
             }
         }
+
         [HttpGet("{guestId}")]
-        public async ValueTask<ActionResult<Guest>> GetGuestByIdAsync(System.Guid guestId)
+        public async ValueTask<ActionResult<Guest>> GetGuestByIdAsync(Guid guestId)
         {
             try
             {
                 Guest guest = await this.guestService.RetrieveGuestByIdAsync(guestId);
+
                 return Ok(guest);
             }
             catch (GuestValidationException guestValidationException)
-             when (guestValidationException.InnerException is NotFoundGuestException)
+                when (guestValidationException.InnerException is NotFoundGuestException)
             {
                 return NotFound(guestValidationException.InnerException);
             }
@@ -90,30 +94,25 @@ namespace Sheenam.Api.Controllers
             }
             catch (GuestDependecyException guestDependecyException)
             {
-                return InternalServerError(guestDependecyException.InnerException);
+                return InternalServerError(guestDependecyException);
             }
             catch (GuestServiceException guestServiceException)
             {
-                return InternalServerError(guestServiceException.InnerException);
+                return InternalServerError(guestServiceException);
             }
         }
 
         [HttpPut("{guestId}")]
-        public async ValueTask<ActionResult<Guest>> PutGuestAsync(System.Guid guestId, Guest guest)
+        public async ValueTask<ActionResult<Guest>> PutGuestAsync(Guest guest)
         {
             try
             {
-                if (guestId != guest.Id)
-                {
-                    return BadRequest("Guest ID mismatch");
-                }
-
                 Guest updatedGuest = await this.guestService.ModifyGuestAsync(guest);
 
                 return Ok(updatedGuest);
             }
             catch (GuestValidationException guestValidationException)
-             when (guestValidationException.InnerException is NotFoundGuestException)
+                when (guestValidationException.InnerException is NotFoundGuestException)
             {
                 return NotFound(guestValidationException.InnerException);
             }
@@ -123,23 +122,25 @@ namespace Sheenam.Api.Controllers
             }
             catch (GuestDependecyException guestDependecyException)
             {
-                return InternalServerError(guestDependecyException.InnerException);
+                return InternalServerError(guestDependecyException);
             }
             catch (GuestServiceException guestServiceException)
             {
-                return InternalServerError(guestServiceException.InnerException);
+                return InternalServerError(guestServiceException);
             }
         }
+
         [HttpDelete("{guestId}")]
-        public async ValueTask<ActionResult<Guest>> DeleteGuestByIdAsync(System.Guid guestId)
+        public async ValueTask<ActionResult<Guest>> DeleteGuestByIdAsync(Guid guestId)
         {
             try
             {
                 Guest deletedGuest = await this.guestService.RemoveGuestByIdAsync(guestId);
+
                 return Ok(deletedGuest);
             }
             catch (GuestValidationException guestValidationException)
-             when (guestValidationException.InnerException is NotFoundGuestException)
+                when (guestValidationException.InnerException is NotFoundGuestException)
             {
                 return NotFound(guestValidationException.InnerException);
             }
@@ -149,11 +150,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (GuestDependecyException guestDependecyException)
             {
-                return InternalServerError(guestDependecyException.InnerException);
+                return InternalServerError(guestDependecyException);
             }
             catch (GuestServiceException guestServiceException)
             {
-                return InternalServerError(guestServiceException.InnerException);
+                return InternalServerError(guestServiceException);
             }
         }
     }

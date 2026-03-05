@@ -20,12 +20,10 @@ namespace Sheenam.Api.Controllers
     {
         private readonly ISaleOfferService saleOfferService;
 
-        public SaleOffersController(ISaleOfferService saleOfferService)
-        {
+        public SaleOffersController(ISaleOfferService saleOfferService) =>
             this.saleOfferService = saleOfferService;
-        }
+
         [HttpPost]
-        // [Authorize] 
         public async ValueTask<ActionResult<SaleOffer>> PostSaleOfferAsync(SaleOffer saleOffer)
         {
             try
@@ -40,8 +38,7 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(saleOfferValidationException.InnerException);
             }
             catch (SaleOfferDependencyValidationException saleOfferDependencyValidationException)
-                when (saleOfferDependencyValidationException.InnerException
-                    is AlreadyExistsSaleOfferException)
+                when (saleOfferDependencyValidationException.InnerException is AlreadyExistsSaleOfferException)
             {
                 return Conflict(saleOfferDependencyValidationException.InnerException);
             }
@@ -51,16 +48,15 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleOfferDependencyException saleOfferDependencyException)
             {
-                return InternalServerError(saleOfferDependencyException.InnerException);
+                return InternalServerError(saleOfferDependencyException);
             }
             catch (SaleOfferServiceException saleOfferServiceException)
             {
-                return InternalServerError(saleOfferServiceException.InnerException);
+                return InternalServerError(saleOfferServiceException);
             }
         }
 
         [HttpGet]
-        // [Authorize(Roles = "Host,Admin")] 
         public ActionResult<IQueryable<SaleOffer>> GetAllSaleOffers()
         {
             try
@@ -72,15 +68,15 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleOfferDependencyException saleOfferDependencyException)
             {
-                return InternalServerError(saleOfferDependencyException.InnerException);
+                return InternalServerError(saleOfferDependencyException);
             }
             catch (SaleOfferServiceException saleOfferServiceException)
             {
-                return InternalServerError(saleOfferServiceException.InnerException);
+                return InternalServerError(saleOfferServiceException);
             }
         }
+
         [HttpGet("{saleOfferId}")]
-        // [Authorize]
         public async ValueTask<ActionResult<SaleOffer>> GetSaleOfferByIdAsync(Guid saleOfferId)
         {
             try
@@ -101,16 +97,15 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleOfferDependencyException saleOfferDependencyException)
             {
-                return InternalServerError(saleOfferDependencyException.InnerException);
+                return InternalServerError(saleOfferDependencyException);
             }
             catch (SaleOfferServiceException saleOfferServiceException)
             {
-                return InternalServerError(saleOfferServiceException.InnerException);
+                return InternalServerError(saleOfferServiceException);
             }
         }
 
         [HttpPut("{saleOfferId}")]
-        // [Authorize]
         public async ValueTask<ActionResult<SaleOffer>> PutSaleOfferAsync(
             Guid saleOfferId,
             SaleOffer saleOffer)
@@ -139,16 +134,15 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleOfferDependencyException saleOfferDependencyException)
             {
-                return InternalServerError(saleOfferDependencyException.InnerException);
+                return InternalServerError(saleOfferDependencyException);
             }
             catch (SaleOfferServiceException saleOfferServiceException)
             {
-                return InternalServerError(saleOfferServiceException.InnerException);
+                return InternalServerError(saleOfferServiceException);
             }
         }
 
         [HttpDelete("{saleOfferId}")]
-        // [Authorize]
         public async ValueTask<ActionResult<SaleOffer>> DeleteSaleOfferByIdAsync(Guid saleOfferId)
         {
             try
@@ -173,11 +167,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (SaleOfferDependencyException saleOfferDependencyException)
             {
-                return InternalServerError(saleOfferDependencyException.InnerException);
+                return InternalServerError(saleOfferDependencyException);
             }
             catch (SaleOfferServiceException saleOfferServiceException)
             {
-                return InternalServerError(saleOfferServiceException.InnerException);
+                return InternalServerError(saleOfferServiceException);
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿//===================================================
-// Copyright (c) Coalition  of Good-Hearted Engineers
-// Free To Use  To Find Comfort and Peace
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
 //===================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +20,9 @@ namespace Sheenam.Api.Controllers
     {
         private readonly IHostService hostService;
 
-        public HostsController(IHostService hostService)
-        {
+        public HostsController(IHostService hostService) =>
             this.hostService = hostService;
-        }
+
         [HttpPost]
         public async ValueTask<ActionResult<Host>> PostHostAsync(Host host)
         {
@@ -38,21 +37,21 @@ namespace Sheenam.Api.Controllers
                 return BadRequest(hostValidationException.InnerException);
             }
             catch (HostDependencyValidationException hostDependencyValidationException)
-             when (hostDependencyValidationException.InnerException is AlreadyExistsHostException)
+                when (hostDependencyValidationException.InnerException is AlreadyExistsHostException)
             {
                 return Conflict(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyValidationException hostDependecyValidationException)
+            catch (HostDependencyValidationException hostDependencyValidationException)
             {
-                return BadRequest(hostDependecyValidationException.InnerException);
+                return BadRequest(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyException hostDependecyException)
+            catch (HostDependencyException hostDependencyException)
             {
-                return InternalServerError(hostDependecyException.InnerException);
+                return InternalServerError(hostDependencyException);
             }
             catch (HostServiceException hostServiceException)
             {
-                return InternalServerError(hostServiceException.InnerException);
+                return InternalServerError(hostServiceException);
             }
         }
 
@@ -62,15 +61,16 @@ namespace Sheenam.Api.Controllers
             try
             {
                 IQueryable<Host> retrievedHosts = this.hostService.RetrieveAllHosts();
+
                 return Ok(retrievedHosts);
             }
             catch (HostDependencyException hostDependencyException)
             {
-                return InternalServerError(hostDependencyException.InnerException);
+                return InternalServerError(hostDependencyException);
             }
             catch (HostServiceException hostServiceException)
             {
-                return InternalServerError(hostServiceException.InnerException);
+                return InternalServerError(hostServiceException);
             }
         }
 
@@ -80,7 +80,13 @@ namespace Sheenam.Api.Controllers
             try
             {
                 Host retrievedHost = await this.hostService.RetrieveHostByIdAsync(hostId);
+
                 return Ok(retrievedHost);
+            }
+            catch (HostValidationException hostValidationException)
+                when (hostValidationException.InnerException is NotFoundHostException)
+            {
+                return NotFound(hostValidationException.InnerException);
             }
             catch (HostValidationException hostValidationException)
             {
@@ -88,53 +94,48 @@ namespace Sheenam.Api.Controllers
             }
             catch (HostDependencyException hostDependencyException)
             {
-                return InternalServerError(hostDependencyException.InnerException);
+                return InternalServerError(hostDependencyException);
             }
             catch (HostServiceException hostServiceException)
             {
-                return InternalServerError(hostServiceException.InnerException);
+                return InternalServerError(hostServiceException);
             }
         }
+
         [HttpPut("{hostId}")]
-        public async ValueTask<ActionResult<Host>> PutHostAsync(
-            Guid hostId,
-            Host host)
+        public async ValueTask<ActionResult<Host>> PutHostAsync(Host host)
         {
             try
             {
-                if (hostId != host.Id)
-                {
-                    return BadRequest(
-                        new
-                        {
-                            Message = "Host ID in the URL does not match Host ID in the body.",
-                            UrlId = hostId,
-                            BodyId = host.Id
-                        });
-                }
                 Host modifiedHost = await this.hostService.ModifyHostAsync(host);
+
                 return Ok(modifiedHost);
+            }
+            catch (HostValidationException hostValidationException)
+                when (hostValidationException.InnerException is NotFoundHostException)
+            {
+                return NotFound(hostValidationException.InnerException);
             }
             catch (HostValidationException hostValidationException)
             {
                 return BadRequest(hostValidationException.InnerException);
             }
             catch (HostDependencyValidationException hostDependencyValidationException)
-             when (hostDependencyValidationException.InnerException is NotFoundHostException)
+                when (hostDependencyValidationException.InnerException is NotFoundHostException)
             {
                 return NotFound(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyValidationException hostDependecyValidationException)
+            catch (HostDependencyValidationException hostDependencyValidationException)
             {
-                return BadRequest(hostDependecyValidationException.InnerException);
+                return BadRequest(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyException hostDependecyException)
+            catch (HostDependencyException hostDependencyException)
             {
-                return InternalServerError(hostDependecyException.InnerException);
+                return InternalServerError(hostDependencyException);
             }
             catch (HostServiceException hostServiceException)
             {
-                return InternalServerError(hostServiceException.InnerException);
+                return InternalServerError(hostServiceException);
             }
         }
 
@@ -144,28 +145,34 @@ namespace Sheenam.Api.Controllers
             try
             {
                 Host deletedHost = await this.hostService.RemoveHostByIdAsync(hostId);
+
                 return Ok(deletedHost);
+            }
+            catch (HostValidationException hostValidationException)
+                when (hostValidationException.InnerException is NotFoundHostException)
+            {
+                return NotFound(hostValidationException.InnerException);
             }
             catch (HostValidationException hostValidationException)
             {
                 return BadRequest(hostValidationException.InnerException);
             }
             catch (HostDependencyValidationException hostDependencyValidationException)
-             when (hostDependencyValidationException.InnerException is NotFoundHostException)
+                when (hostDependencyValidationException.InnerException is NotFoundHostException)
             {
                 return NotFound(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyValidationException hostDependecyValidationException)
+            catch (HostDependencyValidationException hostDependencyValidationException)
             {
-                return BadRequest(hostDependecyValidationException.InnerException);
+                return BadRequest(hostDependencyValidationException.InnerException);
             }
-            catch (HostDependencyException hostDependecyException)
+            catch (HostDependencyException hostDependencyException)
             {
-                return InternalServerError(hostDependecyException.InnerException);
+                return InternalServerError(hostDependencyException);
             }
             catch (HostServiceException hostServiceException)
             {
-                return InternalServerError(hostServiceException.InnerException);
+                return InternalServerError(hostServiceException);
             }
         }
     }
