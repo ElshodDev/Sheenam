@@ -36,7 +36,7 @@ namespace Sheenam.Api.Brokers.Tokens
                 issuer: configuration["JwtSettings:Issuer"],
                 audience: configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
