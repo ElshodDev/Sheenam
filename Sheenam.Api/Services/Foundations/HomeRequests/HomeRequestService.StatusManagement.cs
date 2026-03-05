@@ -8,47 +8,58 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
 {
     public partial class HomeRequestService
     {
-        public async ValueTask<HomeRequest> ApproveHomeRequestAsync(Guid homeRequestId)
-        {
-            HomeRequest maybeHomeRequest =
-                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+        public ValueTask<HomeRequest> ApproveHomeRequestAsync(Guid homeRequestId) =>
+            TryCatch(async () =>
+            {
+                ValidateHomeRequestId(homeRequestId);
 
-            ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
-            ValidateHomeRequestCanBeApproved(maybeHomeRequest);
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
 
-            maybeHomeRequest.Status = HomeRequestStatus.Approved;
-            maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
+                ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
+                ValidateHomeRequestCanBeApproved(maybeHomeRequest);
 
-            return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
-        }
-        public async ValueTask<HomeRequest> RejectHomeRequestAsync(
-            Guid homeRequestId, string rejectionReason = null)
-        {
-            HomeRequest maybeHomeRequest =
-                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+                maybeHomeRequest.Status = HomeRequestStatus.Approved;
+                maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
 
-            ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
-            ValidateHomeRequestCanBeRejected(maybeHomeRequest);
+                return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
+            });
 
-            maybeHomeRequest.Status = HomeRequestStatus.Rejected;
-            maybeHomeRequest.RejectionReason = rejectionReason;
-            maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
+        public ValueTask<HomeRequest> RejectHomeRequestAsync(
+            Guid homeRequestId, string rejectionReason = null) =>
+            TryCatch(async () =>
+            {
+                ValidateHomeRequestId(homeRequestId);
 
-            return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
-        }
-        public async ValueTask<HomeRequest> CancelHomeRequestAsync(Guid homeRequestId)
-        {
-            HomeRequest maybeHomeRequest =
-                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
 
-            ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
-            ValidateHomeRequestCanBeCancelled(maybeHomeRequest);
+                ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
+                ValidateHomeRequestCanBeRejected(maybeHomeRequest);
 
-            maybeHomeRequest.Status = HomeRequestStatus.Cancelled;
-            maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
+                maybeHomeRequest.Status = HomeRequestStatus.Rejected;
+                maybeHomeRequest.RejectionReason = rejectionReason;
+                maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
 
-            return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
-        }
+                return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
+            });
+
+        public ValueTask<HomeRequest> CancelHomeRequestAsync(Guid homeRequestId) =>
+            TryCatch(async () =>
+            {
+                ValidateHomeRequestId(homeRequestId);
+
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+
+                ValidateHomeRequestExists(maybeHomeRequest, homeRequestId);
+                ValidateHomeRequestCanBeCancelled(maybeHomeRequest);
+
+                maybeHomeRequest.Status = HomeRequestStatus.Cancelled;
+                maybeHomeRequest.UpdatedDate = DateTimeOffset.UtcNow;
+
+                return await this.storageBroker.UpdateHomeRequestAsync(maybeHomeRequest);
+            });
         public IQueryable<HomeRequest> RetrieveHomeRequestsByStatusAsync(HomeRequestStatus status)
         {
             return this.storageBroker.SelectAllHomeRequests()
