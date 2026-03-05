@@ -37,46 +37,37 @@ namespace Sheenam.Api.Services.Foundations.Hosts
          });
 
         public IQueryable<Host> RetrieveAllHosts() =>
-            this.storageBroker.SelectAllHosts();
+            TryCatch(() => this.storageBroker.SelectAllHosts());
 
-        public async ValueTask<Host> RetrieveHostByIdAsync(Guid Id)
-        {
-            Host maybeHost = await this.storageBroker.SelectHostByIdAsync(Id);
-
-            if (maybeHost is null)
+        public ValueTask<Host> RetrieveHostByIdAsync(Guid hostId) =>
+            TryCatch(async () =>
             {
-                throw new NotFoundHostException(Id);
-            }
+                ValidateHostId(hostId);
+                Host maybeHost = await this.storageBroker.SelectHostByIdAsync(hostId);
+                ValidateStorageHost(maybeHost, hostId);
 
-            return maybeHost;
-        }
-        public async ValueTask<Host> ModifyHostAsync(Host host)
-        {
-            return await TryCatch(async () =>
+                return maybeHost;
+            });
+
+        public ValueTask<Host> ModifyHostAsync(Host host) =>
+            TryCatch(async () =>
             {
                 ValidateHostOnModify(host);
-                Host trackedHost =
-                    await this.storageBroker.SelectHostByIdAsync(host.Id);
-                if (trackedHost is null)
-                {
-                    throw new NotFoundHostException(host.Id);
-                }
+                Host maybeHost = await this.storageBroker.SelectHostByIdAsync(host.Id);
+                ValidateStorageHost(maybeHost, host.Id);
+
                 return await this.storageBroker.UpdateHostAsync(host);
             });
-        }
 
-        public ValueTask<Host> RemoveHostByIdAsync(Guid Id)
-        {
-            return TryCatch(async () =>
+        public ValueTask<Host> RemoveHostByIdAsync(Guid hostId) =>
+            TryCatch(async () =>
             {
-                Host maybeHost = await this.storageBroker.SelectHostByIdAsync(Id);
-                if (maybeHost is null)
-                {
-                    throw new NotFoundHostException(Id);
-                }
+                ValidateHostId(hostId);
+                Host maybeHost = await this.storageBroker.SelectHostByIdAsync(hostId);
+                ValidateStorageHost(maybeHost, hostId);
+
                 return await this.storageBroker.DeleteHostAsync(maybeHost);
             });
-        }
     }
 
 }

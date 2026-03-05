@@ -48,6 +48,17 @@ namespace Sheenam.Api.Services.Foundations.Hosts
             }
         }
 
+        private void ValidateHostId(Guid hostId) =>
+            Validate((Rule: IsInvalid(hostId), Parameter: nameof(Host.Id)));
+
+        private static void ValidateStorageHost(Host maybeHost, Guid hostId)
+        {
+            if (maybeHost is null)
+            {
+                throw new NotFoundHostException(hostId);
+            }
+        }
+
         private static dynamic IsInvalid(Guid Id) => new
         {
             Condition = Id == Guid.Empty,
