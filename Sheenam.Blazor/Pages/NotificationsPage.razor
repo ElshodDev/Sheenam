@@ -1,0 +1,32 @@
+﻿@page "/notifications"
+@using Sheenam.Blazor.Models.Foundations.Notifications
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-5">
+            <NotificationFormComponent @ref="notificationFormComponent"
+                                       OnNotificationAdded="ReloadTable" />
+        </div>
+        <div class="col-md-7">
+            <NotificationComponent @ref="notificationComponent"
+                                   OnEditSelected="LoadNotificationToEdit" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private NotificationComponent notificationComponent;
+    private NotificationFormComponent notificationFormComponent;
+
+    private async Task ReloadTable()
+    {
+        if (notificationComponent != null)
+            await notificationComponent.RefreshAsync();
+    }
+
+    private void LoadNotificationToEdit(Notification selectedNotification)
+    {
+        if (notificationFormComponent != null)
+            notificationFormComponent.EditNotification(selectedNotification);
+    }
+}

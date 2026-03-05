@@ -7,6 +7,7 @@ using Sheenam.Blazor.Services.Foundations.Guests;
 using Sheenam.Blazor.Services.Foundations.HomeRequests;
 using Sheenam.Blazor.Services.Foundations.Homes;
 using Sheenam.Blazor.Services.Foundations.Hosts;
+using Sheenam.Blazor.Services.Foundations.Notifications;
 using Sheenam.Blazor.Services.Foundations.Payments;
 using Sheenam.Blazor.Services.Foundations.PropertySales;
 using Sheenam.Blazor.Services.Foundations.RentalContracts;
@@ -43,6 +44,7 @@ builder.Services.AddTransient<IPropertySaleService, PropertySaleService>();
 builder.Services.AddTransient<ISaleOfferService, SaleOfferService>();
 builder.Services.AddTransient<ISaleTransactionService, SaleTransactionService>();
 builder.Services.AddTransient<IReviewService, ReviewService>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 
 
