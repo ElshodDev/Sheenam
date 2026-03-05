@@ -13,6 +13,7 @@ using Sheenam.Api.Services.Foundations.Auth;
 using Sheenam.Api.Services.Foundations.Users;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Controllers
@@ -154,6 +155,14 @@ namespace Sheenam.Api.Controllers
         [Authorize]
         public async ValueTask<ActionResult<User>> PutUserAsync(Guid userId, User user)
         {
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(currentUserIdClaim, out Guid currentUserId))
+                return Forbid();
+
+            if (currentUserId != userId && !User.IsInRole("Admin"))
+                return Forbid();
+
             try
             {
                 user.Id = userId;
@@ -188,6 +197,14 @@ namespace Sheenam.Api.Controllers
         [Authorize]
         public async ValueTask<ActionResult<User>> DeleteUserByIdAsync(Guid userId)
         {
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(currentUserIdClaim, out Guid currentUserId))
+                return Forbid();
+
+            if (currentUserId != userId && !User.IsInRole("Admin"))
+                return Forbid();
+
             try
             {
                 User deletedUser = await this.userService.RemoveUserByIdAsync(userId);
