@@ -56,6 +56,9 @@ namespace Sheenam.Api.Services.Foundations.Guests
             }
         }
 
+        private void ValidateGuestId(Guid guestId) =>
+            Validate((Rule: IsInvalid(guestId), Parameter: nameof(Guest.Id)));
+
         private static dynamic IsInvalid(Guid Id) => new
         {
             Condition = Id == Guid.Empty,

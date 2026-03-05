@@ -3,7 +3,9 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Sheenam.Api.Models.Foundations.Homes;
 using Sheenam.Api.Models.Foundations.Homes.Exceptions;
 using System;
@@ -40,6 +42,20 @@ namespace Sheenam.Api.Services.Foundations.Homes
             {
                 var failedHomeStorageException = new FailedHomeStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistHomeException =
+                    new AlreadyExistHomeException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistHomeException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var failedHomeStorageException =
+                    new FailedHomeStorageException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyException(failedHomeStorageException);
             }
             catch (Exception exception)
             {
@@ -78,6 +94,25 @@ namespace Sheenam.Api.Services.Foundations.Homes
         {
             var homeDependencyException = new HomeDependencyException(exception);
             this.loggingBroker.LogCritical(homeDependencyException);
+
+            return homeDependencyException;
+        }
+
+        private HomeDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var homeDependencyValidationException =
+                new HomeDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(homeDependencyValidationException);
+
+            return homeDependencyValidationException;
+        }
+
+        private HomeDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var homeDependencyException = new HomeDependencyException(exception);
+            this.loggingBroker.LogError(homeDependencyException);
 
             return homeDependencyException;
         }
