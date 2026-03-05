@@ -19,17 +19,23 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Brokers.Tokens;
 using Sheenam.Api.Services.Foundations.AIs;
 using Sheenam.Api.Services.Foundations.Auth;
+using Sheenam.Api.Services.Foundations.Favorites;
 using Sheenam.Api.Services.Foundations.Guests;
 using Sheenam.Api.Services.Foundations.HomeRequests;
 using Sheenam.Api.Services.Foundations.Homes;
 using Sheenam.Api.Services.Foundations.Hosts;
+using Sheenam.Api.Services.Foundations.Messages;
 using Sheenam.Api.Services.Foundations.Notifications;
 using Sheenam.Api.Services.Foundations.Payments;
+using Sheenam.Api.Services.Foundations.Properties;
+using Sheenam.Api.Services.Foundations.PropertyImages;
 using Sheenam.Api.Services.Foundations.PropertySales;
+using Sheenam.Api.Services.Foundations.PropertyViews;
 using Sheenam.Api.Services.Foundations.RentalContracts;
 using Sheenam.Api.Services.Foundations.Reviews;
 using Sheenam.Api.Services.Foundations.SaleOffers;
 using Sheenam.Api.Services.Foundations.SaleTransactions;
+using Sheenam.Api.Services.Foundations.SavedSearches;
 using Sheenam.Api.Services.Foundations.Users;
 using System.Text;
 
@@ -49,7 +55,6 @@ namespace Sheenam.Api
 
             AddBrokers(services);
             AddFoundationService(services);
-
             AddJwtAuthentication(services);
 
             services.AddCors(options =>
@@ -61,8 +66,7 @@ namespace Sheenam.Api
                             "http://localhost:5184",
                             "https://localhost:5185",
                             "http://localhost:5000",
-                            "https://localhost:5001"
-                        )
+                            "https://localhost:5001")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -71,11 +75,12 @@ namespace Sheenam.Api
 
             services.AddSwaggerGen(options =>
             {
+                options.CustomSchemaIds(type => type.FullName);
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Sheenam.Api",
                     Version = "v1",
-                    Description = "Home rental API with JWT Authentication & AI Recommendations"
+                    Description = "Real Estate API with JWT Authentication & AI Recommendations"
                 });
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -114,16 +119,14 @@ namespace Sheenam.Api
                 app.UseSwaggerUI(options =>
                 {
                     options.SwaggerEndpoint(
-                       url: "/swagger/v1/swagger.json",
-                       name: "Sheenam.Api v1");
+                        url: "/swagger/v1/swagger.json",
+                        name: "Sheenam.Api v1");
                 });
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
             app.UseCors("AllowBlazor");
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -143,6 +146,12 @@ namespace Sheenam.Api
 
         private static void AddFoundationService(IServiceCollection services)
         {
+            services.AddTransient<IPropertyService, PropertyService>();
+            services.AddTransient<IFavoriteService, FavoriteService>();
+            services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<IPropertyImageService, PropertyImageService>();
+            services.AddTransient<IPropertyViewService, PropertyViewService>();
+            services.AddTransient<ISavedSearchService, SavedSearchService>();
             services.AddTransient<IGuestService, GuestService>();
             services.AddTransient<IHomeService, HomeService>();
             services.AddTransient<IHostService, HostService>();
@@ -155,7 +164,6 @@ namespace Sheenam.Api
             services.AddTransient<IReviewService, ReviewService>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IAiService, AiService>();
-
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
         }

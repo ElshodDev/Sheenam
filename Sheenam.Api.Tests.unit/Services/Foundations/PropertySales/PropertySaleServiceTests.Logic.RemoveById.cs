@@ -4,6 +4,7 @@
 //===================================================
 using Moq;
 using Sheenam.Api.Models.Foundations.PropertySales;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.PropertySales
 {

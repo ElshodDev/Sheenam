@@ -1,4 +1,9 @@
-﻿using Sheenam.Api.Models.Foundations.Hosts;
+﻿//===================================================
+// Copyright (c) Coalition of Good-Hearted Engineers
+// Free To Use To Find Comfort and Peace
+//===================================================
+
+using Sheenam.Api.Models.Foundations.Hosts;
 using System;
 
 namespace Sheenam.Api.Models.Foundations.Homes
@@ -8,6 +13,10 @@ namespace Sheenam.Api.Models.Foundations.Homes
         public Guid Id { get; set; }
         public Guid HostId { get; set; }
         public string Address { get; set; }
+        public string City { get; set; }
+        public string District { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public string AdditionalInfo { get; set; }
         public bool IsVacant { get; set; }
         public bool IsPetAllowed { get; set; }
@@ -20,10 +29,8 @@ namespace Sheenam.Api.Models.Foundations.Homes
         public decimal? MonthlyRent { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? SecurityDeposit { get; set; }
-        public string ImageUrls { get; set; }
         public bool IsFeatured { get; set; }
         public Host Host { get; set; }
-
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }

@@ -4,9 +4,10 @@
 //===================================================
 
 using Moq;
-using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Models.Foundations.Hosts.Exceptions;
+using Sheenam.Api.Models.Foundations.Users;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
 {

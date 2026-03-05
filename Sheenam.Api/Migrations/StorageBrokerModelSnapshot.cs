@@ -22,6 +22,30 @@ namespace Sheenam.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Favorites.Favorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.Guests.Guest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -111,14 +135,17 @@ namespace Sheenam.Api.Migrations
                     b.Property<double>("Area")
                         .HasColumnType("float");
 
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("District")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("HostId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImageUrls")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
@@ -132,8 +159,14 @@ namespace Sheenam.Api.Migrations
                     b.Property<bool>("IsVacant")
                         .HasColumnType("bit");
 
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
                     b.Property<int>("ListingType")
                         .HasColumnType("int");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<decimal?>("MonthlyRent")
                         .HasColumnType("decimal(18,2)");
@@ -190,6 +223,47 @@ namespace Sheenam.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hosts");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Messages.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("HomeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReadDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.Notifications.Notification", b =>
@@ -270,6 +344,110 @@ namespace Sheenam.Api.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Properties.Property", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("AgentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Area")
+                        .HasColumnType("float");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("District")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPetAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVacant")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ListingType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<decimal?>("MonthlyRent")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("NumberOfBathrooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfBedrooms")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("SecurityDeposit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgentId");
+
+                    b.ToTable("Properties");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertyImages.PropertyImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("PropertyImages");
+                });
+
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", b =>
                 {
                     b.Property<Guid>("Id")
@@ -329,6 +507,33 @@ namespace Sheenam.Api.Migrations
                     b.HasIndex("HostId");
 
                     b.ToTable("PropertySales");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertyViews.PropertyView", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ViewedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PropertyViews");
                 });
 
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.RentalContracts.RentalContract", b =>
@@ -513,13 +718,65 @@ namespace Sheenam.Api.Migrations
                     b.ToTable("SaleTransactions");
                 });
 
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.SavedSearches.SavedSearch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("District")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ListingType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaxBedrooms")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MaxPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("MinBedrooms")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MinPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PropertyType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavedSearches");
+                });
+
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DateOfBirth")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
@@ -534,6 +791,9 @@ namespace Sheenam.Api.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsEmailVerified")
                         .ValueGeneratedOnAdd()
@@ -567,6 +827,24 @@ namespace Sheenam.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Favorites.Favorite", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Properties.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.HomeRequests.HomeRequest", b =>
                 {
                     b.HasOne("Sheenam.Api.Models.Foundations.Guests.Guest", "Guest")
@@ -595,6 +873,32 @@ namespace Sheenam.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Messages.Message", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Properties.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.Notifications.Notification", b =>
@@ -633,6 +937,27 @@ namespace Sheenam.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.Properties.Property", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "Agent")
+                        .WithMany()
+                        .HasForeignKey("AgentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertyImages.PropertyImage", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Properties.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Property");
+                });
+
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertySales.PropertySale", b =>
                 {
                     b.HasOne("Sheenam.Api.Models.Foundations.Hosts.Host", "Host")
@@ -642,6 +967,23 @@ namespace Sheenam.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.PropertyViews.PropertyView", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Properties.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Property");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.RentalContracts.RentalContract", b =>
@@ -748,6 +1090,17 @@ namespace Sheenam.Api.Migrations
                     b.Navigation("PropertySale");
 
                     b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("Sheenam.Api.Models.Foundations.SavedSearches.SavedSearch", b =>
+                {
+                    b.HasOne("Sheenam.Api.Models.Foundations.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Sheenam.Api.Models.Foundations.Hosts.Host", b =>

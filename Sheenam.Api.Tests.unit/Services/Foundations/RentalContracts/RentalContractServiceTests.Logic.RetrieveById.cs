@@ -7,6 +7,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.RentalContracts;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 {
@@ -16,9 +17,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
         public async Task ShouldRetrieveRentalContractByIdAsync()
         {
             // given
-            Guid randomRentalContractId = Guid.NewGuid();
-            Guid inputRentalContractId = randomRentalContractId;
             RentalContract randomRentalContract = CreateRandomRentalContract();
+            Guid inputRentalContractId = randomRentalContract.Id;
             RentalContract storageRentalContract = randomRentalContract;
             RentalContract expectedRentalContract = storageRentalContract.DeepClone();
 
@@ -39,6 +39,8 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.RentalContracts
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.guidBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

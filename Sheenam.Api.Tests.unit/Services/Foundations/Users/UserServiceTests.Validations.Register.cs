@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using Sheenam.Api.Models.Foundations.Users;
 using Sheenam.Api.Models.Foundations.Users.Exceptions;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Users
 {

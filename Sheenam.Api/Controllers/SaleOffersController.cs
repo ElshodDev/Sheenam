@@ -77,5 +77,104 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(saleOfferServiceException);
             }
         }
+
+        [HttpGet("{saleOfferId}")]
+        public async ValueTask<ActionResult<SaleOffer>> GetSaleOfferByIdAsync(Guid saleOfferId)
+        {
+            try
+            {
+                SaleOffer retrievedSaleOffer =
+                    await this.saleOfferService.RetrieveSaleOfferByIdAsync(saleOfferId);
+
+                return Ok(retrievedSaleOffer);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+                when (saleOfferValidationException.InnerException is NotFoundSaleOfferException)
+            {
+                return NotFound(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+            {
+                return BadRequest(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferDependencyException saleOfferDependencyException)
+            {
+                return InternalServerError(saleOfferDependencyException);
+            }
+            catch (SaleOfferServiceException saleOfferServiceException)
+            {
+                return InternalServerError(saleOfferServiceException);
+            }
+        }
+
+        [HttpPut("{saleOfferId}")]
+        public async ValueTask<ActionResult<SaleOffer>> PutSaleOfferAsync(
+            Guid saleOfferId,
+            SaleOffer saleOffer)
+        {
+            try
+            {
+                saleOffer.Id = saleOfferId;
+
+                SaleOffer modifiedSaleOffer =
+                    await this.saleOfferService.ModifySaleOfferAsync(saleOffer);
+
+                return Ok(modifiedSaleOffer);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+                when (saleOfferValidationException.InnerException is NotFoundSaleOfferException)
+            {
+                return NotFound(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+            {
+                return BadRequest(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferDependencyValidationException saleOfferDependencyValidationException)
+            {
+                return BadRequest(saleOfferDependencyValidationException.InnerException);
+            }
+            catch (SaleOfferDependencyException saleOfferDependencyException)
+            {
+                return InternalServerError(saleOfferDependencyException);
+            }
+            catch (SaleOfferServiceException saleOfferServiceException)
+            {
+                return InternalServerError(saleOfferServiceException);
+            }
+        }
+
+        [HttpDelete("{saleOfferId}")]
+        public async ValueTask<ActionResult<SaleOffer>> DeleteSaleOfferByIdAsync(Guid saleOfferId)
+        {
+            try
+            {
+                SaleOffer deletedSaleOffer =
+                    await this.saleOfferService.RemoveSaleOfferByIdAsync(saleOfferId);
+
+                return Ok(deletedSaleOffer);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+                when (saleOfferValidationException.InnerException is NotFoundSaleOfferException)
+            {
+                return NotFound(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferValidationException saleOfferValidationException)
+            {
+                return BadRequest(saleOfferValidationException.InnerException);
+            }
+            catch (SaleOfferDependencyValidationException saleOfferDependencyValidationException)
+            {
+                return BadRequest(saleOfferDependencyValidationException.InnerException);
+            }
+            catch (SaleOfferDependencyException saleOfferDependencyException)
+            {
+                return InternalServerError(saleOfferDependencyException);
+            }
+            catch (SaleOfferServiceException saleOfferServiceException)
+            {
+                return InternalServerError(saleOfferServiceException);
+            }
+        }
     }
 }

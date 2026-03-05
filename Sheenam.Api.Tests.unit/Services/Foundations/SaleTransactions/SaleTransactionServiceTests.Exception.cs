@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using Moq;
 using Sheenam.Api.Models.Foundations.SaleTransactions;
 using Sheenam.Api.Models.Foundations.SaleTransactions.Exceptions;
+using Xunit;
 
 namespace Sheenam.Api.Tests.unit.Services.Foundations.SaleTransactions
 {

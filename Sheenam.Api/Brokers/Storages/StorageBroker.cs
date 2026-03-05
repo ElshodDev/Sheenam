@@ -34,7 +34,7 @@ namespace Sheenam.Api.Brokers.Storages
         {
             var broker = new StorageBroker(this.configuration);
 
-            return broker.Set<T>();
+            return broker.Set<T>().AsNoTracking();
         }
 
         private async ValueTask<T> SelectAsync<T>(params object[] @objectIds) where T : class
@@ -80,6 +80,5 @@ namespace Sheenam.Api.Brokers.Storages
             optionsBuilder.UseSqlServer(connectionString);
         }
 
-        public override void Dispose() { }
     }
 }

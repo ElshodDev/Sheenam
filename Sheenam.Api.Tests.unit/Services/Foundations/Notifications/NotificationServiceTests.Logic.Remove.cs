@@ -7,6 +7,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
 using Sheenam.Api.Models.Foundations.Notifications;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
 {
