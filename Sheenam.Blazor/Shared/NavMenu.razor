@@ -1,8 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+@using Sheenam.Blazor.Services.Foundations.Auth
+@inject IAuthStateService AuthStateService
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="">
-            <i class="oi oi-home me-2"></i>Sheenam
-        </a>
+        <a class="navbar-brand" href="">Sheenam</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,81 +13,153 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Bosh sahifa
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="homes">
-                <span class="oi oi-list" aria-hidden="true"></span> Uylar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="hosts">
-                <span class="oi oi-people" aria-hidden="true"></span> Mezbonlar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="guests">
-                <span class="oi oi-person" aria-hidden="true"></span> Mehmonlar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="homerequests">
-                <span class="oi oi-document" aria-hidden="true"></span> Uy So'rovlari
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rentalcontracts">
-                <span class="oi oi-clipboard" aria-hidden="true"></span> Ijara Shartnomalari
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="payments">
-                <span class="oi oi-dollar" aria-hidden="true"></span> To'lovlar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="propertysales">
-                <span class="oi oi-home" aria-hidden="true"></span> Sotuvdagi Mulklar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="saleoffers">
-                <span class="oi oi-tag" aria-hidden="true"></span> Takliflar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="saletransactions">
-                <span class="oi oi-transfer" aria-hidden="true"></span> Tranzaksiyalar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="reviews">
-                <span class="oi oi-comment-square" aria-hidden="true"></span> Sharhlar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="notifications">
-                <span class="oi oi-bell" aria-hidden="true"></span> Bildirishnomalar
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Kirish
-            </NavLink>
-        </div>
+
+        @if (isAuthenticated)
+        {
+            @* Hammaga ko'rinadigan *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="homes">
+                    <span class="oi oi-home" aria-hidden="true"></span> Uylar
+                </NavLink>
+            </div>
+
+            @* Faqat Admin va Host *@
+            @if (isAdmin || isHost)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="hosts">
+                        <span class="oi oi-people" aria-hidden="true"></span> Mezbonlar
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="propertysales">
+                        <span class="oi oi-home" aria-hidden="true"></span> Sotuvdagi Mulklar
+                    </NavLink>
+                </div>
+            }
+
+            @* Faqat Admin va Guest *@
+            @if (isAdmin || isGuest)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="guests">
+                        <span class="oi oi-person" aria-hidden="true"></span> Mehmonlar
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="homerequests">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Uy So'rovlari
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="saleoffers">
+                        <span class="oi oi-tag" aria-hidden="true"></span> Takliflar
+                    </NavLink>
+                </div>
+            }
+
+            @* Hammaga *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rentalcontracts">
+                    <span class="oi oi-document" aria-hidden="true"></span> Ijara Shartnomalari
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="payments">
+                    <span class="oi oi-dollar" aria-hidden="true"></span> To'lovlar
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="saletransactions">
+                    <span class="oi oi-transfer" aria-hidden="true"></span> Tranzaksiyalar
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="reviews">
+                    <span class="oi oi-star" aria-hidden="true"></span> Sharhlar
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="notifications">
+                    <span class="oi oi-bell" aria-hidden="true"></span> Bildirishnomalar
+                </NavLink>
+            </div>
+
+            @* Faqat Admin *@
+            @if (isAdmin)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="users">
+                        <span class="oi oi-person" aria-hidden="true"></span> Foydalanuvchilar
+                    </NavLink>
+                </div>
+            }
+
+            @* Logout *@
+            <div class="nav-item px-3 mt-3">
+                <button class="btn btn-outline-light btn-sm w-100" @onclick="LogoutAsync">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> Chiqish (@userRole)
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="register">
+                    <span class="oi oi-person" aria-hidden="true"></span> Ro'yxatdan o'tish
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Kirish
+                </NavLink>
+            </div>
+        }
+
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool isAuthenticated = false;
+    private bool isAdmin = false;
+    private bool isHost = false;
+    private bool isGuest = false;
+    private string userRole = "";
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass =>
+        collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
+    private void ToggleNavMenu() =>
         collapseNavMenu = !collapseNavMenu;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAuthStateAsync();
+    }
+
+    private async Task LoadAuthStateAsync()
+    {
+        isAuthenticated = await AuthStateService.IsAuthenticatedAsync();
+        if (isAuthenticated)
+        {
+            isAdmin = await AuthStateService.IsAdminAsync();
+            isHost = await AuthStateService.IsHostAsync();
+            isGuest = await AuthStateService.IsGuestAsync();
+            userRole = await AuthStateService.GetCurrentUserRoleAsync() ?? "";
+        }
+        StateHasChanged();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await AuthStateService.LogoutAsync();
+        NavigationManager.NavigateTo("/login", forceLoad: true);
     }
 }

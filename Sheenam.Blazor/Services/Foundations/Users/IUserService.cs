@@ -1,4 +1,4 @@
-﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -9,5 +9,6 @@ namespace Sheenam.Blazor.Services.Foundations.Users
     {
         ValueTask<LoginResponse> LoginAsync(LoginRequest loginRequest);
         ValueTask<IQueryable<User>> RetrieveAllUsersAsync();
+        ValueTask<User> RegisterAsync(RegisterRequest request);
     }
 }
