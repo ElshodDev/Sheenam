@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Payments;
 using Sheenam.Api.Services.Foundations.Payments;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -20,7 +20,6 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-
         private readonly IPaymentService paymentService;
 
         public PaymentServiceTests()
@@ -32,6 +31,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
@@ -45,17 +45,13 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dates)
                 .OnType<DateTimeOffset?>().Use(dates)
-
                 .OnType<string>().Use(new MnemonicString().GetValue())
-
                 .OnProperty(p => p.Amount).Use(GetRandomDecimal())
                 .OnProperty(p => p.Method).Use(PaymentMethod.Card)
                 .OnProperty(p => p.Status).Use(PaymentStatus.Pending)
                 .OnProperty(p => p.CreatedDate).Use(dates)
                 .OnProperty(p => p.UpdatedDate).Use(dates)
-
                 .OnType<Guid?>().Use(() => null)
-
                 .OnProperty(p => p.User).IgnoreIt()
                 .OnProperty(p => p.RentalContract).IgnoreIt()
                 .OnProperty(p => p.SaleTransaction).IgnoreIt();
@@ -64,7 +60,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
         }
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();

@@ -10,7 +10,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Hosts;
 using Sheenam.Api.Services.Foundations.Hosts;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -59,7 +59,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Hosts
         }
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

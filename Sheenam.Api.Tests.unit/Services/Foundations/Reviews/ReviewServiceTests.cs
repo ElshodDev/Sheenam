@@ -11,7 +11,7 @@ using Sheenam.Api.Brokers.Storages;
 using Sheenam.Api.Models.Foundations.Reviews;
 using Sheenam.Api.Services.Foundations.Reviews;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -61,7 +61,7 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
         }
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -83,25 +83,9 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Reviews
                 .OnType<DateTimeOffset>().Use(date)
                 .OnType<DateTimeOffset?>().Use(date)
                 .OnProperty(review => review.Rating).Use(() => new IntRange(min: 1, max: 5).GetValue())
-                .OnProperty(review => review.IsPositive).Use(GetRandomBoolean())
-                .OnProperty(review => review.User).IgnoreIt()
-                .OnProperty(review => review.Home).IgnoreIt()
-                .OnProperty(review => review.PropertySale).IgnoreIt()
-                .OnType<Guid?>().Use(Guid.NewGuid());
+                .OnProperty(review => review.IsPositive).Use(() => true);
 
             return filler;
-        }
-
-        public static TheoryData<int> InvalidMinuteCases()
-        {
-            int randomMoreThanMinuteFromNow = GetRandomNumber();
-            int randomMoreThanMinuteBeforeNow = GetNegativeRandomNumber();
-
-            return new TheoryData<int>
-            {
-                randomMoreThanMinuteFromNow,
-                randomMoreThanMinuteBeforeNow
-            };
         }
     }
 }
