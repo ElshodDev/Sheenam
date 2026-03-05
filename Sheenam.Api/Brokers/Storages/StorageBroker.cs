@@ -23,41 +23,30 @@ namespace Sheenam.Api.Brokers.Storages
 
         private async ValueTask<T> InsertAsync<T>(T @object)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(@object).State = EntityState.Added;
-            await broker.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Added;
+            await this.SaveChangesAsync();
 
             return @object;
         }
 
-        private IQueryable<T> SelectAll<T>() where T : class
-        {
-            var broker = new StorageBroker(this.configuration);
+        private IQueryable<T> SelectAll<T>() where T : class =>
+            this.Set<T>().AsNoTracking();
 
-            return broker.Set<T>().AsNoTracking();
-        }
-
-        private async ValueTask<T> SelectAsync<T>(params object[] @objectIds) where T : class
-        {
-            var broker = new StorageBroker(this.configuration);
-
-            return await broker.Set<T>().FindAsync(@objectIds);
-        }
+        private async ValueTask<T> SelectAsync<T>(params object[] @objectIds) where T : class =>
+            await this.Set<T>().FindAsync(@objectIds);
 
         private async ValueTask<T> UpdateAsync<T>(T @object)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(@object).State = EntityState.Modified;
-            await broker.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Modified;
+            await this.SaveChangesAsync();
 
             return @object;
         }
 
         private async ValueTask<T> DeleteAsync<T>(T @object)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(@object).State = EntityState.Deleted;
-            await broker.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Deleted;
+            await this.SaveChangesAsync();
 
             return @object;
         }
