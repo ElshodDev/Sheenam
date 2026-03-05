@@ -1,4 +1,4 @@
-﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -15,5 +15,8 @@ namespace Sheenam.Blazor.Brokers.Apis
 
         public async ValueTask<List<User>> GetAllUsersAsync() =>
             await this.GetAsync<List<User>>("api/users");
+
+        public async ValueTask<User> PostRegisterAsync(RegisterRequest request) =>
+            await this.PostAsync<RegisterRequest, User>("api/users/register", request);
     }
 }

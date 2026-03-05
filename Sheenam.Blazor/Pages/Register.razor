@@ -1,0 +1,59 @@
+@page "/register"
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 480px; border-radius: 16px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">Sheenam</h2>
+            <p class="text-muted">Yangi hisob yaratish</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        @if (isSuccess)
+        {
+            <div class="alert alert-success">
+                Muvaffaqiyatli ro'yxatdan o'tdingiz! <a href="/login">Kirish</a>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Ism</label>
+                <input type="text" class="form-control" @bind="request.FirstName" placeholder="Ismingiz" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Familiya</label>
+                <input type="text" class="form-control" @bind="request.LastName" placeholder="Familiyangiz" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" @bind="request.Email" placeholder="email@example.com" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Telefon</label>
+                <input type="text" class="form-control" @bind="request.PhoneNumber" placeholder="+998901234567" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Parol</label>
+                <input type="password" class="form-control" @bind="request.Password" placeholder="Parol kiriting" />
+            </div>
+
+            <button class="btn btn-primary w-100 py-2 mt-2"
+                    @onclick="HandleRegisterAsync"
+                    disabled="@isProcessing">
+                @if (isProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                Ro'yxatdan o'tish
+            </button>
+
+            <div class="text-center mt-3">
+                <small>Hisobingiz bormi? <a href="/login">Kirish</a></small>
+            </div>
+        }
+    </div>
+</div>

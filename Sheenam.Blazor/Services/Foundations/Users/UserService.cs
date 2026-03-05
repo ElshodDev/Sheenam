@@ -1,4 +1,4 @@
-﻿//===================================================
+//===================================================
 // Copyright (c) Coalition of Good-Hearted Engineers
 // Free To Use To Find Comfort and Peace
 //===================================================
@@ -18,15 +18,16 @@ namespace Sheenam.Blazor.Services.Foundations.Users
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<LoginResponse> LoginAsync(LoginRequest loginRequest)
-        {
-            return await this.apiBroker.PostLoginAsync(loginRequest);
-        }
+        public async ValueTask<LoginResponse> LoginAsync(LoginRequest loginRequest) =>
+            await this.apiBroker.PostLoginAsync(loginRequest);
 
         public async ValueTask<IQueryable<User>> RetrieveAllUsersAsync()
         {
             var users = await this.apiBroker.GetAllUsersAsync();
             return users.AsQueryable();
         }
+
+        public async ValueTask<User> RegisterAsync(RegisterRequest request) =>
+            await this.apiBroker.PostRegisterAsync(request);
     }
 }

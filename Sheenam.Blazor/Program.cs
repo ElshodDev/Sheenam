@@ -46,6 +46,7 @@ builder.Services.AddTransient<ISaleTransactionService, SaleTransactionService>()
 builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 
 
 var app = builder.Build();

@@ -97,11 +97,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (NotificationDependencyException notificationDependencyException)
             {
-                return InternalServerError(notificationDependencyException.InnerException);
+                return InternalServerError(notificationDependencyException);
             }
             catch (NotificationServiceException notificationServiceException)
             {
-                return InternalServerError(notificationServiceException.InnerException);
+                return InternalServerError(notificationServiceException);
             }
         }
 
@@ -130,11 +130,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (NotificationDependencyException notificationDependencyException)
             {
-                return InternalServerError(notificationDependencyException.InnerException);
+                return InternalServerError(notificationDependencyException);
             }
             catch (NotificationServiceException notificationServiceException)
             {
-                return InternalServerError(notificationServiceException.InnerException);
+                return InternalServerError(notificationServiceException);
             }
         }
 
@@ -163,11 +163,11 @@ namespace Sheenam.Api.Controllers
             }
             catch (NotificationDependencyException notificationDependencyException)
             {
-                return InternalServerError(notificationDependencyException.InnerException);
+                return InternalServerError(notificationDependencyException);
             }
             catch (NotificationServiceException notificationServiceException)
             {
-                return InternalServerError(notificationServiceException.InnerException);
+                return InternalServerError(notificationServiceException);
             }
         }
     }
