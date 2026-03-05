@@ -33,17 +33,18 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
                  return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
              });
 
-        public async ValueTask<HomeRequest> ModifyHomeRequestAsync(HomeRequest homeRequest)
-        {
-            ValidateHomeRequestOnModify(homeRequest);
+        public ValueTask<HomeRequest> ModifyHomeRequestAsync(HomeRequest homeRequest) =>
+            TryCatch(async () =>
+            {
+                ValidateHomeRequestOnModify(homeRequest);
 
-            HomeRequest maybeHomeRequest =
-                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequest.Id);
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequest.Id);
 
-            ValidateStorageHomeRequest(maybeHomeRequest, homeRequest.Id);
+                ValidateStorageHomeRequest(maybeHomeRequest, homeRequest.Id);
 
-            return await this.storageBroker.UpdateHomeRequestAsync(homeRequest);
-        }
+                return await this.storageBroker.UpdateHomeRequestAsync(homeRequest);
+            });
 
         private static void ValidateStorageHomeRequest(HomeRequest maybeHomeRequest, Guid homeRequestId)
         {
@@ -68,30 +69,34 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
         }
 
         public IQueryable<HomeRequest> RetrieveAllHomeRequests() =>
-         this.storageBroker.SelectAllHomeRequests();
+            TryCatch(() => this.storageBroker.SelectAllHomeRequests());
 
-        public async ValueTask<HomeRequest> RetrieveHomeRequestByIdAsync(Guid homeRequestId)
-        {
-            HomeRequest maybeHomeRequest = await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
-            if (maybeHomeRequest is null)
+        public ValueTask<HomeRequest> RetrieveHomeRequestByIdAsync(Guid homeRequestId) =>
+            TryCatch(async () =>
             {
-                throw new NotFoundHomeRequestException(homeRequestId);
-            }
-            return maybeHomeRequest;
-        }
-        public async ValueTask<HomeRequest> RemoveHomeRequestByIdAsync(Guid homeRequestId)
-        {
-            ValidateHomeRequestId(homeRequestId);
-            HomeRequest maybeHomeRequest =
-                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+                ValidateHomeRequestId(homeRequestId);
 
-            ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
 
-            HomeRequest deleteHomeRequest =
-                await this.storageBroker.DeleteHomeRequestAsync(maybeHomeRequest);
+                ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
 
-            return deleteHomeRequest;
-        }
+                return maybeHomeRequest;
+            });
+
+        public ValueTask<HomeRequest> RemoveHomeRequestByIdAsync(Guid homeRequestId) =>
+            TryCatch(async () =>
+            {
+                ValidateHomeRequestId(homeRequestId);
+
+                HomeRequest maybeHomeRequest =
+                    await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+
+                ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
+
+                return await this.storageBroker.DeleteHomeRequestAsync(maybeHomeRequest);
+            });
+
         private static void ValidateHomeRequestId(Guid homeRequestId)
         {
             if (homeRequestId == Guid.Empty)

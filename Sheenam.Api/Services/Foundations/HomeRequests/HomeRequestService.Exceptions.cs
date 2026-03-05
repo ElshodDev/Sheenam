@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -16,6 +17,8 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
     public partial class HomeRequestService
     {
         private delegate ValueTask<HomeRequest> ReturningHomeRequestFunction();
+        private delegate IQueryable<HomeRequest> ReturningHomeRequestsFunction();
+
         private async ValueTask<HomeRequest> TryCatch(
            ReturningHomeRequestFunction returningHomeRequestFunction)
         {
@@ -89,6 +92,28 @@ namespace Sheenam.Api.Services.Foundations.HomeRequests
                 new HomeRequestServiceException(exception);
             this.loggingBroker.LogError(homeRequestServiceException);
             return homeRequestServiceException;
+        }
+
+        private IQueryable<HomeRequest> TryCatch(
+            ReturningHomeRequestsFunction returningHomeRequestsFunction)
+        {
+            try
+            {
+                return returningHomeRequestsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHomeRequestStorageException =
+                    new FailedHomeRequestStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(
+                    failedHomeRequestStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedHomeRequestServiceException =
+                    new FailedHomeRequestServiceException(exception);
+                throw CreateAndLogServiceException(failedHomeRequestServiceException);
+            }
         }
     }
 }
