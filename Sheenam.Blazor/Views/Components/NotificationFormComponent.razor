@@ -1,0 +1,72 @@
+﻿@using Sheenam.Blazor.Models.Foundations.Notifications
+@using Sheenam.Blazor.Models.Foundations.Users
+@namespace Sheenam.Blazor.Views.Components
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@(notification.Id == Guid.Empty ? "Yangi Bildirishnoma Qo'shish" : "Bildirishnomani Tahrirlash")</h4>
+    </div>
+    <div class="card-body">
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-2">@errorMessage</div>
+        }
+
+        <EditForm Model="@notification" OnValidSubmit="HandleSubmit">
+
+            <div class="mb-3">
+                <label class="form-label">Foydalanuvchi:</label>
+                <InputSelect @bind-Value="notification.UserId" class="form-control">
+                    <option value="@Guid.Empty">-- Foydalanuvchi tanlang --</option>
+                    @foreach (var user in Users)
+                    {
+                        <option value="@user.Id">@user.FirstName @user.LastName</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sarlavha:</label>
+                <InputText @bind-Value="notification.Title" class="form-control"
+                           placeholder="Sarlavhani kiriting" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Xabar:</label>
+                <InputTextArea @bind-Value="notification.Message" class="form-control"
+                               rows="3" placeholder="Xabarni kiriting" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tur:</label>
+                    <InputSelect @bind-Value="notification.Type" class="form-control">
+                        @foreach (NotificationType type in Enum.GetValues(typeof(NotificationType)))
+                        {
+                            <option value="@type">@type.ToUzbek()</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-6 mb-3 d-flex align-items-center mt-4">
+                    <div class="form-check">
+                        <InputCheckbox @bind-Value="notification.IsRead" class="form-check-input" id="isRead" />
+                        <label class="form-check-label" for="isRead">O'qilgan</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                @if (notification.Id != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-secondary me-2" @onclick="ResetForm">
+                        Bekor qilish
+                    </button>
+                }
+                <button type="submit" class="btn btn-success shadow-sm">
+                    @(notification.Id == Guid.Empty ? "Saqlash" : "Yangilash")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

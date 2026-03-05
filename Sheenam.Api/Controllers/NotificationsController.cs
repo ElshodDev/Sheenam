@@ -105,7 +105,7 @@ namespace Sheenam.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{notificationId}")]
         public async ValueTask<ActionResult<Notification>> PutNotificationAsync(Notification notification)
         {
             try
