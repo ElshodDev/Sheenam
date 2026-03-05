@@ -75,5 +75,98 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(homeServiceException);
             }
         }
+
+        [HttpGet("{homeId}")]
+        public async ValueTask<ActionResult<Home>> GetHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home retrievedHome = await this.homeService.RetrieveHomeByIdAsync(homeId);
+
+                return Ok(retrievedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+                when (homeValidationException.InnerException is NotFoundHomeException)
+            {
+                return NotFound(homeValidationException.InnerException);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException);
+            }
+        }
+
+        [HttpPut("{homeId}")]
+        public async ValueTask<ActionResult<Home>> PutHomeAsync(Guid homeId, Home home)
+        {
+            try
+            {
+                home.Id = homeId;
+                Home modifiedHome = await this.homeService.ModifyHomeAsync(home);
+
+                return Ok(modifiedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+                when (homeValidationException.InnerException is NotFoundHomeException)
+            {
+                return NotFound(homeValidationException.InnerException);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+            {
+                return BadRequest(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException);
+            }
+        }
+
+        [HttpDelete("{homeId}")]
+        public async ValueTask<ActionResult<Home>> DeleteHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home deletedHome = await this.homeService.RemoveHomeByIdAsync(homeId);
+
+                return Ok(deletedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+                when (homeValidationException.InnerException is NotFoundHomeException)
+            {
+                return NotFound(homeValidationException.InnerException);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+            {
+                return BadRequest(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException);
+            }
+        }
     }
 }

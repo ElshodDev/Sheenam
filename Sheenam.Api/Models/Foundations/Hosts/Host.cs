@@ -3,8 +3,8 @@
 // Free To Use  To Find Comfort and Peace
 //===================================================
 
-using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Homes;
+using Sheenam.Api.Models.Foundations.Users;
 using System;
 using System.Collections.Generic;
 

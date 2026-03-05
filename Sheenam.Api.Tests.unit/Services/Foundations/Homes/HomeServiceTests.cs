@@ -33,6 +33,17 @@ namespace Sheenam.Api.Tests.Unit.Services.Foundations.Homes
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
 
+        private static IQueryable<Home> CreateRandomHomes()
+        {
+            int randomCount = new IntRange(min: 2, max: 9).GetValue();
+            var homes = new List<Home>();
+
+            for (int i = 0; i < randomCount; i++)
+                homes.Add(CreateRandomHome());
+
+            return homes.AsQueryable();
+        }
+
         private static Filler<Home> CreateHomeFiller()
         {
             var filler = new Filler<Home>();

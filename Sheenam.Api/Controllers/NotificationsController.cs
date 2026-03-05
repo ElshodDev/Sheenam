@@ -77,5 +77,106 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(notificationServiceException);
             }
         }
+
+        [HttpGet("{notificationId}")]
+        public async ValueTask<ActionResult<Notification>> GetNotificationByIdAsync(
+            Guid notificationId)
+        {
+            try
+            {
+                Notification retrievedNotification =
+                    await this.notificationService.RetrieveNotificationByIdAsync(notificationId);
+
+                return Ok(retrievedNotification);
+            }
+            catch (NotificationValidationException notificationValidationException)
+                when (notificationValidationException.InnerException is NotFoundNotificationException)
+            {
+                return NotFound(notificationValidationException.InnerException);
+            }
+            catch (NotificationValidationException notificationValidationException)
+            {
+                return BadRequest(notificationValidationException.InnerException);
+            }
+            catch (NotificationDependencyException notificationDependencyException)
+            {
+                return InternalServerError(notificationDependencyException);
+            }
+            catch (NotificationServiceException notificationServiceException)
+            {
+                return InternalServerError(notificationServiceException);
+            }
+        }
+
+        [HttpPut("{notificationId}")]
+        public async ValueTask<ActionResult<Notification>> PutNotificationAsync(
+            Guid notificationId,
+            Notification notification)
+        {
+            try
+            {
+                notification.Id = notificationId;
+
+                Notification modifiedNotification =
+                    await this.notificationService.ModifyNotificationAsync(notification);
+
+                return Ok(modifiedNotification);
+            }
+            catch (NotificationValidationException notificationValidationException)
+                when (notificationValidationException.InnerException is NotFoundNotificationException)
+            {
+                return NotFound(notificationValidationException.InnerException);
+            }
+            catch (NotificationValidationException notificationValidationException)
+            {
+                return BadRequest(notificationValidationException.InnerException);
+            }
+            catch (NotificationDependencyValidationException notificationDependencyValidationException)
+            {
+                return BadRequest(notificationDependencyValidationException.InnerException);
+            }
+            catch (NotificationDependencyException notificationDependencyException)
+            {
+                return InternalServerError(notificationDependencyException);
+            }
+            catch (NotificationServiceException notificationServiceException)
+            {
+                return InternalServerError(notificationServiceException);
+            }
+        }
+
+        [HttpDelete("{notificationId}")]
+        public async ValueTask<ActionResult<Notification>> DeleteNotificationByIdAsync(
+            Guid notificationId)
+        {
+            try
+            {
+                Notification deletedNotification =
+                    await this.notificationService.RemoveNotificationByIdAsync(notificationId);
+
+                return Ok(deletedNotification);
+            }
+            catch (NotificationValidationException notificationValidationException)
+                when (notificationValidationException.InnerException is NotFoundNotificationException)
+            {
+                return NotFound(notificationValidationException.InnerException);
+            }
+            catch (NotificationValidationException notificationValidationException)
+            {
+                return BadRequest(notificationValidationException.InnerException);
+            }
+            catch (NotificationDependencyValidationException notificationDependencyValidationException)
+            {
+                return BadRequest(notificationDependencyValidationException.InnerException);
+            }
+            catch (NotificationDependencyException notificationDependencyException)
+            {
+                return InternalServerError(notificationDependencyException);
+            }
+            catch (NotificationServiceException notificationServiceException)
+            {
+                return InternalServerError(notificationServiceException);
+            }
+        }
     }
 }

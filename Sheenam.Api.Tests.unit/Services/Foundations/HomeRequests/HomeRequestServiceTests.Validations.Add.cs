@@ -6,6 +6,7 @@
 using Moq;
 using Sheenam.Api.Models.Foundations.HomeRequests;
 using Sheenam.Api.Models.Foundations.HomeRequests.Exceptions;
+using Xunit;
 
 namespace Sheenam.Api.Tests.unit.Services.Foundations.HomeRequests
 {

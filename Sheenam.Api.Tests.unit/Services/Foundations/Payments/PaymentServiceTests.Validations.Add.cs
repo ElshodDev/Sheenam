@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using Sheenam.Api.Models.Foundations.Payments;
 using Sheenam.Api.Models.Foundations.Payments.Exceptions;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Payments
 {

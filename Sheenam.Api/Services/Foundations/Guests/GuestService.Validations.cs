@@ -5,6 +5,7 @@
 
 using Sheenam.Api.Models.Foundations.Guests;
 using Sheenam.Api.Models.Foundations.Guests.Exceptions;
+using Sheenam.Api.Models.Foundations.Users;
 using System;
 
 namespace Sheenam.Api.Services.Foundations.Guests

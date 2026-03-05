@@ -4,14 +4,10 @@
 //===================================================
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using Sheenam.Api.Brokers.Tokens;
 using Sheenam.Api.Models.Foundations.Auth.Exceptions;
 using Sheenam.Api.Models.Foundations.Users;
 using Sheenam.Api.Services.Foundations.Users;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Sheenam.Api.Services.Foundations.Auth
@@ -19,13 +15,16 @@ namespace Sheenam.Api.Services.Foundations.Auth
     public partial class AuthService : IAuthService
     {
         private readonly IUserService userService;
+        private readonly ITokenBroker tokenBroker;
         private readonly IConfiguration configuration;
 
         public AuthService(
             IUserService userService,
+            ITokenBroker tokenBroker,
             IConfiguration configuration)
         {
             this.userService = userService;
+            this.tokenBroker = tokenBroker;
             this.configuration = configuration;
         }
 
@@ -51,36 +50,7 @@ namespace Sheenam.Api.Services.Foundations.Auth
                 throw new InvalidCredentialsException();
             }
 
-            return GenerateJwtToken(user);
+            return this.tokenBroker.GenerateToken(user);
         });
-
-        private string GenerateJwtToken(User user)
-        {
-            var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(this.configuration["JwtSettings:SecretKey"]));
-
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: this.configuration["JwtSettings:Issuer"],
-                audience: this.configuration["JwtSettings:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    Convert.ToDouble(this.configuration["JwtSettings:ExpirationMinutes"])),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
     }
 }

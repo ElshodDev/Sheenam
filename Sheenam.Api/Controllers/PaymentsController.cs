@@ -106,5 +106,70 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(paymentServiceException);
             }
         }
+
+        [HttpPut("{paymentId}")]
+        public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Guid paymentId, Payment payment)
+        {
+            try
+            {
+                payment.Id = paymentId;
+                Payment modifiedPayment = await this.paymentService.ModifyPaymentAsync(payment);
+
+                return Ok(modifiedPayment);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
+            {
+                return NotFound(paymentValidationException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+            {
+                return BadRequest(paymentValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+            {
+                return BadRequest(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException);
+            }
+        }
+
+        [HttpDelete("{paymentId}")]
+        public async ValueTask<ActionResult<Payment>> DeletePaymentByIdAsync(Guid paymentId)
+        {
+            try
+            {
+                Payment deletedPayment = await this.paymentService.RemovePaymentByIdAsync(paymentId);
+
+                return Ok(deletedPayment);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
+            {
+                return NotFound(paymentValidationException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+            {
+                return BadRequest(paymentValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+            {
+                return BadRequest(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException);
+            }
+        }
     }
 }

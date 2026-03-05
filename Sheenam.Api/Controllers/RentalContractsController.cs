@@ -77,5 +77,106 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(rentalContractServiceException);
             }
         }
+
+        [HttpGet("{rentalContractId}")]
+        public async ValueTask<ActionResult<RentalContract>> GetRentalContractByIdAsync(
+            Guid rentalContractId)
+        {
+            try
+            {
+                RentalContract retrievedRentalContract =
+                    await this.rentalContractService.RetrieveRentalContractByIdAsync(rentalContractId);
+
+                return Ok(retrievedRentalContract);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+            {
+                return NotFound(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+            {
+                return BadRequest(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractDependencyException rentalContractDependencyException)
+            {
+                return InternalServerError(rentalContractDependencyException);
+            }
+            catch (RentalContractServiceException rentalContractServiceException)
+            {
+                return InternalServerError(rentalContractServiceException);
+            }
+        }
+
+        [HttpPut("{rentalContractId}")]
+        public async ValueTask<ActionResult<RentalContract>> PutRentalContractAsync(
+            Guid rentalContractId,
+            RentalContract rentalContract)
+        {
+            try
+            {
+                rentalContract.Id = rentalContractId;
+
+                RentalContract modifiedRentalContract =
+                    await this.rentalContractService.ModifyRentalContractAsync(rentalContract);
+
+                return Ok(modifiedRentalContract);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+            {
+                return NotFound(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+            {
+                return BadRequest(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractDependencyValidationException rentalContractDependencyValidationException)
+            {
+                return BadRequest(rentalContractDependencyValidationException.InnerException);
+            }
+            catch (RentalContractDependencyException rentalContractDependencyException)
+            {
+                return InternalServerError(rentalContractDependencyException);
+            }
+            catch (RentalContractServiceException rentalContractServiceException)
+            {
+                return InternalServerError(rentalContractServiceException);
+            }
+        }
+
+        [HttpDelete("{rentalContractId}")]
+        public async ValueTask<ActionResult<RentalContract>> DeleteRentalContractByIdAsync(
+            Guid rentalContractId)
+        {
+            try
+            {
+                RentalContract deletedRentalContract =
+                    await this.rentalContractService.RemoveRentalContractByIdAsync(rentalContractId);
+
+                return Ok(deletedRentalContract);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+                when (rentalContractValidationException.InnerException is NotFoundRentalContractException)
+            {
+                return NotFound(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractValidationException rentalContractValidationException)
+            {
+                return BadRequest(rentalContractValidationException.InnerException);
+            }
+            catch (RentalContractDependencyValidationException rentalContractDependencyValidationException)
+            {
+                return BadRequest(rentalContractDependencyValidationException.InnerException);
+            }
+            catch (RentalContractDependencyException rentalContractDependencyException)
+            {
+                return InternalServerError(rentalContractDependencyException);
+            }
+            catch (RentalContractServiceException rentalContractServiceException)
+            {
+                return InternalServerError(rentalContractServiceException);
+            }
+        }
     }
 }

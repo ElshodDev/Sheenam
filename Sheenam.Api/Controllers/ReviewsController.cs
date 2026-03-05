@@ -108,5 +108,70 @@ namespace Sheenam.Api.Controllers
                 return InternalServerError(reviewServiceException);
             }
         }
+
+        [HttpPut("{reviewId}")]
+        public async ValueTask<ActionResult<Review>> PutReviewAsync(Guid reviewId, Review review)
+        {
+            try
+            {
+                review.Id = reviewId;
+                Review modifiedReview = await this.reviewService.ModifyReviewAsync(review);
+
+                return Ok(modifiedReview);
+            }
+            catch (ReviewValidationException reviewValidationException)
+                when (reviewValidationException.InnerException is NotFoundReviewException)
+            {
+                return NotFound(reviewValidationException.InnerException);
+            }
+            catch (ReviewValidationException reviewValidationException)
+            {
+                return BadRequest(reviewValidationException.InnerException);
+            }
+            catch (ReviewDependencyValidationException reviewDependencyValidationException)
+            {
+                return BadRequest(reviewDependencyValidationException.InnerException);
+            }
+            catch (ReviewDependencyException reviewDependencyException)
+            {
+                return InternalServerError(reviewDependencyException);
+            }
+            catch (ReviewServiceException reviewServiceException)
+            {
+                return InternalServerError(reviewServiceException);
+            }
+        }
+
+        [HttpDelete("{reviewId}")]
+        public async ValueTask<ActionResult<Review>> DeleteReviewByIdAsync(Guid reviewId)
+        {
+            try
+            {
+                Review deletedReview = await this.reviewService.RemoveReviewAsync(reviewId);
+
+                return Ok(deletedReview);
+            }
+            catch (ReviewValidationException reviewValidationException)
+                when (reviewValidationException.InnerException is NotFoundReviewException)
+            {
+                return NotFound(reviewValidationException.InnerException);
+            }
+            catch (ReviewValidationException reviewValidationException)
+            {
+                return BadRequest(reviewValidationException.InnerException);
+            }
+            catch (ReviewDependencyValidationException reviewDependencyValidationException)
+            {
+                return BadRequest(reviewDependencyValidationException.InnerException);
+            }
+            catch (ReviewDependencyException reviewDependencyException)
+            {
+                return InternalServerError(reviewDependencyException);
+            }
+            catch (ReviewServiceException reviewServiceException)
+            {
+                return InternalServerError(reviewServiceException);
+            }
+        }
     }
 }

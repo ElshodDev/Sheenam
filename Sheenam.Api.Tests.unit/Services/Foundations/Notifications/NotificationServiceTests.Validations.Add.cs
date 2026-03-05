@@ -6,6 +6,7 @@
 using Moq;
 using Sheenam.Api.Models.Foundations.Notifications;
 using Sheenam.Api.Models.Foundations.Notifications.Exceptions;
+using Xunit;
 
 namespace Sheenam.Api.Tests.Unit.Services.Foundations.Notifications
 {
